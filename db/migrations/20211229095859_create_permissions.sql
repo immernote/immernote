@@ -28,7 +28,7 @@ CREATE TABLE user_group_permissions (
   created_at timestamptz DEFAULT now() NOT NULL,
   modified_at timestamptz DEFAULT now() NOT NULL,
   deleted_at timestamptz,
-  PRIMARY KEY (space_id, block_id)
+  PRIMARY KEY (user_group_id, block_id)
 );
 
 CREATE TRIGGER set_modified_at
@@ -43,7 +43,7 @@ CREATE TABLE user_permissions (
   created_at timestamptz DEFAULT now() NOT NULL,
   modified_at timestamptz DEFAULT now() NOT NULL,
   deleted_at timestamptz,
-  PRIMARY KEY (space_id, block_id)
+  PRIMARY KEY (user_id, block_id)
 );
 
 CREATE TRIGGER set_modified_at
