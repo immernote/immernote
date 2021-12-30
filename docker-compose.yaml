@@ -48,7 +48,8 @@ services:
     volumes:
       - ./apps/api:/app/apps/api
       - ./internal:/app/internal
-    command: bash -c "air -c air.toml"
+      - ./db:/app/db
+    command: bash -c "air -c .air.toml"
     ports:
       - 4000:4000
   web:
