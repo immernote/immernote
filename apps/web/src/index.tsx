@@ -1,14 +1,16 @@
-import 'tailwindcss';
+import "./styles/global.css"
+import "./styles/colors.css"
+import "tailwindcss"
 
-import { render } from 'solid-js/web';
-import { Router } from 'solid-app-router';
-import App from './app';
+import { render } from "solid-js/web"
+import { Router } from "solid-app-router"
+import App from "./app"
 
 render(
-  () => (
-    <Router>
-      <App />
-    </Router>
-  ),
-  document.getElementById('root') as HTMLElement,
-);
+	() => (
+		<Router>
+			<App />
+		</Router>
+	),
+	document.getElementById("root") as HTMLElement
+)

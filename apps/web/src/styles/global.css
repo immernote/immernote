@@ -1,0 +1,26 @@
+:root {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	letter-spacing: -0.01em;
+	text-size-adjust: 100%;
+	font-variant-ligatures: contextual common-ligatures;
+	font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "cv10" 1;
+}
+
+:root {
+	font-family: "Inter", "Apple Color Emoji", system-ui, sans-serif;
+}
+@supports (font-variation-settings: normal) {
+	:root {
+		font-family: "Inter var", "Apple Color Emoji", system-ui, sans-serif;
+	}
+}
+
+.no-scrollbar {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+	width: 0px;
+	display: none;
+}

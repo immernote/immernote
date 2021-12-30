@@ -4,6 +4,10 @@ importers:
 
   apps/web:
     specifiers:
+      '@downwindcss/text-decoration': ^1.1.1
+      '@radix-ui/colors': ^0.1.8
+      '@tailwindcss/forms': ^0.4.0
+      '@tailwindcss/typography': ^0.5.0
       autoprefixer: ^10.4.1
       postcss: ^8.4.5
       solid-app-router: ^0.1.14
@@ -15,6 +19,10 @@ importers:
       solid-app-router: 0.1.14_solid-js@1.2.6
       solid-js: 1.2.6
     devDependencies:
+      '@downwindcss/text-decoration': 1.1.1
+      '@radix-ui/colors': 0.1.8
+      '@tailwindcss/forms': 0.4.0_tailwindcss@3.0.8
+      '@tailwindcss/typography': 0.5.0_tailwindcss@3.0.8
       autoprefixer: 10.4.1_postcss@8.4.5
       postcss: 8.4.5
       tailwindcss: 3.0.8_cefe482e8d38053bbf3d5815e0c551b3
@@ -323,6 +331,11 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
+  /@downwindcss/text-decoration/1.1.1:
+    resolution: {integrity: sha512-nvuakpy1gxu/1S6TgC5oMHe94YT1BPlCmjyy4+nW3NtxVzID09MrpLXfukDNtMBJhFztuNJl+JlNPkwPLee3jw==}
+    engines: {node: '>=10'}
+    dev: true
+
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -342,6 +355,31 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
+    dev: true
+
+  /@radix-ui/colors/0.1.8:
+    resolution: {integrity: sha512-jwRMXYwC0hUo0mv6wGpuw254Pd9p/R6Td5xsRpOmaWkUHlooNWqVcadgyzlRumMq3xfOTXwJReU0Jv+EIy4Jbw==}
+    dev: true
+
+  /@tailwindcss/forms/0.4.0_tailwindcss@3.0.8:
+    resolution: {integrity: sha512-DeaQBx6EgEeuZPQACvC+mKneJsD8am1uiJugjgQK1+/Vt+Ai0GpFBC2T2fqnUad71WgOxyrZPE6BG1VaI6YqfQ==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
+    dependencies:
+      mini-svg-data-uri: 1.4.3
+      tailwindcss: 3.0.8_cefe482e8d38053bbf3d5815e0c551b3
+    dev: true
+
+  /@tailwindcss/typography/0.5.0_tailwindcss@3.0.8:
+    resolution: {integrity: sha512-1p/3C6C+JJziS/ghtG8ACYalbA2SyLJY27Pm33cVTlAoY6VQ7zfm2H64cPxUMBkVIlWXTtWHhZcZJPobMRmQAA==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1 || insiders'
+    dependencies:
+      lodash.castarray: 4.4.0
+      lodash.isplainobject: 4.0.6
+      lodash.merge: 4.6.2
+      lodash.uniq: 4.5.0
+      tailwindcss: 3.0.8_cefe482e8d38053bbf3d5815e0c551b3
     dev: true
 
   /@types/parse-json/4.0.0:
@@ -973,6 +1011,22 @@ packages:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
     dev: true
 
+  /lodash.castarray/4.4.0:
+    resolution: {integrity: sha1-wCUTUV4wna3dTCTGDP3c9ZdtkRU=}
+    dev: true
+
+  /lodash.isplainobject/4.0.6:
+    resolution: {integrity: sha1-fFJqUtibRcRcxpC4gWO+BJf1UMs=}
+    dev: true
+
+  /lodash.merge/4.6.2:
+    resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: true
+
+  /lodash.uniq/4.5.0:
+    resolution: {integrity: sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=}
+    dev: true
+
   /merge-anything/4.0.2:
     resolution: {integrity: sha512-YxLHKgX8jN5xfKIxcwVNzQ2HpS0r9eUSqifgGhVARoZEW31Jwu95OQzX7qlFPBPQdCmNBhCYaqJzOcwAKi2Elg==}
     dependencies:
@@ -991,6 +1045,11 @@ packages:
     dependencies:
       braces: 3.0.2
       picomatch: 2.3.0
+    dev: true
+
+  /mini-svg-data-uri/1.4.3:
+    resolution: {integrity: sha512-gSfqpMRC8IxghvMcxzzmMnWpXAChSA+vy4cia33RgerMS8Fex95akUyQZPbxJJmeBGiGmK7n/1OpUX8ksRjIdA==}
+    hasBin: true
     dev: true
 
   /minimatch/3.0.4:
