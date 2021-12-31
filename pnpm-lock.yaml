@@ -9,14 +9,19 @@ importers:
       '@tailwindcss/forms': ^0.4.0
       '@tailwindcss/typography': ^0.5.0
       autoprefixer: ^10.4.1
+      lucide-solid: ^0.0.1
       postcss: ^8.4.5
+      redaxios: ^0.4.1
       solid-app-router: ^0.1.14
       solid-js: ^1.2.6
       solid-meta: ^0.27.2
       tailwindcss: ^3.0.8
+      type-fest: ^2.8.0
       vite: ^2.7.6
       vite-plugin-solid: ^2.1.4
     dependencies:
+      lucide-solid: 0.0.1_solid-js@1.2.6
+      redaxios: 0.4.1
       solid-app-router: 0.1.14_solid-js@1.2.6
       solid-js: 1.2.6
       solid-meta: 0.27.2_solid-js@1.2.6
@@ -28,6 +33,7 @@ importers:
       autoprefixer: 10.4.1_postcss@8.4.5
       postcss: 8.4.5
       tailwindcss: 3.0.8_cefe482e8d38053bbf3d5815e0c551b3
+      type-fest: 2.8.0
       vite: 2.7.7
       vite-plugin-solid: 2.1.4
 
@@ -1029,6 +1035,14 @@ packages:
     resolution: {integrity: sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=}
     dev: true
 
+  /lucide-solid/0.0.1_solid-js@1.2.6:
+    resolution: {integrity: sha512-Zrj/bCpCXc3sW8hNMh6B7IG+uNYjt5/DgbqJGjM/JbAJm1emA6E7IGYvz1filD2PQ/E7AMe0oZJAxramOL7gYg==}
+    peerDependencies:
+      solid-js: ^1.2.6
+    dependencies:
+      solid-js: 1.2.6
+    dev: false
+
   /merge-anything/4.0.2:
     resolution: {integrity: sha512-YxLHKgX8jN5xfKIxcwVNzQ2HpS0r9eUSqifgGhVARoZEW31Jwu95OQzX7qlFPBPQdCmNBhCYaqJzOcwAKi2Elg==}
     dependencies:
@@ -1208,6 +1222,10 @@ packages:
       picomatch: 2.3.0
     dev: true
 
+  /redaxios/0.4.1:
+    resolution: {integrity: sha512-+Jhh1j8/H0KBro+Hih/MrDEJ1PICaU10JA6iu5b3+uvgRI+5n2M7qpMNXq7eC/0fspP0tTq49ONXlGWFdRoNLg==}
+    dev: false
+
   /resolve-from/4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
@@ -1370,6 +1388,11 @@ packages:
 
   /ts-toolbelt/9.6.0:
     resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
+    dev: true
+
+  /type-fest/2.8.0:
+    resolution: {integrity: sha512-O+V9pAshf9C6loGaH0idwsmugI2LxVNR7DtS40gVo2EXZVYFgz9OuNtOhgHLdHdapOEWNdvz9Ob/eeuaWwwlxA==}
+    engines: {node: '>=12.20'}
     dev: true
 
   /util-deprecate/1.0.2:

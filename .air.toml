@@ -4,7 +4,7 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "go build -o ./tmp/main ./apps/api"
+  cmd = "go build -tags=go_json -tags=nomsgpack -o ./tmp/main ./apps/api"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules", "db", "packages"]
   exclude_file = []

@@ -32,6 +32,8 @@ type Config struct {
 	AWS_ACCESS_KEY_ID     string
 	AWS_SECRET_ACCESS_KEY string
 	AWS_DEFAULT_REGION    string
+
+	ROOT_EMAIL string
 }
 
 var config Config
@@ -96,6 +98,8 @@ func Init() Config {
 		AWS_ACCESS_KEY_ID:     getEnv("AWS_ACCESS_KEY_ID"),
 		AWS_SECRET_ACCESS_KEY: getEnv("AWS_SECRET_ACCESS_KEY"),
 		AWS_DEFAULT_REGION:    getEnv("AWS_DEFAULT_REGION"),
+
+		ROOT_EMAIL: getEnv("ROOT_EMAIL"),
 	}
 
 	return config

@@ -73,6 +73,19 @@ CREATE TABLE public.blocks (
 
 
 --
+-- Name: instance_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.instance_settings (
+    setting_key text NOT NULL,
+    setting_value text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    modified_at timestamp with time zone DEFAULT now() NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -209,6 +222,14 @@ CREATE TABLE public.users (
 
 ALTER TABLE ONLY public.blocks
     ADD CONSTRAINT blocks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: instance_settings instance_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.instance_settings
+    ADD CONSTRAINT instance_settings_pkey PRIMARY KEY (setting_key);
 
 
 --
@@ -490,4 +511,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20211228182013'),
     ('20211228235047'),
     ('20211229095356'),
-    ('20211229095859');
+    ('20211229095859'),
+    ('20211231194719');

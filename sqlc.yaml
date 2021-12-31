@@ -1,7 +1,7 @@
 version: "1"
 packages:
   - name: "query"
-    path: "pkg/query"
+    path: "internal/query"
     queries: "db/queries/"
     schema: "db/schema.sql"
     engine: "postgresql"
@@ -22,3 +22,9 @@ overrides:
   - go_type: "github.com/jackc/pgtype.Date"
     db_type: "date"
     nullable: true
+  - column: "users.settings"
+    go_type: "github.com/immernote/immernote/internal/types.UserSettings"
+  - column: "spaces.settings"
+    go_type: "github.com/immernote/immernote/internal/types.SpaceSettings"
+  - column: "spaces.icon"
+    go_type: "github.com/immernote/immernote/internal/types.SpaceIcon"
