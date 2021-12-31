@@ -1,4 +1,4 @@
-import { Link } from "solid-app-router"
+import { Link } from "solid-app-router";
 // import { ThemeSwitcher } from "./ThemeSwitcher"
 
 export function Header() {
@@ -10,5 +10,5 @@ export function Header() {
 				{/* <ThemeSwitcher /> */}
 			</div>
 		</div>
-	)
+	);
 }

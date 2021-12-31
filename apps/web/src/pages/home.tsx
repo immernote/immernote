@@ -1,19 +1,19 @@
-import { createEffect, createSignal } from "solid-js"
+import { createEffect, createSignal } from "solid-js";
 
 export default function Home() {
-	const [isDown, setIsDown] = createSignal(false)
-	const [count, setCount] = createSignal(0)
-	let intervalRef
+	const [isDown, setIsDown] = createSignal(false);
+	const [count, setCount] = createSignal(0);
+	let intervalRef;
 
 	createEffect(() => {
 		if (isDown()) {
 			intervalRef = setInterval(() => {
-				setCount(count() + 1)
-			}, 100)
+				setCount(count() + 1);
+			}, 100);
 		} else {
-			clearInterval(intervalRef)
+			clearInterval(intervalRef);
 		}
-	})
+	});
 
 	return (
 		<section class="bg-gray-100 text-gray-700 p-8">
@@ -24,8 +24,8 @@ export default function Home() {
 				<button
 					class="border rounded-lg px-2 border-gray-900"
 					onMouseDown={() => {
-						console.log("DOWN")
-						setIsDown(true)
+						console.log("DOWN");
+						setIsDown(true);
 					}}
 					onMouseUp={() => setIsDown(false)}
 				>
@@ -37,8 +37,8 @@ export default function Home() {
 				<button
 					class="border rounded-lg px-2 border-gray-900"
 					onMouseDown={() => {
-						console.log("DOWN")
-						setIsDown(true)
+						console.log("DOWN");
+						setIsDown(true);
 					}}
 					onMouseUp={() => setIsDown(false)}
 				>
@@ -46,5 +46,5 @@ export default function Home() {
 				</button>
 			</div>
 		</section>
-	)
+	);
 }
