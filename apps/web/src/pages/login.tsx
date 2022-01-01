@@ -6,7 +6,7 @@ import { login } from "../actions/auth";
 import { delay } from "../utils/delay";
 
 export default function Login() {
-	const [state, setState] = createSignal<"idle" | "waiting" | "success" | "error">("idle");
+	const [state, setState] = createSignal<"idle" | "waiting" | "success" | "error">("error");
 	const [error, setError] = createSignal<string>();
 
 	return (
@@ -23,11 +23,15 @@ export default function Login() {
 
 							const email = event.currentTarget.email.value as string;
 							const [_, loginError, otherError] = await login(email);
+
+							await delay(1000);
+
 							if (loginError || otherError) {
 								setState("error");
 								if (loginError) {
 									setError("User not found");
 								}
+
 								await delay(1000);
 								setState("idle");
 								return;
