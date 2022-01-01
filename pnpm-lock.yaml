@@ -15,7 +15,7 @@ importers:
       '@tailwindcss/forms': ^0.4.0
       '@tailwindcss/typography': ^0.5.0
       autoprefixer: ^10.4.1
-      lucide-solid: ^0.0.1
+      lucide-solid: ^0.0.2
       postcss: ^8.4.5
       redaxios: ^0.4.1
       solid-app-router: ^0.1.14
@@ -26,7 +26,7 @@ importers:
       vite: ^2.7.6
       vite-plugin-solid: ^2.1.4
     dependencies:
-      lucide-solid: 0.0.1_solid-js@1.2.6
+      lucide-solid: 0.0.2_solid-js@1.2.6
       redaxios: 0.4.1
       solid-app-router: 0.1.14_solid-js@1.2.6
       solid-js: 1.2.6
@@ -1041,8 +1041,8 @@ packages:
     resolution: {integrity: sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=}
     dev: true
 
-  /lucide-solid/0.0.1_solid-js@1.2.6:
-    resolution: {integrity: sha512-Zrj/bCpCXc3sW8hNMh6B7IG+uNYjt5/DgbqJGjM/JbAJm1emA6E7IGYvz1filD2PQ/E7AMe0oZJAxramOL7gYg==}
+  /lucide-solid/0.0.2_solid-js@1.2.6:
+    resolution: {integrity: sha512-pzFa+7i1QUMdpEOPBjajyDMpr8Inaola3yEdgrhPS89vkyELeoofPsUHlJ08YmlSt69gH1N3nuUbf6dBfpwVUg==}
     peerDependencies:
       solid-js: ^1.2.6
     dependencies:
