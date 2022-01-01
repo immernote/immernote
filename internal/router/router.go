@@ -16,6 +16,7 @@ func RegisterRoutes(r *gin.Engine) {
 		v0.GET("/ok", withJson(Health))
 
 		v0.POST("/login", withJson(Login))
+		v0.POST("/confirm", withJson(Confirm))
 	}
 	// Login
 	// Create workspace
@@ -23,6 +24,7 @@ func RegisterRoutes(r *gin.Engine) {
 	// Get user
 	// Get workspace
 }
+
 
 func Health(
 	c *gin.Context,
