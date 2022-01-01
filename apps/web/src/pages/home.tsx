@@ -1,50 +1,15 @@
-import { createEffect, createSignal } from "solid-js";
+import { Layout } from "../components/layout";
+import { Header } from "../components/header";
 
 export default function Home() {
-	const [isDown, setIsDown] = createSignal(false);
-	const [count, setCount] = createSignal(0);
-	let intervalRef;
-
-	createEffect(() => {
-		if (isDown()) {
-			intervalRef = setInterval(() => {
-				setCount(count() + 1);
-			}, 100);
-		} else {
-			clearInterval(intervalRef);
-		}
-	});
-
 	return (
-		<section class="bg-gray-100 text-gray-700 p-8">
-			<h1 class="text-2xl font-bold">Home</h1>
-			<p class="mt-4">This is the home page.</p>
-
-			<div class="flex items-center space-x-2">
-				<button
-					class="border rounded-lg px-2 border-gray-900"
-					onMouseDown={() => {
-						console.log("DOWN");
-						setIsDown(true);
-					}}
-					onMouseUp={() => setIsDown(false)}
-				>
-					-
-				</button>
-
-				<output class="p-10px">Count: {count}</output>
-
-				<button
-					class="border rounded-lg px-2 border-gray-900"
-					onMouseDown={() => {
-						console.log("DOWN");
-						setIsDown(true);
-					}}
-					onMouseUp={() => setIsDown(false)}
-				>
-					+
-				</button>
+		<Layout title="Page Not Found">
+			<div className="max-w-7xl mx-auto min-h-screen tracking-tight flex flex-col items-center px-4">
+				<Header />
+				<div className="flex flex-col items-start min-h-full flex-grow mt-32 max-w-lg w-full">
+					<h1 className="text-4xl font-semibold tracking-tight mb-12">Home</h1>
+				</div>
 			</div>
-		</section>
+		</Layout>
 	);
 }
