@@ -1,5 +1,5 @@
 {
-  "name": "editor",
+  "name": "solid-prosemirror",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -23,6 +23,7 @@
     "@types/prosemirror-state": "^1.2.8",
     "@types/prosemirror-view": "^1.19.2",
     "prosemirror-dev-tools": "^3.1.0",
+    "prosemirror-example-setup": "^1.1.2",
     "prosemirror-schema-basic": "^1.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -33,7 +34,6 @@
   "dependencies": {
     "prosemirror-commands": "^1.1.12",
     "prosemirror-dropcursor": "^1.4.0",
-    "prosemirror-example-setup": "^1.1.2",
     "prosemirror-gapcursor": "^1.2.1",
     "prosemirror-history": "^1.2.0",
     "prosemirror-inputrules": "^1.1.3",
