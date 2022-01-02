@@ -112,6 +112,8 @@ importers:
 
   packages/solid-prosemirror:
     specifiers:
+      '@rollup/plugin-typescript': ^8.3.0
+      '@types/node': ^17.0.6
       '@types/prosemirror-commands': ^1.0.4
       '@types/prosemirror-dev-tools': ^3.0.2
       '@types/prosemirror-dropcursor': ^1.0.3
@@ -140,6 +142,7 @@ importers:
       react: ^17.0.2
       react-dom: ^17.0.2
       solid-js: ^1.2.6
+      tslib: ^2.3.1
       typescript: ^4.5.4
       vite: ^2.7.6
       vite-plugin-solid: ^2.1.4
@@ -156,6 +159,8 @@ importers:
       prosemirror-view: 1.23.5
       solid-js: 1.2.6
     devDependencies:
+      '@rollup/plugin-typescript': 8.3.0_tslib@2.3.1+typescript@4.5.4
+      '@types/node': 17.0.6
       '@types/prosemirror-commands': 1.0.4
       '@types/prosemirror-dev-tools': 3.0.2
       '@types/prosemirror-dropcursor': 1.0.3
@@ -173,6 +178,7 @@ importers:
       prosemirror-schema-basic: 1.1.2
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
+      tslib: 2.3.1
       typescript: 4.5.4
       vite: 2.7.7
       vite-plugin-solid: 2.1.4
@@ -653,6 +659,31 @@ packages:
     resolution: {integrity: sha512-jwRMXYwC0hUo0mv6wGpuw254Pd9p/R6Td5xsRpOmaWkUHlooNWqVcadgyzlRumMq3xfOTXwJReU0Jv+EIy4Jbw==}
     dev: true
 
+  /@rollup/plugin-typescript/8.3.0_tslib@2.3.1+typescript@4.5.4:
+    resolution: {integrity: sha512-I5FpSvLbtAdwJ+naznv+B4sjXZUcIvLLceYpITAn7wAP8W0wqc5noLdGIp9HGVntNhRWXctwPYrSSFQxtl0FPA==}
+    engines: {node: '>=8.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    dependencies:
+      '@rollup/pluginutils': 3.1.0
+      resolve: 1.20.0
+      tslib: 2.3.1
+      typescript: 4.5.4
+    dev: true
+
+  /@rollup/pluginutils/3.1.0:
+    resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.3.0
+    dev: true
+
   /@tailwindcss/forms/0.4.0_tailwindcss@3.0.8:
     resolution: {integrity: sha512-DeaQBx6EgEeuZPQACvC+mKneJsD8am1uiJugjgQK1+/Vt+Ai0GpFBC2T2fqnUad71WgOxyrZPE6BG1VaI6YqfQ==}
     peerDependencies:
@@ -672,6 +703,14 @@ packages:
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
       tailwindcss: 3.0.8_cefe482e8d38053bbf3d5815e0c551b3
+    dev: true
+
+  /@types/estree/0.0.39:
+    resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
+    dev: true
+
+  /@types/node/17.0.6:
+    resolution: {integrity: sha512-+XBAjfZmmivILUzO0HwBJoYkAyyySSLg5KCGBDFLomJo0sV6szvVLAf4ANZZ0pfWzgEds5KmGLG9D5hfEqOhaA==}
     dev: true
 
   /@types/orderedmap/1.0.0:
@@ -1277,6 +1316,10 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /estree-walker/1.0.1:
+    resolution: {integrity: sha512-1fMXF3YP4pZZVozF8j/ZLfvnR8NSIljt56UhbZ5PeeDmmGHpgpdwQt7ITlGvYaQukCvuBRMLEiKiYC+oeIg4cg==}
+    dev: true
+
   /fast-glob/3.2.7:
     resolution: {integrity: sha512-rYGMRwip6lUMvYD3BTScMwT1HtAs2d71SMv66Vrxs0IekGZEjhM0pcMfjQPnknBt2zeCwQMEupiN02ZP4DiT1Q==}
     engines: {node: '>=8'}
@@ -1499,6 +1542,7 @@ packages:
       chalk: 2.4.2
       diff-match-patch: 1.0.5
     dev: true
+    bundledDependencies: []
 
   /lilconfig/2.0.4:
     resolution: {integrity: sha512-bfTIN7lEsiooCocSISTWXkiWJkRqtL9wYtYy+8EK3Y41qh3mpwPU0ycTOgjdY9ErwXCc8QyrQp82bdL0Xkm9yA==}
@@ -2158,6 +2202,10 @@ packages:
 
   /ts-toolbelt/9.6.0:
     resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
+    dev: true
+
+  /tslib/2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
     dev: true
 
   /type-fest/2.8.0:
