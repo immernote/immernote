@@ -10,8 +10,8 @@ export default defineConfig({
 		polyfillDynamicImport: false,
 		lib: {
 			entry: path.resolve(__dirname, "src/index.ts"),
-			name: "SolidProsemirror",
-			fileName: (format) => `solid-prosemirror.${format}.js`,
+			name: "ProsemirrorSolid",
+			fileName: (format) => `prosemirror-solid.${format}.js`,
 		},
 		rollupOptions: {
 			// make sure to externalize deps that shouldn't be bundled
