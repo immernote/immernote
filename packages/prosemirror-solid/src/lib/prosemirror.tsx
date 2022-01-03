@@ -2,7 +2,6 @@ import { onMount, onCleanup, createEffect } from "solid-js";
 import type { Store } from "solid-js/store";
 import { EditorView, EditorProps } from "prosemirror-view";
 import type { EditorState } from "prosemirror-state";
-import applyDevTools from "prosemirror-dev-tools";
 
 interface PropsBase extends EditorProps {
 	state: Store<EditorState>;
@@ -51,8 +50,6 @@ export function ProseMirror(props: Props) {
 				}
 			},
 		});
-
-		applyDevTools(viewRef);
 	});
 
 	onCleanup(() => {
