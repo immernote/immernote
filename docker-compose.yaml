@@ -61,7 +61,6 @@ services:
     restart: always
     environment:
       - NODE_ENV
-      - API_HOST
     volumes:
       - "./apps/web:/app/apps/web"
     command: "pnpm --filter web dev"

@@ -18,6 +18,15 @@ WHERE
   email = $1
 LIMIT 1;
 
+-- name: GetUserByID :one
+SELECT
+  *
+FROM
+  public.users
+WHERE
+  id = $1
+LIMIT 1;
+
 -- name: HasUserByEmail :one
 SELECT
   EXISTS (
