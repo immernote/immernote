@@ -1,15 +1,15 @@
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { confirm } from "../actions/auth";
+import { Button } from "../components/button";
+import { Header } from "../components/header";
 import { Layout } from "../components/layout";
 import { Link } from "../components/link";
-import { Header } from "../components/header";
-import { Button } from "../components/button";
-import { createSignal } from "solid-js";
-import { useNavigate, useSearchParams } from "solid-app-router";
-import { confirm } from "../actions/auth";
 import { delay } from "../utils/delay";
 
 export default function Confirm() {
-	let [state, setState] = createSignal<"idle" | "waiting" | "error" | "success">("idle");
-	let [errorMessage, setErrorMessage] = createSignal<string | undefined>();
+	let [state, setState] = useState<"idle" | "waiting" | "error" | "success">("idle");
+	let [errorMessage, setErrorMessage] = useState<string>();
 
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function Confirm() {
 
 		setErrorMessage("");
 		setState("waiting");
-		let [_, userError, otherError] = await confirm(searchParams.token, searchParams.userID);
+		let [_, userError, otherError] = await confirm(searchParams.get("token")!, searchParams.get("userID")!);
 
 		await delay(1000);
 
@@ -39,11 +39,11 @@ export default function Confirm() {
 				<Header />
 				<div className="flex flex-col items-start min-h-full flex-grow mt-32 max-w-lg w-full">
 					<h1 className="text-4xl font-semibold tracking-tight mb-12">Confirm</h1>
-					<Button variant="blue" size="sm" state={state()} onClick={handleClick} className="mb-8">
+					<Button variant="blue" size="sm" state={state} onClick={handleClick} className="mb-8">
 						Continue
 					</Button>
-					{errorMessage() && <div className="text-red11 -mt-4 mb-8">{errorMessage}</div>}
-					<Link href="/login" variant={state() === "error" ? "blue" : "subtle"}>
+					{errorMessage && <div className="text-red11 -mt-4 mb-8">{errorMessage}</div>}
+					<Link to="/login" variant={state === "error" ? "blue" : "subtle"}>
 						Resend link?
 					</Link>
 				</div>
