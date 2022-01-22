@@ -35,3 +35,49 @@ func (q *Queries) CreateSpace(ctx context.Context, arg CreateSpaceParams) error 
 	)
 	return err
 }
+
+const listSpacesByUserID = `-- name: ListSpacesByUserID :many
+SELECT
+  id, handle, name, icon, settings, domains, invitation_token, created_at, modified_at, deleted_at
+FROM
+  public.spaces s
+WHERE
+  s.id = ANY (
+    SELECT
+      sm.space_id
+    FROM
+      public.space_members sm
+    WHERE
+      sm.user_id = $1)
+`
+
+func (q *Queries) ListSpacesByUserID(ctx context.Context, userID uuid.UUID) ([]Space, error) {
+	rows, err := q.db.Query(ctx, listSpacesByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Space{}
+	for rows.Next() {
+		var i Space
+		if err := rows.Scan(
+			&i.ID,
+			&i.Handle,
+			&i.Name,
+			&i.Icon,
+			&i.Settings,
+			&i.Domains,
+			&i.InvitationToken,
+			&i.CreatedAt,
+			&i.ModifiedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

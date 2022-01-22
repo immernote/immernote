@@ -23,6 +23,8 @@ func RegisterRoutes(r *gin.Engine) {
 			v0.POST("/confirm", withJson(Confirm))
 
 			v0.GET("/users", middleware.Auth(), withJson(GetUserByCookie))
+
+			v0.GET("/spaces", middleware.Auth(), withJson(ListSpaces))
 		}
 		// Login
 		// Create workspace
