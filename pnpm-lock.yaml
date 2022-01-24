@@ -2,6 +2,12 @@ lockfileVersion: 5.3
 
 importers:
 
+  .:
+    specifiers:
+      prettier: ^2.5.1
+    devDependencies:
+      prettier: 2.5.1
+
   apps/web:
     specifiers:
       '@downwindcss/text-decoration': ^1.1.1
@@ -1204,6 +1210,12 @@ packages:
       nanoid: 3.1.30
       picocolors: 1.0.0
       source-map-js: 1.0.1
+    dev: true
+
+  /prettier/2.5.1:
+    resolution: {integrity: sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: true
 
   /queue-microtask/1.2.3:
