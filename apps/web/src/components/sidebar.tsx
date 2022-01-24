@@ -1,7 +1,8 @@
-import { createEffect, createResource } from "solid-js";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useEffect } from "react";
 import axios from "redaxios";
+import useSWR from "swr";
 import { Space } from "../interfaces/space";
-import { Menu, MenuItem } from "solid-headless";
 
 export function Sidebar() {
 	return (
@@ -15,17 +16,46 @@ export function Sidebar() {
 }
 
 function Workspaces() {
-	const [spaces] = createResource(() => axios<Space[]>("/api/v0/spaces").then(({ data }) => data));
+	const { data: spaces } = useSWR("spaces", (key) => axios<Space[]>("/api/v0/spaces").then(({ data }) => data));
 
-	createEffect(() => {
-		console.log(spaces());
+	useEffect(() => {
+		console.log(spaces);
 	});
 
-	return <div className="font-medium tracking-tight transition hover:bg-gray3 px-4 py-4 text-sm">
-		<Menu>
-			<MenuItem>Bla bla</MenuItem>
-		</Menu>
-	</div>;
+	return (
+		<div className="font-medium tracking-tight transition hover:bg-gray3 px-4 py-4 text-sm">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger />
+
+				<DropdownMenu.Content>
+					<DropdownMenu.Label />
+					<DropdownMenu.Item />
+
+					<DropdownMenu.Group>
+						<DropdownMenu.Item />
+					</DropdownMenu.Group>
+
+					<DropdownMenu.CheckboxItem>
+						<DropdownMenu.ItemIndicator />
+					</DropdownMenu.CheckboxItem>
+
+					<DropdownMenu.RadioGroup>
+						<DropdownMenu.RadioItem value="checked">
+							<DropdownMenu.ItemIndicator />
+						</DropdownMenu.RadioItem>
+					</DropdownMenu.RadioGroup>
+
+					<DropdownMenu.Root>
+						<DropdownMenu.TriggerItem />
+						<DropdownMenu.Content />
+					</DropdownMenu.Root>
+
+					<DropdownMenu.Separator />
+					<DropdownMenu.Arrow />
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
+	);
 }
 
 function Links() {

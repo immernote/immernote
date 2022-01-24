@@ -1,17 +1,12 @@
-import { Component, onMount } from "solid-js";
-import { MetaProvider, Title, Link, Meta } from "solid-meta";
+import { FC } from "react";
+import { Helmet } from "react-helmet";
 
-export const Layout: Component<{ title?: string }> = (props) => {
-	onMount(() => {
-		// Remove the default <title /> in HTML
-		document.querySelector("title")?.remove();
-	});
-
+export const Layout: FC<{ title?: string }> = (props) => {
 	return (
 		<>
-			<MetaProvider>
-				<Title>{props.title + " - " ?? ""}ImmerNote</Title>
-			</MetaProvider>
+			<Helmet>
+				<title>{props.title + " - " ?? ""}ImmerNote</title>
+			</Helmet>
 			{props.children}
 		</>
 	);
