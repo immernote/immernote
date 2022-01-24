@@ -1,6 +1,5 @@
 import "./styles/global.css"
 import "./styles/colors.css"
-import "tailwindcss"
 
 import { render } from "solid-js/web"
 import { Router } from "solid-app-router"
