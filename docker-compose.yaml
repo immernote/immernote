@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  database:
+    image: "postgres:14-alpine"
+    container_name: immernote-database
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: admin
+    ports:
+      - 5432:5432
+  smtp:
+    image: "mailhog/mailhog:latest"
+    container_name: immernote-smtp
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev.api
+    container_name: immernote-api
+    restart: always
+    environment:
+      - IS_DEV=true
+      - COOKIE_SECRET
+      - COOKIE_SECURE
+      - COOKIE_HOST
+      - WEB_HOST
+      - PGHOST
+      - PGUSER
+      - PGDATABASE
+      - PGPASSWORD
+      - PGPORT
+      - DATABASE_URL
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_USERNAME
+      - SMTP_PASSWORD
+      - SMTP_SECURE
+      - PORT
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./internal:/app/internal
+    command: bash -c "air -c air.toml"
+    ports:
+      - 4000:4000
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev.web
+    container_name: immernote-web
+    restart: always
+    environment:
+      - NODE_ENV
+      - API_HOST
+    volumes:
+      - "./apps/web:/app/apps/web"
+    command: "pnpm --filter web dev"
+    ports:
+      - 3000:3000
+
+volumes:
+  pgdata:
