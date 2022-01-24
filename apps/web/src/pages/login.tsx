@@ -1,15 +1,13 @@
-import { Layout } from "../components/layout"
-import { Button } from "../components/button"
-import { Header } from "../components/header"
-import { createSignal } from "solid-js"
-import { login } from "../actions/auth"
-import { delay } from "../utils/delay"
+import { Layout } from "../components/layout";
+import { Button } from "../components/button";
+import { Header } from "../components/header";
+import { createSignal } from "solid-js";
+import { login } from "../actions/auth";
+import { delay } from "../utils/delay";
 
 export default function Login() {
-	const [state, setState] = createSignal<
-		"idle" | "waiting" | "success" | "error"
-	>("idle")
-	const [error, setError] = createSignal<string>()
+	const [state, setState] = createSignal<"idle" | "waiting" | "success" | "error">("idle");
+	const [error, setError] = createSignal<string>();
 
 	return (
 		<Layout title="Log in">
@@ -19,32 +17,27 @@ export default function Login() {
 					<form
 						className="flex flex-col items-start flex-grow max-w-lg w-full mt-32"
 						onSubmit={async (event) => {
-							event.preventDefault()
-							setError("")
-							setState("waiting")
+							event.preventDefault();
+							setError("");
+							setState("waiting");
 
-							const email = event.currentTarget.email.value as string
-							const [_, loginError, otherError] = await login(email)
+							const email = event.currentTarget.email.value as string;
+							const [_, loginError, otherError] = await login(email);
 							if (loginError || otherError) {
-								setState("error")
+								setState("error");
 								if (loginError) {
-									setError("User not found")
+									setError("User not found");
 								}
-								await delay(1000)
-								setState("idle")
-								return
+								await delay(1000);
+								setState("idle");
+								return;
 							}
 
-							setState("success")
+							setState("success");
 						}}
 					>
-						<h1 className="text-4xl font-medium tracking-tight mb-12">
-							Log in
-						</h1>
-						<label
-							htmlFor="email"
-							className="tracking-tight font-semibold mb-2 text-lg select-none"
-						>
+						<h1 className="text-4xl font-medium tracking-tight mb-12">Log in</h1>
+						<label htmlFor="email" className="tracking-tight font-semibold mb-2 text-lg select-none">
 							Email
 						</label>
 						<input
@@ -56,11 +49,7 @@ export default function Login() {
 							required
 							disabled={state() === "waiting"}
 						/>
-						{error() && (
-							<p className="text-red11 tracking-tight font-medium mb-8 -mt-6">
-								User not found
-							</p>
-						)}
+						{error() && <p className="text-red11 tracking-tight font-medium mb-8 -mt-6">User not found</p>}
 						<Button variant="blue" state={state()} type="submit" size="sm">
 							Continue
 						</Button>
@@ -76,5 +65,5 @@ export default function Login() {
 				)}
 			</div>
 		</Layout>
-	)
+	);
 }
