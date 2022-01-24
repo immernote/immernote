@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"noEmit": true,
+		"outDir": "dist",
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"jsx": "preserve",
+		"jsxImportSource": "solid-js",
+		"types": ["vite/client"],
+		"resolveJsonModule": true
+	},
+	"include": ["src/index.ts", "src/lib/*.tsx", "src/lib/*.ts"]
+}
