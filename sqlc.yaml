@@ -31,3 +31,7 @@ overrides:
     go_type: "github.com/immernote/immernote/internal/types.SpaceSettings"
   - column: "spaces.icon"
     go_type: "github.com/immernote/immernote/internal/types.SpaceIcon"
+  - column: "blocks.content"
+    go_type: "github.com/immernote/immernote/internal/types.Map"
+  - column: "blocks.format"
+    go_type: "github.com/immernote/immernote/internal/types.Map"

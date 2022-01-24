@@ -110,7 +110,7 @@ function Pages() {
   return (
     <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] text-sm bg-gray2">
       {pages.map((page) => (
-        <div key={page.id}>{page.content}</div>
+        <div key={page.id}>{page.created_at}</div>
       ))}
     </nav>
   );
@@ -124,8 +124,8 @@ function CreatePage() {
 
     const [data, err] = await create_page_block({
       id: uuid(),
-      content: "{}",
-      format: "{}",
+      content: {},
+      format: {},
       parent_block_id: null,
       parent_page_id: null,
       space_id: space.id,

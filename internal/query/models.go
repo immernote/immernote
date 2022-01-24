@@ -57,8 +57,8 @@ type Block struct {
 	ID            uuid.UUID          `json:"id"`
 	Type          string             `json:"type"`
 	Rank          string             `json:"rank"`
-	Content       string             `json:"content"`
-	Format        string             `json:"format"`
+	Content       types.Map          `json:"content"`
+	Format        types.Map          `json:"format"`
 	ParentBlockID pgtype.UUID        `json:"parent_block_id"`
 	ParentPageID  pgtype.UUID        `json:"parent_page_id"`
 	SpaceID       uuid.UUID          `json:"space_id"`

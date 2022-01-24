@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/immernote/immernote/internal/database"
 	"github.com/immernote/immernote/internal/query"
+	"github.com/immernote/immernote/internal/types"
 	"github.com/jackc/pgtype"
 )
 
@@ -42,8 +43,8 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 type create_page_block_body struct {
 	ID uuid.UUID `json:"id" binding:"required"`
 	// Rank          string      `json:"rank"`
-	Content       string      `json:"content" binding:"required"`
-	Format        string      `json:"format" binding:"required"`
+	Content       types.Map   `json:"content" binding:"required"`
+	Format        types.Map   `json:"format" binding:"required"`
 	ParentBlockID pgtype.UUID `json:"parent_block_id"`
 	ParentPageID  pgtype.UUID `json:"parent_page_id"`
 	SpaceID       uuid.UUID   `json:"space_id" binding:"required"`

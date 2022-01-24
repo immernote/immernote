@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/immernote/immernote/internal/types"
 	"github.com/jackc/pgtype"
 )
 
@@ -43,8 +44,8 @@ type CreatePageBlockParams struct {
 	ID            uuid.UUID   `json:"id"`
 	SpaceID       uuid.UUID   `json:"space_id"`
 	ParentPageID  pgtype.UUID `json:"parent_page_id"`
-	Content       string      `json:"content"`
-	Format        string      `json:"format"`
+	Content       types.Map   `json:"content"`
+	Format        types.Map   `json:"format"`
 	ParentBlockID pgtype.UUID `json:"parent_block_id"`
 	CreatedBy     uuid.UUID   `json:"created_by"`
 }
