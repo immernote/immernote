@@ -7,7 +7,56 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgtype"
 )
+
+const createPageBlock = `-- name: CreatePageBlock :one
+INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_page_id", "space_id", "created_by", "modified_by")
+  VALUES ($1, 'page', $2, $3, $4, $5, $6, $7, $8, $8)
+RETURNING
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+`
+
+type CreatePageBlockParams struct {
+	ID            uuid.UUID   `json:"id"`
+	Rank          string      `json:"rank"`
+	Content       string      `json:"content"`
+	Format        string      `json:"format"`
+	ParentBlockID pgtype.UUID `json:"parent_block_id"`
+	ParentPageID  pgtype.UUID `json:"parent_page_id"`
+	SpaceID       uuid.UUID   `json:"space_id"`
+	CreatedBy     uuid.UUID   `json:"created_by"`
+}
+
+func (q *Queries) CreatePageBlock(ctx context.Context, arg CreatePageBlockParams) (Block, error) {
+	row := q.db.QueryRow(ctx, createPageBlock,
+		arg.ID,
+		arg.Rank,
+		arg.Content,
+		arg.Format,
+		arg.ParentBlockID,
+		arg.ParentPageID,
+		arg.SpaceID,
+		arg.CreatedBy,
+	)
+	var i Block
+	err := row.Scan(
+		&i.ID,
+		&i.Type,
+		&i.Rank,
+		&i.Content,
+		&i.Format,
+		&i.ParentBlockID,
+		&i.ParentPageID,
+		&i.SpaceID,
+		&i.CreatedBy,
+		&i.ModifiedBy,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
 
 const listPageBlocksBySpaceHandle = `-- name: ListPageBlocksBySpaceHandle :many
 SELECT

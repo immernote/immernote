@@ -9,8 +9,26 @@ services:
       - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: admin
+    networks:
+      - default
+      - postgres
     ports:
       - 5432:5432
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: immernote-pdadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    networks:
+      - default
+      - postgres
+    ports:
+      - "5050:80"
+    restart: unless-stopped
   smtp:
     image: "mailhog/mailhog:latest"
     container_name: immernote-smtp
@@ -66,6 +84,10 @@ services:
     command: "pnpm --filter web dev"
     ports:
       - 3000:3000
+networks:
+  postgres:
+    driver: bridge
 
 volumes:
   pgdata:
+  pgadmin:
