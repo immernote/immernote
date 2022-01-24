@@ -18,7 +18,17 @@ const App: Component = () => {
 	});
 	return (
 		<main>
-			<ProseMirror state={state} onStateChange={setState} onDocChange={console.log} />
+			<ProseMirror
+				state={state}
+				onStateChange={setState}
+				onDocChange={console.log}
+				onDeleteBlock={() => {
+					console.log("DELETE THIS BLOCK");
+				}}
+				onInsertBlocks={(blocks) => {
+					console.log("INSERTS THESE BLOCKS", blocks);
+				}}
+			/>
 			<pre>
 				<code>{JSON.stringify(state)}</code>
 			</pre>

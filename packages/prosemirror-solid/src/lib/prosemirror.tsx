@@ -8,6 +8,8 @@ interface PropsBase extends EditorProps {
 	state: Store<EditorState>;
 	onStateChange: (state: EditorState) => void;
 	onDocChange: (doc: any) => void;
+	onDeleteBlock: () => void;
+	onInsertBlocks: (blocks: any[]) => void;
 }
 
 type Props = PropsBase;
@@ -19,19 +21,34 @@ export function ProseMirror(props: Props) {
 	onMount(() => {
 		viewRef = new EditorView(root, {
 			state: props.state,
+			handleKeyDown(view, event) {
+				if (
+					event.key === "Backspace" &&
+					!view.composing &&
+					(view.state.doc.childCount === 0 || view.state.doc.firstChild?.childCount === 0)
+				) {
+					props.onDeleteBlock();
+					return true;
+				}
+
+				return false;
+			},
 			dispatchTransaction(transaction) {
-				const newState = viewRef.state.apply(transaction);
+				let newState = viewRef.state.apply(transaction);
+				let blocks: any[] | undefined;
+				if (newState.doc.childCount > 1) {
+					blocks = (newState.doc.content.toJSON() as any[]).slice(1);
+
+					const tr = newState.tr.deleteRange(newState.doc.firstChild!.nodeSize, newState.doc.content.size);
+
+					newState = newState.apply(tr);
+				}
 				viewRef.updateState(newState);
-				// console.log(
-				// 	"TRANSACTION:\t",
-				// 	JSON.stringify(transaction.steps, null, 2)
-				// )
-				// console.log("CONTENT:\t", JSON.stringify(newState.doc.content, null, 2))
-				// console.log("STATE:\t", JSON.stringify(newState.toJSON().doc))
-				// console.log("CHANGED?:\t", transaction.docChanged)
 				props.onStateChange(newState);
 				transaction.docChanged && props.onDocChange(newState.toJSON().doc);
-				// do something here such as eventBus.dispatch('NEW-TRANSACTIION', transaction)
+				if (blocks) {
+					props.onInsertBlocks(blocks);
+				}
 			},
 		});
 
