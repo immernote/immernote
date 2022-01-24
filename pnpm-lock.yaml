@@ -12,12 +12,14 @@ importers:
       postcss: ^8.4.5
       solid-app-router: ^0.1.14
       solid-js: ^1.2.6
+      solid-meta: ^0.27.2
       tailwindcss: ^3.0.8
       vite: ^2.7.6
       vite-plugin-solid: ^2.1.4
     dependencies:
       solid-app-router: 0.1.14_solid-js@1.2.6
       solid-js: 1.2.6
+      solid-meta: 0.27.2_solid-js@1.2.6
     devDependencies:
       '@downwindcss/text-decoration': 1.1.1
       '@radix-ui/colors': 0.1.8
@@ -1268,6 +1270,14 @@ packages:
 
   /solid-js/1.2.6:
     resolution: {integrity: sha512-NvPHJ5Vj5f+ZJWIioickrC55seovSkDtm5NzSpnoUk3z4tATv0STpy5iuGNEn51ZORUcwpZzrMAtOCGziXU1XA==}
+
+  /solid-meta/0.27.2_solid-js@1.2.6:
+    resolution: {integrity: sha512-t4rotsA99LMhiSI6C0pfN1fR8+bApl2ouOqIpOgxHtapJ+fgBIv7cVnI3nLMMzjiiML+vb83l9xes6/OLSCNtw==}
+    peerDependencies:
+      solid-js: ^1.0.0
+    dependencies:
+      solid-js: 1.2.6
+    dev: false
 
   /solid-refresh/0.3.3_solid-js@1.2.6:
     resolution: {integrity: sha512-8Xi828ErNGAp7FmNNfJTBKy+LdMxnJ1LAAh8CgtPhtaVMBlmppzvD4YSR6UHm8sNsoO5rwTwAl5uHfKsWFFDPA==}
