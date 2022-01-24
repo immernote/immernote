@@ -45,6 +45,7 @@ services:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - AWS_DEFAULT_REGION
+      - ROOT_EMAIL
     volumes:
       - ./apps/api:/app/apps/api
       - ./internal:/app/internal

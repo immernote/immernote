@@ -14,12 +14,20 @@ export const routes: RouteDefinition[] = [
 		component: lazy(() => import("./pages/start")),
 	},
 	{
+		path: "/login",
+		component: lazy(() => import("./pages/login")),
+	},
+	{
+		path: "/confirm",
+		component: lazy(() => import("./pages/confirm")),
+	},
+	{
 		path: "/about",
 		component: lazy(() => import("./pages/about")),
 		data: AboutData,
 	},
-	{
-		path: "**",
-		component: lazy(() => import("./errors/404")),
-	},
+	// {
+	// 	path: "**",
+	// 	component: lazy(() => import("./errors/404")),
+	// },
 ]

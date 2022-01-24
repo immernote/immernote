@@ -1,8 +1,8 @@
 package router
 
 import (
-	"net/http"
-
+	"github.com/gin-gonic/gin"
+	"github.com/immernote/immernote/internal/token"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -10,11 +10,13 @@ type Router struct {
 	r *httprouter.Router
 }
 
-func RegisterRoutes() {
-	router := httprouter.New()
-	router.PanicHandler = handlePanic
+func RegisterRoutes(r *gin.Engine) {
+	v0 := r.Group("/v0")
+	{
+		v0.GET("/ok", withJson(Health))
 
-	router.GET("/", withJson(Health))
+		v0.POST("/login", withJson(Login))
+	}
 	// Login
 	// Create workspace
 	// Auth with JWT and multiple emails
@@ -23,9 +25,8 @@ func RegisterRoutes() {
 }
 
 func Health(
-	w http.ResponseWriter,
-	r *http.Request,
-	_ httprouter.Params,
+	c *gin.Context,
 ) (int, interface{}, error) {
-	return 200, H{"ok": true}, nil
+	tkn, _ := token.New("AAAAAA")
+	return 200, gin.H{"ok": true, "token": tkn}, nil
 }
