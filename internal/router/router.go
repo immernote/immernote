@@ -26,7 +26,7 @@ func RegisterRoutes(r *gin.Engine) {
 
 			v0.GET("/spaces", middleware.Auth(), with_json(ListSpaces))
 
-			v0.GET("/blocks/pages", middleware.Auth(), with_json(ListPageBlocks))
+			v0.GET("/blocks", middleware.Auth(), with_json(ListBlocks))
 			v0.POST("/blocks/pages", middleware.Auth(), with_json(CreatePageBlock))
 		}
 		// Login

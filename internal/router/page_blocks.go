@@ -10,12 +10,15 @@ import (
 	"github.com/jackc/pgtype"
 )
 
-type list_page_blocks_query struct {
-	SpaceHandle string `form:"space_handle"`
+type list_blocks_query struct {
+	Type         string    `form:"type" binding:"required"`
+	SpaceHandle  string    `form:"space_handle" binding:"required_without=SpaceID"`
+	SpaceID      uuid.UUID `form:"space_id" binding:"required_without=SpaceHandle"`
+	ParentPageID uuid.UUID `form:"parent_page_id"`
 }
 
-func ListPageBlocks(c *gin.Context) (int, interface{}, error) {
-	qs := new(list_page_blocks_query)
+func ListBlocks(c *gin.Context) (int, interface{}, error) {
+	qs := new(list_blocks_query)
 
 	if err := c.BindQuery(qs); err != nil {
 		return http.StatusBadRequest, nil, err
@@ -23,19 +26,17 @@ func ListPageBlocks(c *gin.Context) (int, interface{}, error) {
 
 	pq := query.New(database.Get())
 
-	switch true {
-	case qs.SpaceHandle != "":
-		blocks, err := pq.ListPageBlocksBySpaceHandle(c.Request.Context(), qs.SpaceHandle)
-		if err != nil {
-			return http.StatusInternalServerError, nil, err
-		}
-
-		return 200, blocks, nil
-	default:
-
-		return http.StatusNotFound, nil, nil
-
+	blocks, err := pq.ListBlocks(c.Request.Context(), query.ListBlocksParams{
+		Type:         qs.Type,
+		SpaceHandle:  qs.SpaceHandle,
+		SpaceID:      qs.SpaceID,
+		ParentPageID: qs.ParentPageID,
+	})
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
 	}
+
+	return 200, blocks, nil
 }
 
 type create_page_block_body struct {
