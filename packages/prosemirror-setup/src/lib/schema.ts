@@ -1,6 +1,6 @@
 import { Schema } from "prosemirror-model";
 
-export const schema = new Schema({
+export const prose = new Schema({
 	nodes: {
 		// :: NodeSpec The top level document node.
 		doc: {
@@ -36,73 +36,6 @@ export const schema = new Schema({
 		// :: NodeSpec The text node.
 		text: {
 			group: "inline",
-		},
-
-		ordered_list: {
-			content: "list_item+",
-			group: "block",
-			attrs: { order: { default: 1 } },
-			parseDOM: [
-				{
-					tag: "ol",
-					// @ts-ignore
-					getAttrs(dom: HTMLOListElement) {
-						return {
-							order: dom.hasAttribute("start") ? +(dom.getAttribute("start") as string) : 1,
-						};
-					},
-				},
-			],
-			toDOM(node) {
-				return node.attrs.order == 1 ? ["ol", 0] : ["ol", { start: node.attrs.order }, 0];
-			},
-		},
-		bullet_list: {
-			content: "list_item+",
-			group: "block",
-			parseDOM: [{ tag: "ul" }],
-			toDOM() {
-				return ["ul", 0];
-			},
-		},
-		list_item: {
-			content: "paragraph block*",
-			parseDOM: [{ tag: "li" }],
-			toDOM() {
-				return ["li", 0];
-			},
-			defining: true,
-		},
-
-		// :: NodeSpec An inline image (`<img>`) node. Supports `src`,
-		// `alt`, and `href` attributes. The latter two default to the empty
-		// string.
-		image: {
-			inline: true,
-			attrs: {
-				src: {},
-				alt: { default: null },
-				title: { default: null },
-			},
-			group: "inline",
-			draggable: true,
-			parseDOM: [
-				{
-					tag: "img[src]",
-					// @ts-ignore
-					getAttrs(dom: HTMLImageElement) {
-						return {
-							src: dom.getAttribute("src"),
-							title: dom.getAttribute("title"),
-							alt: dom.getAttribute("alt"),
-						};
-					},
-				},
-			],
-			toDOM(node) {
-				let { src, alt, title } = node.attrs;
-				return ["img", { src, alt, title }];
-			},
 		},
 
 		// :: NodeSpec A hard line break, represented in the DOM as `<br>`.
