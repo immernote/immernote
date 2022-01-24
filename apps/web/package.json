@@ -23,6 +23,7 @@
 		"lucide-solid": "^0.0.2",
 		"redaxios": "^0.4.1",
 		"solid-app-router": "^0.1.14",
+		"solid-headless": "^0.10.12",
 		"solid-js": "^1.2.6",
 		"solid-meta": "^0.27.2"
 	}
