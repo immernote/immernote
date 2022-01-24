@@ -20,7 +20,7 @@
 		"vite-plugin-solid": "^2.1.4"
 	},
 	"dependencies": {
-		"lucide-solid": "^0.0.1",
+		"lucide-solid": "^0.0.2",
 		"redaxios": "^0.4.1",
 		"solid-app-router": "^0.1.14",
 		"solid-js": "^1.2.6",
