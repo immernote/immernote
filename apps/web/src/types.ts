@@ -52,8 +52,8 @@ export type Block = {
   id: string;
   type: string;
   rank: string;
-  content: string;
-  format: string;
+  content: { title: string };
+  format: { icon: { type: string; value: string } };
   parent_block_id: string | undefined;
   parent_page_id: string | undefined;
   /** UUID */
