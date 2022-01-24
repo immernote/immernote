@@ -90,7 +90,7 @@ WHERE
       public.spaces s
     WHERE
       s.handle = $1)
-  AND b.parent_page_id = NULL
+  AND b.parent_page_id IS NULL
 `
 
 func (q *Queries) ListPageBlocksBySpaceHandle(ctx context.Context, handle string) ([]Block, error) {

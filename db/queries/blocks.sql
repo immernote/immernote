@@ -22,7 +22,7 @@ WHERE
       public.spaces s
     WHERE
       s.handle = $1)
-  AND b.parent_page_id = NULL;
+  AND b.parent_page_id IS NULL;
 
 -- name: CreatePageBlock :one
 INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_page_id", "space_id", "created_by", "modified_by")
