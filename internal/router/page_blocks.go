@@ -39,17 +39,17 @@ func ListPageBlocks(c *gin.Context) (int, interface{}, error) {
 }
 
 type create_page_block_body struct {
-	ID            uuid.UUID   `json:"id"`
-	Rank          string      `json:"rank"`
-	Content       string      `json:"content"`
-	Format        string      `json:"format"`
+	ID uuid.UUID `json:"id" binding:"required"`
+	// Rank          string      `json:"rank"`
+	Content       string      `json:"content" binding:"required"`
+	Format        string      `json:"format" binding:"required"`
 	ParentBlockID pgtype.UUID `json:"parent_block_id"`
 	ParentPageID  pgtype.UUID `json:"parent_page_id"`
-	SpaceID       uuid.UUID   `json:"space_id"`
+	SpaceID       uuid.UUID   `json:"space_id" binding:"required"`
 }
 
 func CreatePageBlock(c *gin.Context) (int, interface{}, error) {
-	body := new(list_page_blocks_query)
+	body := new(create_page_block_body)
 
 	if err := c.BindJSON(body); err != nil {
 		return http.StatusBadRequest, nil, err
@@ -58,7 +58,13 @@ func CreatePageBlock(c *gin.Context) (int, interface{}, error) {
 	pq := query.New(database.Get())
 
 	block, err := pq.CreatePageBlock(c.Request.Context(), query.CreatePageBlockParams{
-		CreatedBy: c.MustGet("user_id").(uuid.UUID),
+		ID:            body.ID,
+		SpaceID:       body.SpaceID,
+		ParentPageID:  body.ParentPageID,
+		ParentBlockID: body.ParentBlockID,
+		Content:       body.Content,
+		Format:        body.Format,
+		CreatedBy:     c.MustGet("user_id").(uuid.UUID),
 	})
 	if err != nil {
 		return http.StatusInternalServerError, nil, err

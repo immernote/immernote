@@ -7,6 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lukeed/uuid": "^2.0.0",
     "@radix-ui/react-dropdown-menu": "^0.1.4",
     "@radix-ui/react-slot": "^0.1.2",
     "clsx": "^1.1.1",

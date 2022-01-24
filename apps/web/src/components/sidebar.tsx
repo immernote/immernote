@@ -1,7 +1,9 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronsUpDown, Plus, Search, Settings } from "lucide-react";
+import { create_page_block } from "../actions/blocks";
 import { usePageBlocks } from "../hooks/blocks";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
+import { v4 as uuid } from "@lukeed/uuid";
 
 export function Sidebar() {
   return (
@@ -115,8 +117,28 @@ function Pages() {
 }
 
 function CreatePage() {
+  const { data: space } = useCurrentSpace();
+
+  async function handleClick() {
+    if (!space) return;
+
+    const [data, err] = await create_page_block({
+      id: uuid(),
+      content: "{}",
+      format: "{}",
+      parent_block_id: null,
+      parent_page_id: null,
+      space_id: space.id,
+    });
+
+    console.log(data, err);
+  }
+
   return (
-    <button className="tracking-tight transition hover:bg-gray3 px-4 py-2 text-sm text-left inline-flex items-center gap-x-2">
+    <button
+      className="tracking-tight transition hover:bg-gray3 px-4 py-2 text-sm text-left inline-flex items-center gap-x-2"
+      onClick={handleClick}
+    >
       <Plus className="h-[1em]" />
       <span>New Page</span>
     </button>

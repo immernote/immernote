@@ -12,31 +12,49 @@ import (
 
 const createPageBlock = `-- name: CreatePageBlock :one
 INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_page_id", "space_id", "created_by", "modified_by")
-  VALUES ($1, 'page', $2, $3, $4, $5, $6, $7, $8, $8)
+  VALUES ($1, 'page', (
+      SELECT
+        (COUNT(*) + 1)::text
+      FROM
+        public.blocks b
+      WHERE
+        b.space_id = $2
+        -- Avoid comparing NULL
+        AND (
+          CASE WHEN $3::uuid IS NULL THEN
+            b.parent_page_id IS NULL
+          ELSE
+            b.parent_page_id = $3::uuid
+          END)),
+      $4,
+      $5,
+      $6,
+      $3,
+      $2,
+      $7,
+      $7)
 RETURNING
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
 `
 
 type CreatePageBlockParams struct {
 	ID            uuid.UUID   `json:"id"`
-	Rank          string      `json:"rank"`
+	SpaceID       uuid.UUID   `json:"space_id"`
+	ParentPageID  pgtype.UUID `json:"parent_page_id"`
 	Content       string      `json:"content"`
 	Format        string      `json:"format"`
 	ParentBlockID pgtype.UUID `json:"parent_block_id"`
-	ParentPageID  pgtype.UUID `json:"parent_page_id"`
-	SpaceID       uuid.UUID   `json:"space_id"`
 	CreatedBy     uuid.UUID   `json:"created_by"`
 }
 
 func (q *Queries) CreatePageBlock(ctx context.Context, arg CreatePageBlockParams) (Block, error) {
 	row := q.db.QueryRow(ctx, createPageBlock,
 		arg.ID,
-		arg.Rank,
+		arg.SpaceID,
+		arg.ParentPageID,
 		arg.Content,
 		arg.Format,
 		arg.ParentBlockID,
-		arg.ParentPageID,
-		arg.SpaceID,
 		arg.CreatedBy,
 	)
 	var i Block

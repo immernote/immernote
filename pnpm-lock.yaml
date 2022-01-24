@@ -11,6 +11,7 @@ importers:
   apps/web:
     specifiers:
       '@downwindcss/text-decoration': ^1.1.1
+      '@lukeed/uuid': ^2.0.0
       '@radix-ui/colors': ^0.1.8
       '@radix-ui/react-dropdown-menu': ^0.1.4
       '@radix-ui/react-slot': ^0.1.2
@@ -37,6 +38,7 @@ importers:
       typescript: ^4.4.4
       vite: ^2.7.2
     dependencies:
+      '@lukeed/uuid': 2.0.0
       '@radix-ui/react-dropdown-menu': 0.1.4_b3482aaf5744fc7c2aeb7941b0e0a78f
       '@radix-ui/react-slot': 0.1.2_react@17.0.2
       clsx: 1.1.1
@@ -531,6 +533,18 @@ packages:
     resolution: {integrity: sha512-nvuakpy1gxu/1S6TgC5oMHe94YT1BPlCmjyy4+nW3NtxVzID09MrpLXfukDNtMBJhFztuNJl+JlNPkwPLee3jw==}
     engines: {node: '>=10'}
     dev: true
+
+  /@lukeed/csprng/1.0.1:
+    resolution: {integrity: sha512-uSvJdwQU5nK+Vdf6zxcWAY2A8r7uqe+gePwLWzJ+fsQehq18pc0I2hJKwypZ2aLM90+Er9u1xn4iLJPZ+xlL4g==}
+    engines: {node: '>=8'}
+    dev: false
+
+  /@lukeed/uuid/2.0.0:
+    resolution: {integrity: sha512-dUz8OmYvlY5A9wXaroHIMSPASpSYRLCqbPvxGSyHguhtTQIy24lC+EGxQlwv71AhRCO55WOtgwhzQLpw27JaJQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@lukeed/csprng': 1.0.1
+    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
