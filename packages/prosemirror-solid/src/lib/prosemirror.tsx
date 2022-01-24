@@ -8,7 +8,11 @@ interface PropsBase extends EditorProps {
 	onStateChange: (state: EditorState) => void;
 	onDocChange: (doc: any) => void;
 	onDeleteBlock: () => void;
+	onArrowUp: (pos: number) => void;
+	onArrowDown: (pos: number) => void;
 	onInsertBlocks: (blocks: any[]) => void;
+	isFirst: boolean;
+	isLast: boolean;
 }
 
 type Props = PropsBase;
@@ -17,10 +21,16 @@ export function ProseMirror(props: Props) {
 	let viewRef: EditorView;
 	let root: HTMLDivElement | undefined;
 
+	let isArrowDown = false;
+	let isArrowUp = false;
+
 	onMount(() => {
 		viewRef = new EditorView(root, {
 			state: props.state,
 			handleKeyDown(view, event) {
+				isArrowDown = !view.composing && event.key === "ArrowDown";
+				isArrowUp = !view.composing && event.key === "ArrowUp";
+
 				if (
 					event.key === "Backspace" &&
 					!view.composing &&
@@ -33,6 +43,31 @@ export function ProseMirror(props: Props) {
 				return false;
 			},
 			dispatchTransaction(transaction) {
+				// @ts-ignore
+				const isPointer = !!(transaction["meta"] as { [key: string]: boolean })["pointer"];
+
+				if (
+					!props.isLast &&
+					isArrowDown &&
+					!isPointer &&
+					transaction.selection.empty &&
+					transaction.selection.$to.pos === transaction.selection.$to.end()
+				) {
+					props.onArrowDown(viewRef.state.selection.anchor);
+					return;
+				}
+
+				if (
+					!props.isFirst &&
+					isArrowUp &&
+					!isPointer &&
+					transaction.selection.empty &&
+					transaction.selection.$from.pos === transaction.selection.$from.start()
+				) {
+					props.onArrowUp(viewRef.state.selection.anchor);
+					return;
+				}
+
 				let newState = viewRef.state.apply(transaction);
 				let blocks: any[] | undefined;
 				if (newState.doc.childCount > 1) {

@@ -28,6 +28,10 @@ const App: Component = () => {
 				onInsertBlocks={(blocks) => {
 					console.log("INSERTS THESE BLOCKS", blocks);
 				}}
+				onArrowDown={() => {}}
+				onArrowUp={() => {}}
+				isFirst={false}
+				isLast={false}
 			/>
 			<pre>
 				<code>{JSON.stringify(state)}</code>
