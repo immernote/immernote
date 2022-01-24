@@ -10,30 +10,30 @@ import (
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenCookie, err := c.Cookie("immernote_token")
+		token_cookie, err := c.Cookie("immernote_token")
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, "User not found")
 			return
 		}
 
-		if len(tokenCookie) == 0 {
+		if len(token_cookie) == 0 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, "User not found")
 			return
 		}
 
-		parsedToken, err := token.Decrypt(tokenCookie)
+		parsed_token, err := token.Decrypt(token_cookie)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		userID, err := uuid.Parse(parsedToken.Get("id"))
+		user_id, err := uuid.Parse(parsed_token.Get("id"))
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 			return
 		}
 
-		c.Set("userID", userID)
+		c.Set("user_id", user_id)
 
 		c.Next()
 	}

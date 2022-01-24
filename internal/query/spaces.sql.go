@@ -36,6 +36,33 @@ func (q *Queries) CreateSpace(ctx context.Context, arg CreateSpaceParams) error 
 	return err
 }
 
+const getSpaceByHandle = `-- name: GetSpaceByHandle :one
+SELECT
+  id, handle, name, icon, settings, domains, invitation_token, created_at, modified_at, deleted_at
+FROM
+  public.spaces s
+WHERE
+  s.handle = $1
+`
+
+func (q *Queries) GetSpaceByHandle(ctx context.Context, handle string) (Space, error) {
+	row := q.db.QueryRow(ctx, getSpaceByHandle, handle)
+	var i Space
+	err := row.Scan(
+		&i.ID,
+		&i.Handle,
+		&i.Name,
+		&i.Icon,
+		&i.Settings,
+		&i.Domains,
+		&i.InvitationToken,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const listSpacesByUserID = `-- name: ListSpacesByUserID :many
 SELECT
   id, handle, name, icon, settings, domains, invitation_token, created_at, modified_at, deleted_at

@@ -16,3 +16,11 @@ WHERE
     WHERE
       sm.user_id = $1);
 
+-- name: GetSpaceByHandle :one
+SELECT
+  *
+FROM
+  public.spaces s
+WHERE
+  s.handle = $1;
+

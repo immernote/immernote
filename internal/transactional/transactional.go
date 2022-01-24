@@ -35,7 +35,7 @@ func Send(subject, to, text, html string) error {
 	}
 
 	// SMTP client
-	smtpClient, err := server.Connect()
+	smtp_client, err := server.Connect()
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func Send(subject, to, text, html string) error {
 	email.AddAlternative(mail.TextHTML, html)
 
 	// Call Send and pass the client
-	if err := email.Send(smtpClient); err != nil {
+	if err := email.Send(smtp_client); err != nil {
 		return err
 	}
 

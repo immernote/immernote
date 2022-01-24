@@ -28,12 +28,12 @@ func Login(c *gin.Context) (int, interface{}, error) {
 
 	pq := query.New(database.Get())
 
-	hasUser, err := pq.HasUserByEmail(context.Background(), body.Email)
+	has_user, err := pq.HasUserByEmail(context.Background(), body.Email)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
 
-	if !hasUser {
+	if !has_user {
 		return http.StatusNotFound, nil, errors.New("user not found")
 	}
 
@@ -69,40 +69,40 @@ func Login(c *gin.Context) (int, interface{}, error) {
 func Confirm(c *gin.Context) (int, interface{}, error) {
 	body := new(struct {
 		Token  string `json:"token" validate:"required"`
-		UserID string `json:"userID" validate:"required"`
+		UserID string `json:"user_id" validate:"required"`
 	})
 
 	if err := c.BindJSON(body); err != nil {
 		return http.StatusBadRequest, nil, err
 	}
 
-	userID, err := uuid.Parse(body.UserID)
+	user_id, err := uuid.Parse(body.UserID)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
 
 	pq := query.New(database.Get())
 
-	hasValidToken, err := pq.HasValidConfirmationTokenByUserID(c.Request.Context(), userID)
+	has_valid_token, err := pq.HasValidConfirmationTokenByUserID(c.Request.Context(), user_id)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
 
-	if !hasValidToken {
+	if !has_valid_token {
 		return http.StatusNotFound, nil, errors.New("user not found")
 	}
 
-	user, err := pq.UpdateUserConfirmedAtByID(c.Request.Context(), userID)
+	user, err := pq.UpdateUserConfirmedAtByID(c.Request.Context(), user_id)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
 
-	accessToken, err := token.New(body.UserID)
+	access_token, err := token.New(body.UserID)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
 
-	cookie.Auth(c, accessToken)
+	cookie.Auth(c, access_token)
 
 	return 200, user, nil
 }

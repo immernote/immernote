@@ -1,6 +1,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { ChevronsUpDown } from "lucide-react";
-import { useSpaces } from "../hooks/spaces";
+import { ChevronsUpDown, Plus, Search, Settings } from "lucide-react";
+import { usePageBlocks } from "../hooks/blocks";
+import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 
 export function Sidebar() {
   return (
@@ -13,22 +14,18 @@ export function Sidebar() {
   );
 }
 
-function Workspaces() {
-  const { data: spaces } = useSpaces();
+/* ---------------------------------------------------------------------------------------------- */
+/*                                           Workspaces                                           */
+/* ---------------------------------------------------------------------------------------------- */
 
+function Workspaces() {
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className="text-left font-medium tracking-tight transition hover:bg-gray4 px-4 py-4 text-sm focus:outline-none flex gap-x-4 items-center">
-        <div>{spaces?.[0].icon?.value}</div>
-        <div>{spaces?.[0].name}</div>
-        <ChevronsUpDown className="h-[1em]" />
-      </DropdownMenu.Trigger>
+      <WorkspacesTrigger />
       <DropdownMenu.Content className="bg-gray1 border border-gray6 backdrop-blur-3xl rounded shadow-lg w-80">
-        <DropdownMenu.Item className="text-sm tracking-tight transition hover:bg-gray4 px-4 py-4 hover:outline-none">
-          Workspace 1
-        </DropdownMenu.Item>
+        <WorkspacesList />
         <DropdownMenu.DropdownMenuSeparator className="h-px bg-gray7" />
-        <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-4 hover:outline-none">
+        <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-2 hover:outline-none">
           Log out
         </DropdownMenu.Item>
       </DropdownMenu.Content>
@@ -36,27 +33,92 @@ function Workspaces() {
   );
 }
 
-function Links() {
+function WorkspacesTrigger() {
+  const { data: space } = useCurrentSpace();
+
+  return (
+    <DropdownMenu.Trigger className="text-left font-medium tracking-tight transition hover:bg-gray4 px-4 py-4 text-sm focus:outline-none flex gap-x-4 items-center">
+      <span>{space?.icon?.value}</span>
+      <span>{space?.name}</span>
+      <ChevronsUpDown className="h-[1em]" />
+    </DropdownMenu.Trigger>
+  );
+}
+
+function WorkspacesList() {
+  const { data: spaces } = useSpaces();
+
+  if (!spaces) {
+    return null;
+  }
+
   return (
     <>
-      <div className="tracking-tight transition hover:bg-gray4 px-4 py-1 text-sm">Search</div>
-      <div className="tracking-tight transition hover:bg-gray4 px-4 py-1 text-sm">Settings</div>
+      {spaces.map((space) => (
+        <DropdownMenu.Item
+          key={space.id}
+          className="text-sm tracking-tight transition hover:bg-gray4 px-4 py-4 hover:outline-none flex items-center gap-x-4 focus:outline-none"
+        >
+          <span>{space.icon.value}</span>
+          <span>{space.name}</span>
+        </DropdownMenu.Item>
+      ))}
     </>
   );
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+/*                                              Links                                             */
+/* ---------------------------------------------------------------------------------------------- */
+
+function Links() {
+  return (
+    <>
+      <div className="tracking-tight transition hover:bg-gray4 px-4 py-1 text-sm inline-flex items-center gap-x-2">
+        <Search className="h-[1em]" />
+        <span>Search</span>
+      </div>
+      <div className="tracking-tight transition hover:bg-gray4 px-4 py-1 text-sm inline-flex items-center gap-x-2">
+        <Settings className="h-[1em]" />
+        <span>Settings {"&"} Members</span>
+      </div>
+    </>
+  );
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                              Pages                                             */
+/* ---------------------------------------------------------------------------------------------- */
+
 function Pages() {
+  const { data: pages } = usePageBlocks();
+
+  if (!pages) {
+    return null;
+  }
+
+  if (pages.length === 0) {
+    return (
+      <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] bg-gray2 text-gray11 px-4 py-4 text-xs">
+        No pages.
+      </nav>
+    );
+  }
+
   return (
     <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] text-sm bg-gray2">
-      Loading...
+      {pages.map((page) => (
+        <div key={page.id}>{page.content}</div>
+      ))}
     </nav>
   );
 }
 
 function CreatePage() {
   return (
-    <button className="font-medium tracking-tight transition hover:bg-gray3 px-4 py-2 text-sm text-left">
-      New Page
+    <button className="tracking-tight transition hover:bg-gray3 px-4 py-2 text-sm text-left inline-flex items-center gap-x-2">
+      <Plus className="h-[1em]" />
+      <span>New Page</span>
     </button>
   );
 }

@@ -12,7 +12,7 @@ import (
 func GetUserByCookie(c *gin.Context) (int, interface{}, error) {
 	pq := query.New(database.Get())
 
-	user, err := pq.GetUserByID(c.Request.Context(), c.MustGet("userID").(uuid.UUID))
+	user, err := pq.GetUserByID(c.Request.Context(), c.MustGet("user_id").(uuid.UUID))
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}

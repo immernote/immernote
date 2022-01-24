@@ -17,7 +17,7 @@ import (
 func setup() {
 	pq := query.New(database.Get())
 
-	hasSetting, err := pq.HasSettingKeyValue(context.Background(), query.HasSettingKeyValueParams{
+	has_setting, err := pq.HasSettingKeyValue(context.Background(), query.HasSettingKeyValueParams{
 		SettingKey:   "finished_setup",
 		SettingValue: "TRUE",
 	})
@@ -25,7 +25,7 @@ func setup() {
 		panic(err)
 	}
 
-	if !hasSetting {
+	if !has_setting {
 
 		tx, err := database.Get().Begin(context.Background())
 		if err != nil {
@@ -40,14 +40,14 @@ func setup() {
 
 		log.Println("Setting up the root user using ", email)
 
-		userID, err := uuid.NewRandom()
+		user_id, err := uuid.NewRandom()
 		if err != nil {
 			tx.Rollback(context.Background())
 			panic(err)
 		}
 
 		if err := pq.WithTx(tx).CreateUserByID(context.Background(), query.CreateUserByIDParams{
-			ID:       userID,
+			ID:       user_id,
 			Email:    email,
 			Name:     utils.EmailName(email),
 			Avatar:   avatars.Get(email),
@@ -57,14 +57,14 @@ func setup() {
 			panic(err)
 		}
 
-		spaceID, err := uuid.NewRandom()
+		space_id, err := uuid.NewRandom()
 		if err != nil {
 			tx.Rollback(context.Background())
 			panic(err)
 		}
 
 		if err := pq.WithTx(tx).CreateSpace(context.Background(), query.CreateSpaceParams{
-			ID:     spaceID,
+			ID:     space_id,
 			Handle: strings.ToLower(utils.EmailName(email)),
 			Name:   utils.EmailName(email) + " Workspace",
 			Icon: types.SpaceIcon{
@@ -79,8 +79,8 @@ func setup() {
 		}
 
 		if err := pq.WithTx(tx).CreateSpaceMember(context.Background(), query.CreateSpaceMemberParams{
-			UserID:  userID,
-			SpaceID: spaceID,
+			UserID:  user_id,
+			SpaceID: space_id,
 			Type:    query.MemberTypeADMIN,
 		}); err != nil {
 			tx.Rollback(context.Background())

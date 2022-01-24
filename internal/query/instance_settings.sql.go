@@ -13,8 +13,8 @@ INSERT INTO public.instance_settings ("setting_key", "setting_value")
 `
 
 type CreateInstanceSettingParams struct {
-	SettingKey   string `json:"settingKey"`
-	SettingValue string `json:"settingValue"`
+	SettingKey   string `json:"setting_key"`
+	SettingValue string `json:"setting_value"`
 }
 
 func (q *Queries) CreateInstanceSetting(ctx context.Context, arg CreateInstanceSettingParams) error {
@@ -36,8 +36,8 @@ SELECT
 `
 
 type HasSettingKeyValueParams struct {
-	SettingKey   string `json:"settingKey"`
-	SettingValue string `json:"settingValue"`
+	SettingKey   string `json:"setting_key"`
+	SettingValue string `json:"setting_value"`
 }
 
 func (q *Queries) HasSettingKeyValue(ctx context.Context, arg HasSettingKeyValueParams) (bool, error) {

@@ -59,22 +59,22 @@ type Block struct {
 	Rank          string             `json:"rank"`
 	Content       string             `json:"content"`
 	Format        string             `json:"format"`
-	ParentBlockID pgtype.UUID        `json:"parentBlockID"`
-	ParentPageID  pgtype.UUID        `json:"parentPageID"`
-	SpaceID       uuid.UUID          `json:"spaceID"`
-	CreatedBy     uuid.UUID          `json:"createdBy"`
-	ModifiedBy    uuid.UUID          `json:"modifiedBy"`
-	CreatedAt     time.Time          `json:"createdAt"`
-	ModifiedAt    time.Time          `json:"modifiedAt"`
-	DeletedAt     pgtype.Timestamptz `json:"deletedAt"`
+	ParentBlockID pgtype.UUID        `json:"parent_block_id"`
+	ParentPageID  pgtype.UUID        `json:"parent_page_id"`
+	SpaceID       uuid.UUID          `json:"space_id"`
+	CreatedBy     uuid.UUID          `json:"created_by"`
+	ModifiedBy    uuid.UUID          `json:"modified_by"`
+	CreatedAt     time.Time          `json:"created_at"`
+	ModifiedAt    time.Time          `json:"modified_at"`
+	DeletedAt     pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type InstanceSetting struct {
-	SettingKey   string             `json:"settingKey"`
-	SettingValue string             `json:"settingValue"`
-	CreatedAt    time.Time          `json:"createdAt"`
-	ModifiedAt   time.Time          `json:"modifiedAt"`
-	DeletedAt    pgtype.Timestamptz `json:"deletedAt"`
+	SettingKey   string             `json:"setting_key"`
+	SettingValue string             `json:"setting_value"`
+	CreatedAt    time.Time          `json:"created_at"`
+	ModifiedAt   time.Time          `json:"modified_at"`
+	DeletedAt    pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type SchemaMigration struct {
@@ -88,28 +88,28 @@ type Space struct {
 	Icon            types.SpaceIcon     `json:"icon"`
 	Settings        types.SpaceSettings `json:"settings"`
 	Domains         []string            `json:"domains"`
-	InvitationToken pgtype.Text         `json:"invitationToken"`
-	CreatedAt       time.Time           `json:"createdAt"`
-	ModifiedAt      time.Time           `json:"modifiedAt"`
-	DeletedAt       pgtype.Timestamptz  `json:"deletedAt"`
+	InvitationToken pgtype.Text         `json:"invitation_token"`
+	CreatedAt       time.Time           `json:"created_at"`
+	ModifiedAt      time.Time           `json:"modified_at"`
+	DeletedAt       pgtype.Timestamptz  `json:"deleted_at"`
 }
 
 type SpaceMember struct {
-	UserID     uuid.UUID          `json:"userID"`
-	SpaceID    uuid.UUID          `json:"spaceID"`
+	UserID     uuid.UUID          `json:"user_id"`
+	SpaceID    uuid.UUID          `json:"space_id"`
 	Type       MemberType         `json:"type"`
-	CreatedAt  time.Time          `json:"createdAt"`
-	ModifiedAt time.Time          `json:"modifiedAt"`
-	DeletedAt  pgtype.Timestamptz `json:"deletedAt"`
+	CreatedAt  time.Time          `json:"created_at"`
+	ModifiedAt time.Time          `json:"modified_at"`
+	DeletedAt  pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type SpacePermission struct {
-	SpaceID     uuid.UUID          `json:"spaceID"`
-	BlockID     uuid.UUID          `json:"blockID"`
-	AccessLevel BlockAccessLevel   `json:"accessLevel"`
-	CreatedAt   time.Time          `json:"createdAt"`
-	ModifiedAt  time.Time          `json:"modifiedAt"`
-	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
+	SpaceID     uuid.UUID          `json:"space_id"`
+	BlockID     uuid.UUID          `json:"block_id"`
+	AccessLevel BlockAccessLevel   `json:"access_level"`
+	CreatedAt   time.Time          `json:"created_at"`
+	ModifiedAt  time.Time          `json:"modified_at"`
+	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type User struct {
@@ -118,47 +118,47 @@ type User struct {
 	Name               string             `json:"name"`
 	Avatar             string             `json:"avatar"`
 	Settings           types.UserSettings `json:"settings"`
-	ConfirmationToken  pgtype.Text        `json:"confirmationToken"`
-	ConfirmationSentAt pgtype.Timestamptz `json:"confirmationSentAt"`
-	InvitedAt          pgtype.Timestamptz `json:"invitedAt"`
-	ConfirmedAt        pgtype.Timestamptz `json:"confirmedAt"`
-	CreatedAt          time.Time          `json:"createdAt"`
-	ModifiedAt         time.Time          `json:"modifiedAt"`
-	DeletedAt          pgtype.Timestamptz `json:"deletedAt"`
+	ConfirmationToken  pgtype.Text        `json:"confirmation_token"`
+	ConfirmationSentAt pgtype.Timestamptz `json:"confirmation_sent_at"`
+	InvitedAt          pgtype.Timestamptz `json:"invited_at"`
+	ConfirmedAt        pgtype.Timestamptz `json:"confirmed_at"`
+	CreatedAt          time.Time          `json:"created_at"`
+	ModifiedAt         time.Time          `json:"modified_at"`
+	DeletedAt          pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type UserGroup struct {
 	ID         uuid.UUID          `json:"id"`
 	Name       string             `json:"name"`
 	Icon       string             `json:"icon"`
-	SpaceID    uuid.UUID          `json:"spaceID"`
-	CreatedAt  time.Time          `json:"createdAt"`
-	ModifiedAt time.Time          `json:"modifiedAt"`
-	DeletedAt  pgtype.Timestamptz `json:"deletedAt"`
+	SpaceID    uuid.UUID          `json:"space_id"`
+	CreatedAt  time.Time          `json:"created_at"`
+	ModifiedAt time.Time          `json:"modified_at"`
+	DeletedAt  pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type UserGroupMember struct {
-	UserID      uuid.UUID          `json:"userID"`
-	UserGroupID uuid.UUID          `json:"userGroupID"`
-	CreatedAt   time.Time          `json:"createdAt"`
-	ModifiedAt  time.Time          `json:"modifiedAt"`
-	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
+	UserID      uuid.UUID          `json:"user_id"`
+	UserGroupID uuid.UUID          `json:"user_group_id"`
+	CreatedAt   time.Time          `json:"created_at"`
+	ModifiedAt  time.Time          `json:"modified_at"`
+	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type UserGroupPermission struct {
-	UserGroupID uuid.UUID          `json:"userGroupID"`
-	BlockID     uuid.UUID          `json:"blockID"`
-	AccessLevel BlockAccessLevel   `json:"accessLevel"`
-	CreatedAt   time.Time          `json:"createdAt"`
-	ModifiedAt  time.Time          `json:"modifiedAt"`
-	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
+	UserGroupID uuid.UUID          `json:"user_group_id"`
+	BlockID     uuid.UUID          `json:"block_id"`
+	AccessLevel BlockAccessLevel   `json:"access_level"`
+	CreatedAt   time.Time          `json:"created_at"`
+	ModifiedAt  time.Time          `json:"modified_at"`
+	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type UserPermission struct {
-	UserID      uuid.UUID          `json:"userID"`
-	BlockID     uuid.UUID          `json:"blockID"`
-	AccessLevel BlockAccessLevel   `json:"accessLevel"`
-	CreatedAt   time.Time          `json:"createdAt"`
-	ModifiedAt  time.Time          `json:"modifiedAt"`
-	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
+	UserID      uuid.UUID          `json:"user_id"`
+	BlockID     uuid.UUID          `json:"block_id"`
+	AccessLevel BlockAccessLevel   `json:"access_level"`
+	CreatedAt   time.Time          `json:"created_at"`
+	ModifiedAt  time.Time          `json:"modified_at"`
+	DeletedAt   pgtype.Timestamptz `json:"deleted_at"`
 }

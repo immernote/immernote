@@ -11,7 +11,7 @@ packages:
     emit_exact_table_names: false
     emit_empty_slices: true
     emit_json_tags: true
-    json_tags_case_style: "camel"
+    json_tags_case_style: "snake"
 overrides:
   - go_type: "github.com/jackc/pgtype.Text"
     db_type: "text"

@@ -21,14 +21,14 @@ func Get() *pgxpool.Pool {
 
 func Init() *pgxpool.Pool {
 	config := config.Get()
-	connectionString := fmt.Sprintf("host=%s user=%s dbname=%s password=%s port=%d", config.PGHOST, config.PGUSER, config.PGDATABASE, config.PGPASSWORD, config.PGPORT)
+	connection_string := fmt.Sprintf("host=%s user=%s dbname=%s password=%s port=%d", config.PGHOST, config.PGUSER, config.PGDATABASE, config.PGPASSWORD, config.PGPORT)
 
-	parsedConfig, err := pgxpool.ParseConfig(connectionString)
+	parsed_config, err := pgxpool.ParseConfig(connection_string)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	conn, err := pgxpool.ConnectConfig(context.Background(), parsedConfig)
+	conn, err := pgxpool.ConnectConfig(context.Background(), parsed_config)
 	if err != nil {
 		log.Fatal(err)
 	}

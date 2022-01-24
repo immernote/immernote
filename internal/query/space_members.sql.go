@@ -15,8 +15,8 @@ INSERT INTO public.space_members ("user_id", "space_id", "type")
 `
 
 type CreateSpaceMemberParams struct {
-	UserID  uuid.UUID  `json:"userID"`
-	SpaceID uuid.UUID  `json:"spaceID"`
+	UserID  uuid.UUID  `json:"user_id"`
+	SpaceID uuid.UUID  `json:"space_id"`
 	Type    MemberType `json:"type"`
 }
 

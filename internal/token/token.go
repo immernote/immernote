@@ -8,12 +8,12 @@ import (
 )
 
 func New(uuid string) (string, error) {
-	symmetricKey := []byte(config.Get().COOKIE_SECRET) // Must be 32 bytes
+	symmetric_key := []byte(config.Get().COOKIE_SECRET) // Must be 32 bytes
 	now := time.Now()
 	exp := now.Add(365 * 24 * time.Hour)
 	nbt := now
 
-	jsonToken := paseto.JSONToken{
+	json_token := paseto.JSONToken{
 		// Audience:   "test",
 		// Issuer:     "test_service",
 		// Jti:        "123",
@@ -24,10 +24,10 @@ func New(uuid string) (string, error) {
 	}
 
 	// Add custom claim to the token
-	jsonToken.Set("id", uuid)
+	json_token.Set("id", uuid)
 
 	// Encrypt data
-	token, err := paseto.NewV2().Encrypt(symmetricKey, jsonToken, nil)
+	token, err := paseto.NewV2().Encrypt(symmetric_key, json_token, nil)
 	if err != nil {
 		return token, err
 	}
@@ -36,12 +36,12 @@ func New(uuid string) (string, error) {
 }
 
 func Decrypt(token string) (paseto.JSONToken, error) {
-	symmetricKey := []byte(config.Get().COOKIE_SECRET)
+	symmetric_key := []byte(config.Get().COOKIE_SECRET)
 
-	var newJsonToken paseto.JSONToken
-	if err := paseto.NewV2().Decrypt(token, symmetricKey, &newJsonToken, nil); err != nil {
-		return newJsonToken, err
+	var new_json_token paseto.JSONToken
+	if err := paseto.NewV2().Decrypt(token, symmetric_key, &new_json_token, nil); err != nil {
+		return new_json_token, err
 	}
 
-	return newJsonToken, nil
+	return new_json_token, nil
 }

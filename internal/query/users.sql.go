@@ -148,7 +148,7 @@ RETURNING
 
 type UpdateUserConfirmationTokenByIDParams struct {
 	ID                uuid.UUID   `json:"id"`
-	ConfirmationToken pgtype.Text `json:"confirmationToken"`
+	ConfirmationToken pgtype.Text `json:"confirmation_token"`
 }
 
 func (q *Queries) UpdateUserConfirmationTokenByID(ctx context.Context, arg UpdateUserConfirmationTokenByIDParams) (User, error) {

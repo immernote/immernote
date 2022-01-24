@@ -17,14 +17,16 @@ func RegisterRoutes(r *gin.Engine) {
 	{
 		v0 := api.Group("/v0")
 		{
-			v0.GET("/ok", withJson(Health))
+			v0.GET("/ok", with_json(Health))
 
-			v0.POST("/login", withJson(Login))
-			v0.POST("/confirm", withJson(Confirm))
+			v0.POST("/login", with_json(Login))
+			v0.POST("/confirm", with_json(Confirm))
 
-			v0.GET("/users", middleware.Auth(), withJson(GetUserByCookie))
+			v0.GET("/users", middleware.Auth(), with_json(GetUserByCookie))
 
-			v0.GET("/spaces", middleware.Auth(), withJson(ListSpaces))
+			v0.GET("/spaces", middleware.Auth(), with_json(ListSpaces))
+
+			v0.GET("/blocks/pages", middleware.Auth(), with_json(ListPageBlocks))
 		}
 		// Login
 		// Create workspace
