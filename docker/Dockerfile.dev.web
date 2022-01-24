@@ -1,0 +1,14 @@
+FROM node:17-alpine AS base
+RUN apk --no-cache add curl
+RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+
+
+FROM base AS main
+WORKDIR /app
+COPY pnpm-lock.yaml ./
+RUN pnpm fetch
+COPY pnpm-workspace.yaml ./
+COPY ./apps/web/package.json ./apps/web/package.json
+RUN pnpm i --frozen-lockfile
+COPY . .
+EXPOSE 3000
