@@ -6,7 +6,7 @@ import { login } from "../actions/auth";
 import { delay } from "../utils/delay";
 
 export default function Login() {
-	const [state, setState] = createSignal<"idle" | "waiting" | "success" | "error">("error");
+	const [state, setState] = createSignal<"idle" | "waiting" | "success" | "error">("idle");
 	const [error, setError] = createSignal<string>();
 
 	return (
