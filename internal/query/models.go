@@ -3,7 +3,6 @@
 package query
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -55,27 +54,27 @@ func (e *MemberType) Scan(src interface{}) error {
 }
 
 type Block struct {
-	ID            uuid.UUID    `json:"id"`
-	Type          string       `json:"type"`
-	Rank          string       `json:"rank"`
-	Content       string       `json:"content"`
-	Format        string       `json:"format"`
-	ParentBlockID pgtype.UUID  `json:"parentBlockID"`
-	ParentPageID  pgtype.UUID  `json:"parentPageID"`
-	SpaceID       uuid.UUID    `json:"spaceID"`
-	CreatedBy     uuid.UUID    `json:"createdBy"`
-	ModifiedBy    uuid.UUID    `json:"modifiedBy"`
-	CreatedAt     time.Time    `json:"createdAt"`
-	ModifiedAt    time.Time    `json:"modifiedAt"`
-	DeletedAt     sql.NullTime `json:"deletedAt"`
+	ID            uuid.UUID          `json:"id"`
+	Type          string             `json:"type"`
+	Rank          string             `json:"rank"`
+	Content       string             `json:"content"`
+	Format        string             `json:"format"`
+	ParentBlockID pgtype.UUID        `json:"parentBlockID"`
+	ParentPageID  pgtype.UUID        `json:"parentPageID"`
+	SpaceID       uuid.UUID          `json:"spaceID"`
+	CreatedBy     uuid.UUID          `json:"createdBy"`
+	ModifiedBy    uuid.UUID          `json:"modifiedBy"`
+	CreatedAt     time.Time          `json:"createdAt"`
+	ModifiedAt    time.Time          `json:"modifiedAt"`
+	DeletedAt     pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type InstanceSetting struct {
-	SettingKey   string       `json:"settingKey"`
-	SettingValue string       `json:"settingValue"`
-	CreatedAt    time.Time    `json:"createdAt"`
-	ModifiedAt   time.Time    `json:"modifiedAt"`
-	DeletedAt    sql.NullTime `json:"deletedAt"`
+	SettingKey   string             `json:"settingKey"`
+	SettingValue string             `json:"settingValue"`
+	CreatedAt    time.Time          `json:"createdAt"`
+	ModifiedAt   time.Time          `json:"modifiedAt"`
+	DeletedAt    pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type SchemaMigration struct {
@@ -92,25 +91,25 @@ type Space struct {
 	InvitationToken pgtype.Text         `json:"invitationToken"`
 	CreatedAt       time.Time           `json:"createdAt"`
 	ModifiedAt      time.Time           `json:"modifiedAt"`
-	DeletedAt       sql.NullTime        `json:"deletedAt"`
+	DeletedAt       pgtype.Timestamptz  `json:"deletedAt"`
 }
 
 type SpaceMember struct {
-	UserID     uuid.UUID    `json:"userID"`
-	SpaceID    uuid.UUID    `json:"spaceID"`
-	Type       MemberType   `json:"type"`
-	CreatedAt  time.Time    `json:"createdAt"`
-	ModifiedAt time.Time    `json:"modifiedAt"`
-	DeletedAt  sql.NullTime `json:"deletedAt"`
+	UserID     uuid.UUID          `json:"userID"`
+	SpaceID    uuid.UUID          `json:"spaceID"`
+	Type       MemberType         `json:"type"`
+	CreatedAt  time.Time          `json:"createdAt"`
+	ModifiedAt time.Time          `json:"modifiedAt"`
+	DeletedAt  pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type SpacePermission struct {
-	SpaceID     uuid.UUID        `json:"spaceID"`
-	BlockID     uuid.UUID        `json:"blockID"`
-	AccessLevel BlockAccessLevel `json:"accessLevel"`
-	CreatedAt   time.Time        `json:"createdAt"`
-	ModifiedAt  time.Time        `json:"modifiedAt"`
-	DeletedAt   sql.NullTime     `json:"deletedAt"`
+	SpaceID     uuid.UUID          `json:"spaceID"`
+	BlockID     uuid.UUID          `json:"blockID"`
+	AccessLevel BlockAccessLevel   `json:"accessLevel"`
+	CreatedAt   time.Time          `json:"createdAt"`
+	ModifiedAt  time.Time          `json:"modifiedAt"`
+	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type User struct {
@@ -120,46 +119,46 @@ type User struct {
 	Avatar             string             `json:"avatar"`
 	Settings           types.UserSettings `json:"settings"`
 	ConfirmationToken  pgtype.Text        `json:"confirmationToken"`
-	ConfirmationSentAt sql.NullTime       `json:"confirmationSentAt"`
-	InvitedAt          sql.NullTime       `json:"invitedAt"`
-	ConfirmedAt        sql.NullTime       `json:"confirmedAt"`
+	ConfirmationSentAt pgtype.Timestamptz `json:"confirmationSentAt"`
+	InvitedAt          pgtype.Timestamptz `json:"invitedAt"`
+	ConfirmedAt        pgtype.Timestamptz `json:"confirmedAt"`
 	CreatedAt          time.Time          `json:"createdAt"`
 	ModifiedAt         time.Time          `json:"modifiedAt"`
-	DeletedAt          sql.NullTime       `json:"deletedAt"`
+	DeletedAt          pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type UserGroup struct {
-	ID         uuid.UUID    `json:"id"`
-	Name       string       `json:"name"`
-	Icon       string       `json:"icon"`
-	SpaceID    uuid.UUID    `json:"spaceID"`
-	CreatedAt  time.Time    `json:"createdAt"`
-	ModifiedAt time.Time    `json:"modifiedAt"`
-	DeletedAt  sql.NullTime `json:"deletedAt"`
+	ID         uuid.UUID          `json:"id"`
+	Name       string             `json:"name"`
+	Icon       string             `json:"icon"`
+	SpaceID    uuid.UUID          `json:"spaceID"`
+	CreatedAt  time.Time          `json:"createdAt"`
+	ModifiedAt time.Time          `json:"modifiedAt"`
+	DeletedAt  pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type UserGroupMember struct {
-	UserID      uuid.UUID    `json:"userID"`
-	UserGroupID uuid.UUID    `json:"userGroupID"`
-	CreatedAt   time.Time    `json:"createdAt"`
-	ModifiedAt  time.Time    `json:"modifiedAt"`
-	DeletedAt   sql.NullTime `json:"deletedAt"`
+	UserID      uuid.UUID          `json:"userID"`
+	UserGroupID uuid.UUID          `json:"userGroupID"`
+	CreatedAt   time.Time          `json:"createdAt"`
+	ModifiedAt  time.Time          `json:"modifiedAt"`
+	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type UserGroupPermission struct {
-	UserGroupID uuid.UUID        `json:"userGroupID"`
-	BlockID     uuid.UUID        `json:"blockID"`
-	AccessLevel BlockAccessLevel `json:"accessLevel"`
-	CreatedAt   time.Time        `json:"createdAt"`
-	ModifiedAt  time.Time        `json:"modifiedAt"`
-	DeletedAt   sql.NullTime     `json:"deletedAt"`
+	UserGroupID uuid.UUID          `json:"userGroupID"`
+	BlockID     uuid.UUID          `json:"blockID"`
+	AccessLevel BlockAccessLevel   `json:"accessLevel"`
+	CreatedAt   time.Time          `json:"createdAt"`
+	ModifiedAt  time.Time          `json:"modifiedAt"`
+	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
 }
 
 type UserPermission struct {
-	UserID      uuid.UUID        `json:"userID"`
-	BlockID     uuid.UUID        `json:"blockID"`
-	AccessLevel BlockAccessLevel `json:"accessLevel"`
-	CreatedAt   time.Time        `json:"createdAt"`
-	ModifiedAt  time.Time        `json:"modifiedAt"`
-	DeletedAt   sql.NullTime     `json:"deletedAt"`
+	UserID      uuid.UUID          `json:"userID"`
+	BlockID     uuid.UUID          `json:"blockID"`
+	AccessLevel BlockAccessLevel   `json:"accessLevel"`
+	CreatedAt   time.Time          `json:"createdAt"`
+	ModifiedAt  time.Time          `json:"modifiedAt"`
+	DeletedAt   pgtype.Timestamptz `json:"deletedAt"`
 }

@@ -22,6 +22,9 @@ overrides:
   - go_type: "github.com/jackc/pgtype.Date"
     db_type: "date"
     nullable: true
+  - go_type: "github.com/jackc/pgtype.Timestamptz"
+    db_type: "pg_catalog.timestamptz"
+    nullable: true
   - column: "users.settings"
     go_type: "github.com/immernote/immernote/internal/types.UserSettings"
   - column: "spaces.settings"

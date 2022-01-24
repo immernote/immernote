@@ -1,6 +1,5 @@
 import axios from "redaxios";
 import type { Response, Options } from "redaxios";
-import { API_HOST } from "../constants";
 import { isResponse } from "./is-response";
 
 /**
@@ -14,7 +13,7 @@ export async function aksios<T>(
 	try {
 		return [
 			await axios<T>({
-				url: `${API_HOST}${url}`,
+				url: `/api${url}`,
 				method,
 				data,
 			}),

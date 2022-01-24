@@ -2,6 +2,8 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/immernote/immernote/internal/config"
+	"github.com/immernote/immernote/internal/middleware"
 	"github.com/immernote/immernote/internal/token"
 	"github.com/julienschmidt/httprouter"
 )
@@ -11,20 +13,30 @@ type Router struct {
 }
 
 func RegisterRoutes(r *gin.Engine) {
-	v0 := r.Group("/v0")
+	api := r.Group("/api")
 	{
-		v0.GET("/ok", withJson(Health))
+		v0 := api.Group("/v0")
+		{
+			v0.GET("/ok", withJson(Health))
 
-		v0.POST("/login", withJson(Login))
-		v0.POST("/confirm", withJson(Confirm))
+			v0.POST("/login", withJson(Login))
+			v0.POST("/confirm", withJson(Confirm))
+
+			v0.GET("/users", middleware.Auth(), withJson(GetUserByCookie))
+		}
+		// Login
+		// Create workspace
+		// Auth with JWT and multiple emails
+		// Get user
+		// Get workspace
 	}
-	// Login
-	// Create workspace
-	// Auth with JWT and multiple emails
-	// Get user
-	// Get workspace
-}
 
+	if config.Get().IS_DEV {
+		r.NoRoute(middleware.Proxy("http://web:3000"))
+	} else {
+		r.Use(middleware.Spa("/", "./dist"))
+	}
+}
 
 func Health(
 	c *gin.Context,
