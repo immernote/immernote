@@ -66,7 +66,7 @@ func Login(c *gin.Context) (int, interface{}, error) {
 	return 200, user, nil
 }
 
-func confirm(c *gin.Context) (int, interface{}, error) {
+func Confirm(c *gin.Context) (int, interface{}, error) {
 	body := new(struct {
 		Token  string `json:"token" validate:"required"`
 		UserID string `json:"userID" validate:"required"`
