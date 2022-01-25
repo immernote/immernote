@@ -1,13 +1,13 @@
+import { v4 as uuid } from "@lukeed/uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import clsx from "clsx";
 import { ChevronRight, ChevronsUpDown, MoreHorizontal, Plus, Search, Settings } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { create_page_block } from "../actions/blocks";
 import { usePageBlocks } from "../hooks/blocks";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
-import { v4 as uuid } from "@lukeed/uuid";
-import { useMemo, useState } from "react";
 import { Block } from "../types";
-import clsx from "clsx";
-import { Link } from "react-router-dom";
 
 export function Sidebar() {
   return (
