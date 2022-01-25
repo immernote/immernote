@@ -1,9 +1,12 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { ChevronsUpDown, Plus, Search, Settings } from "lucide-react";
+import { ChevronRight, ChevronsUpDown, MoreHorizontal, Plus, Search, Settings } from "lucide-react";
 import { create_page_block } from "../actions/blocks";
 import { usePageBlocks } from "../hooks/blocks";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 import { v4 as uuid } from "@lukeed/uuid";
+import { useMemo, useState } from "react";
+import { Block } from "../types";
+import clsx from "clsx";
 
 export function Sidebar() {
   return (
@@ -92,8 +95,8 @@ function Links() {
 /*                                              Pages                                             */
 /* ---------------------------------------------------------------------------------------------- */
 
-function Pages() {
-  const { data: pages } = usePageBlocks();
+function Pages(props: { parent_page_id?: string }) {
+  const { data: pages } = usePageBlocks(props.parent_page_id);
 
   if (!pages) {
     return null;
@@ -110,33 +113,132 @@ function Pages() {
   return (
     <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] text-sm bg-gray2">
       {pages.map((page) => (
-        <div key={page.id}>{page.content.title ?? "Untitled"}</div>
+        <Page key={page.id} {...page} />
       ))}
     </nav>
   );
 }
 
-function CreatePage() {
+function Page({ id, format, content }: Block) {
+  const [expanded, setExpanded] = useState(false);
+  const [hasFocus, setHasFocus] = useState(false);
+  return (
+    <>
+      <div
+        className={clsx({
+          "flex items-center justify-between px-4 py-2 transition hover:bg-gray4 group": true,
+          "bg-gray4": hasFocus,
+        })}
+      >
+        <div className="inline-flex items-center gap-x-2 flex-grow">
+          <ChevronRight className="h-[1em]" onClick={() => setExpanded((v) => !v)} />
+          <span>{format.icon.value}</span>
+          <span>{content.title ?? "Untitled"}</span>
+        </div>
+        <div
+          className={clsx({
+            "inline-flex items-center gap-x-2 group-hover:visible": true,
+            visible: hasFocus,
+            invisible: !hasFocus,
+          })}
+        >
+          <DropdownMenu.Root onOpenChange={(v) => setHasFocus(v)}>
+            <DropdownMenu.Trigger className="transition-all">
+              <MoreHorizontal className="h-[1em]" />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content className="bg-gray1 border border-gray6 backdrop-blur-3xl rounded shadow-lg w-80">
+              <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-2 hover:outline-none">
+                Delete
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-2 hover:outline-none">
+                Add to Favorites
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-2 hover:outline-none">
+                Duplicate
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-2 hover:outline-none">
+                Copy Link
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-2 hover:outline-none">
+                Rename
+              </DropdownMenu.Item>
+              <DropdownMenu.DropdownMenuSeparator className="h-px bg-gray7" />
+              <DropdownMenu.Item className="text-xs text-gray11 tracking-tight bg-gray3 transition hover:bg-gray4 px-4 py-2 hover:outline-none">
+                Move to
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+          <CreateSubPage id={id} />
+        </div>
+      </div>
+      {expanded && <Pages parent_page_id={id} />}
+    </>
+  );
+}
+
+function CreateSubPage({ id }: { id: string }) {
   const { data: space } = useCurrentSpace();
+  const { mutate } = usePageBlocks();
 
   async function handleClick() {
     if (!space) return;
 
-    const [data, err] = await create_page_block({
-      id: uuid(),
-      content: {
-        title: ["New page"],
-      },
-      format: {
-        icon: {
-          type: "emoji",
-          value: "🦄",
+    await create_page_block(
+      {
+        id: uuid(),
+        content: {
+          title: ["New Sub Page"],
         },
+        format: {
+          icon: {
+            type: "emoji",
+            value: "🦄",
+          },
+        },
+        parent_block_id: id,
+        parent_page_id: id,
+        space_id: space.id,
       },
-      parent_block_id: null,
-      parent_page_id: null,
-      space_id: space.id,
-    });
+      mutate
+    );
+  }
+
+  return (
+    <button onClick={handleClick}>
+      <Plus className="h-[1em]" />
+    </button>
+  );
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                           CreatePage                                           */
+/* ---------------------------------------------------------------------------------------------- */
+
+function CreatePage() {
+  const { data: space } = useCurrentSpace();
+  const { mutate } = usePageBlocks();
+
+  async function handleClick() {
+    if (!space) return;
+
+    await create_page_block(
+      {
+        id: uuid(),
+        content: {
+          title: ["New page"],
+        },
+        format: {
+          icon: {
+            type: "emoji",
+            value: "🦄",
+          },
+        },
+        parent_block_id: null,
+        parent_page_id: null,
+        space_id: space.id,
+      },
+      mutate
+    );
   }
 
   return (

@@ -23,6 +23,10 @@ module.exports = {
   theme: {
     extend: {
       colors: { ...getColors() },
+      transitionDuration: {
+        DEFAULT: "20ms",
+        20: "20ms",
+      },
     },
   },
   plugins: [
@@ -32,6 +36,8 @@ module.exports = {
     plugin(function ({ addVariant }) {
       addVariant("state-open", "&[data-state='open']");
       addVariant("state-closed", "&[data-state='closed']");
+
+      addVariant("child-state-open", "& [data-state='open']");
     }),
   ],
 };

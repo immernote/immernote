@@ -79,50 +79,188 @@ func (q *Queries) CreatePageBlock(ctx context.Context, arg CreatePageBlockParams
 	return i, err
 }
 
-const listBlocks = `-- name: ListBlocks :many
+const listBlocksByTypeSpaceHandleNullParentPageID = `-- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
 SELECT
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
 FROM
   public.blocks b
 WHERE
   b.type = $1
-  -- Select by space_id or space_handle
-  AND (
-    CASE WHEN nullif ($2::text, '') IS NULL THEN
-      b.space_id = $3::uuid
-    ELSE
-      b.space_id = (
-        SELECT
-          s.id
-        FROM
-          public.spaces s
-        WHERE
-          s.handle = $2::text)
-    END)
-AND (
-  CASE WHEN nullif ($4::uuid, '00000000-0000-0000-0000-000000000000') IS NULL THEN
-    b.parent_page_id IS NULL
-  ELSE
-    b.parent_page_id = $4::uuid
-  END)
+  AND b.space_id = (
+    SELECT
+      s.id
+    FROM
+      public.spaces s
+    WHERE
+      s.handle = $2)
+  AND b.parent_page_id IS NULL
 `
 
-type ListBlocksParams struct {
-	Type         string    `json:"type"`
-	SpaceHandle  string    `json:"space_handle"`
-	SpaceID      uuid.UUID `json:"space_id"`
-	ParentPageID uuid.UUID `json:"parent_page_id"`
+type ListBlocksByTypeSpaceHandleNullParentPageIDParams struct {
+	Type        string `json:"type"`
+	SpaceHandle string `json:"space_handle"`
 }
 
-// Avoid comparing NULL
+func (q *Queries) ListBlocksByTypeSpaceHandleNullParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceHandleNullParentPageIDParams) ([]Block, error) {
+	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceHandleNullParentPageID, arg.Type, arg.SpaceHandle)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Block{}
+	for rows.Next() {
+		var i Block
+		if err := rows.Scan(
+			&i.ID,
+			&i.Type,
+			&i.Rank,
+			&i.Content,
+			&i.Format,
+			&i.ParentBlockID,
+			&i.ParentPageID,
+			&i.SpaceID,
+			&i.CreatedBy,
+			&i.ModifiedBy,
+			&i.CreatedAt,
+			&i.ModifiedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
 
-func (q *Queries) ListBlocks(ctx context.Context, arg ListBlocksParams) ([]Block, error) {
-	rows, err := q.db.Query(ctx, listBlocks,
-		arg.Type,
-		arg.SpaceHandle,
-		arg.SpaceID,
-		arg.ParentPageID,
-	)
+const listBlocksByTypeSpaceHandleParentPageID = `-- name: ListBlocksByTypeSpaceHandleParentPageID :many
+SELECT
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+FROM
+  public.blocks b
+WHERE
+  b.type = $1
+  AND b.space_id = (
+    SELECT
+      s.id
+    FROM
+      public.spaces s
+    WHERE
+      s.handle = $2)
+  AND b.parent_page_id = $3
+`
+
+type ListBlocksByTypeSpaceHandleParentPageIDParams struct {
+	Type         string      `json:"type"`
+	SpaceHandle  string      `json:"space_handle"`
+	ParentPageID pgtype.UUID `json:"parent_page_id"`
+}
+
+func (q *Queries) ListBlocksByTypeSpaceHandleParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceHandleParentPageIDParams) ([]Block, error) {
+	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceHandleParentPageID, arg.Type, arg.SpaceHandle, arg.ParentPageID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Block{}
+	for rows.Next() {
+		var i Block
+		if err := rows.Scan(
+			&i.ID,
+			&i.Type,
+			&i.Rank,
+			&i.Content,
+			&i.Format,
+			&i.ParentBlockID,
+			&i.ParentPageID,
+			&i.SpaceID,
+			&i.CreatedBy,
+			&i.ModifiedBy,
+			&i.CreatedAt,
+			&i.ModifiedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listBlocksByTypeSpaceIDNullParentPageID = `-- name: ListBlocksByTypeSpaceIDNullParentPageID :many
+SELECT
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+FROM
+  public.blocks b
+WHERE
+  b.type = $1
+  AND b.space_id = $2
+  AND b.parent_page_id IS NULL
+`
+
+type ListBlocksByTypeSpaceIDNullParentPageIDParams struct {
+	Type    string    `json:"type"`
+	SpaceID uuid.UUID `json:"space_id"`
+}
+
+func (q *Queries) ListBlocksByTypeSpaceIDNullParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceIDNullParentPageIDParams) ([]Block, error) {
+	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceIDNullParentPageID, arg.Type, arg.SpaceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Block{}
+	for rows.Next() {
+		var i Block
+		if err := rows.Scan(
+			&i.ID,
+			&i.Type,
+			&i.Rank,
+			&i.Content,
+			&i.Format,
+			&i.ParentBlockID,
+			&i.ParentPageID,
+			&i.SpaceID,
+			&i.CreatedBy,
+			&i.ModifiedBy,
+			&i.CreatedAt,
+			&i.ModifiedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listBlocksByTypeSpaceIDParentPageID = `-- name: ListBlocksByTypeSpaceIDParentPageID :many
+SELECT
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+FROM
+  public.blocks b
+WHERE
+  b.type = $1
+  AND b.space_id = $2
+  AND b.parent_page_id = $3
+`
+
+type ListBlocksByTypeSpaceIDParentPageIDParams struct {
+	Type         string      `json:"type"`
+	SpaceID      uuid.UUID   `json:"space_id"`
+	ParentPageID pgtype.UUID `json:"parent_page_id"`
+}
+
+func (q *Queries) ListBlocksByTypeSpaceIDParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceIDParentPageIDParams) ([]Block, error) {
+	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceIDParentPageID, arg.Type, arg.SpaceID, arg.ParentPageID)
 	if err != nil {
 		return nil, err
 	}
