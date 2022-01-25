@@ -7,13 +7,14 @@ import { v4 as uuid } from "@lukeed/uuid";
 import { useMemo, useState } from "react";
 import { Block } from "../types";
 import clsx from "clsx";
+import { Link } from "react-router-dom";
 
 export function Sidebar() {
   return (
     <div className="min-w-[calc(100%/5)] w-1/5 bg-gray3 text-gray11 h-screen flex flex-col items-stretch">
       <Workspaces />
       <Links />
-      <Pages />
+      <Pages level={0} />
       <CreatePage />
     </div>
   );
@@ -95,49 +96,79 @@ function Links() {
 /*                                              Pages                                             */
 /* ---------------------------------------------------------------------------------------------- */
 
-function Pages(props: { parent_page_id?: string }) {
+function Pages(props: { parent_page_id?: string; level: number }) {
   const { data: pages } = usePageBlocks(props.parent_page_id);
 
   if (!pages) {
     return null;
   }
 
+  if (props.parent_page_id) {
+    if (pages.length === 0) {
+      return (
+        <div
+          className="flex flex-col items-stretch w-full h-10 bg-gray2 text-gray11 px-4 py-2 text-xs"
+          style={{ paddingLeft: `${props.level / 2 + 2}rem` }}
+        >
+          No pages.
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {pages.map((page) => (
+          <Page key={page.id} level={props.level} {...page} />
+        ))}
+      </>
+    );
+  }
+
   if (pages.length === 0) {
     return (
-      <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] bg-gray2 text-gray11 px-4 py-4 text-xs">
+      <div className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] bg-gray2 text-gray11 px-4 py-4 text-xs">
         No pages.
-      </nav>
+      </div>
     );
   }
 
   return (
-    <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] text-sm bg-gray2">
+    <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] text-sm bg-gray2 overflow-y-auto">
       {pages.map((page) => (
-        <Page key={page.id} {...page} />
+        <Page key={page.id} level={props.level} {...page} />
       ))}
     </nav>
   );
 }
 
-function Page({ id, format, content }: Block) {
+function Page({ level, id, format, content }: Block & { level: number }) {
+  const { data: space } = useCurrentSpace();
   const [expanded, setExpanded] = useState(false);
   const [hasFocus, setHasFocus] = useState(false);
   return (
     <>
       <div
         className={clsx({
-          "flex items-center justify-between px-4 py-2 transition hover:bg-gray4 group": true,
+          "flex items-center justify-between px-4 transition hover:bg-gray4 group": true,
           "bg-gray4": hasFocus,
         })}
+        style={{
+          paddingLeft: `${level / 2 + 1}rem`,
+        }}
       >
-        <div className="inline-flex items-center gap-x-2 flex-grow">
-          <ChevronRight className="h-[1em]" onClick={() => setExpanded((v) => !v)} />
+        <button className="py-2" onClick={() => setExpanded((v) => !v)}>
+          <ChevronRight className="h-[1em]" />
+        </button>
+        <Link
+          className="inline-flex items-center gap-x-2 flex-grow py-2"
+          to={`/${space?.handle}/${id}`}
+        >
           <span>{format.icon.value}</span>
           <span>{content.title ?? "Untitled"}</span>
-        </div>
+        </Link>
         <div
           className={clsx({
-            "inline-flex items-center gap-x-2 group-hover:visible": true,
+            "inline-flex items-center gap-x-2 group-hover:visible py-2": true,
             visible: hasFocus,
             invisible: !hasFocus,
           })}
@@ -171,14 +202,14 @@ function Page({ id, format, content }: Block) {
           <CreateSubPage id={id} />
         </div>
       </div>
-      {expanded && <Pages parent_page_id={id} />}
+      {expanded && <Pages parent_page_id={id} level={level + 1} />}
     </>
   );
 }
 
 function CreateSubPage({ id }: { id: string }) {
   const { data: space } = useCurrentSpace();
-  const { mutate } = usePageBlocks();
+  const { mutate } = usePageBlocks(id);
 
   async function handleClick() {
     if (!space) return;
