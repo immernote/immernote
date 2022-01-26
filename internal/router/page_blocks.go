@@ -2,6 +2,8 @@ package router
 
 import (
 	"net/http"
+	"sort"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -37,6 +39,8 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 			return http.StatusInternalServerError, nil, err
 		}
 
+		sort.Sort(ByRank(blocks))
+
 		return 200, blocks, nil
 
 	case qs.SpaceID != "" && qs.ParentPageID == "":
@@ -52,6 +56,8 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 		if err != nil {
 			return http.StatusInternalServerError, nil, err
 		}
+
+		sort.Sort(ByRank(blocks))
 
 		return 200, blocks, nil
 
@@ -69,6 +75,8 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 		if err != nil {
 			return http.StatusInternalServerError, nil, err
 		}
+
+		sort.Sort(ByRank(blocks))
 
 		return 200, blocks, nil
 
@@ -91,6 +99,8 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 		if err != nil {
 			return http.StatusInternalServerError, nil, err
 		}
+
+		sort.Sort(ByRank(blocks))
 
 		return 200, blocks, nil
 
@@ -133,3 +143,14 @@ func CreatePageBlock(c *gin.Context) (int, interface{}, error) {
 
 	return 200, block, nil
 }
+
+type ByRank []query.Block
+
+func (a ByRank) Len() int { return len(a) }
+func (a ByRank) Less(i, j int) bool {
+	ai, _ := strconv.ParseFloat(a[i].Rank, 64)
+	aj, _ := strconv.ParseFloat(a[i].Rank, 64)
+
+	return ai < aj
+}
+func (a ByRank) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
