@@ -12,7 +12,7 @@ import (
 )
 
 type list_blocks_query struct {
-	Type         string `form:"type" binding:"required"`
+	Type         string `form:"type"`
 	SpaceHandle  string `form:"space_handle" binding:"required_without=SpaceID"`
 	SpaceID      string `form:"space_id" binding:"required_without=SpaceHandle"`
 	ParentPageID string `form:"parent_page_id"`

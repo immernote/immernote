@@ -3,8 +3,12 @@ SELECT
   *
 FROM
   public.blocks b
-WHERE
-  b.type = @type
+WHERE (
+  CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+    b.type = @type::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = (
     SELECT
       s.id
@@ -19,8 +23,12 @@ SELECT
   *
 FROM
   public.blocks b
-WHERE
-  b.type = @type
+WHERE (
+  CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+    b.type = @type::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = (
     SELECT
       s.id
@@ -35,8 +43,12 @@ SELECT
   *
 FROM
   public.blocks b
-WHERE
-  b.type = @type
+WHERE (
+  CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+    b.type = @type::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = @space_id
   AND b.parent_page_id = @parent_page_id;
 
@@ -45,8 +57,12 @@ SELECT
   *
 FROM
   public.blocks b
-WHERE
-  b.type = @type
+WHERE (
+  CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+    b.type = @type::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = @space_id
   AND b.parent_page_id IS NULL;
 

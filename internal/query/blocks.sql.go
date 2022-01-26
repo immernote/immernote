@@ -84,8 +84,12 @@ SELECT
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
 FROM
   public.blocks b
-WHERE
-  b.type = $1
+WHERE (
+  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
+    b.type = $1::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = (
     SELECT
       s.id
@@ -140,8 +144,12 @@ SELECT
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
 FROM
   public.blocks b
-WHERE
-  b.type = $1
+WHERE (
+  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
+    b.type = $1::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = (
     SELECT
       s.id
@@ -197,8 +205,12 @@ SELECT
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
 FROM
   public.blocks b
-WHERE
-  b.type = $1
+WHERE (
+  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
+    b.type = $1::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = $2
   AND b.parent_page_id IS NULL
 `
@@ -247,8 +259,12 @@ SELECT
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
 FROM
   public.blocks b
-WHERE
-  b.type = $1
+WHERE (
+  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
+    b.type = $1::text
+  ELSE
+    TRUE
+  END)
   AND b.space_id = $2
   AND b.parent_page_id = $3
 `

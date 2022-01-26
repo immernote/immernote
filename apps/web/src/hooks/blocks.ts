@@ -13,3 +13,13 @@ export function usePageBlocks(parent_page_id?: string) {
       : null
   );
 }
+
+export function usePageBlockChildren(parent_page_id: string | undefined) {
+  const { data: space } = useCurrentSpace();
+
+  return useSWR<Block[]>(
+    space?.handle && parent_page_id
+      ? `/api/v0/blocks/?space_handle=${space.handle}&parent_page_id=${parent_page_id}`
+      : null
+  );
+}
