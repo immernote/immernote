@@ -14,6 +14,10 @@ export function usePageBlocks(parent_page_id?: string) {
   );
 }
 
+export function usePageBlock(id: string | undefined) {
+  return useSWR<Block>(id ? `/api/v0/block?id=${id}` : null);
+}
+
 export function usePageBlockChildren(parent_page_id: string | undefined) {
   const { data: space } = useCurrentSpace();
 

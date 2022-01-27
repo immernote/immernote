@@ -66,6 +66,14 @@ WHERE (
   AND b.space_id = @space_id
   AND b.parent_page_id IS NULL;
 
+-- name: GetBlockByID :one
+SELECT
+  *
+FROM
+  public.blocks b
+WHERE
+  b.id = $1;
+
 -- name: CreatePageBlock :one
 INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_page_id", "space_id", "created_by", "modified_by")
   VALUES (@id, 'page', (

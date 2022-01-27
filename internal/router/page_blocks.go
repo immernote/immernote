@@ -109,6 +109,38 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 	}
 }
 
+type get_block_query struct {
+	ID string `form:"id" binding:"required"`
+}
+
+func GetBlock(c *gin.Context) (int, interface{}, error) {
+	qs := new(get_block_query)
+
+	if err := c.BindQuery(qs); err != nil {
+		return http.StatusBadRequest, nil, err
+	}
+
+	pq := query.New(database.Get())
+
+	switch {
+	case qs.ID != "":
+		block_id, err := uuid.Parse(qs.ID)
+		if err != nil {
+			return http.StatusInternalServerError, nil, err
+		}
+
+		block, err := pq.GetBlockByID(c.Request.Context(), block_id)
+		if err != nil {
+			return http.StatusInternalServerError, nil, err
+		}
+
+		return 200, block, nil
+
+	default:
+		return http.StatusBadRequest, nil, nil
+	}
+}
+
 type create_page_block_body struct {
 	ID uuid.UUID `json:"id" binding:"required"`
 	// Rank          string      `json:"rank"`

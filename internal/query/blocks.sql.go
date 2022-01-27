@@ -79,6 +79,36 @@ func (q *Queries) CreatePageBlock(ctx context.Context, arg CreatePageBlockParams
 	return i, err
 }
 
+const getBlockByID = `-- name: GetBlockByID :one
+SELECT
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+FROM
+  public.blocks b
+WHERE
+  b.id = $1
+`
+
+func (q *Queries) GetBlockByID(ctx context.Context, id uuid.UUID) (Block, error) {
+	row := q.db.QueryRow(ctx, getBlockByID, id)
+	var i Block
+	err := row.Scan(
+		&i.ID,
+		&i.Type,
+		&i.Rank,
+		&i.Content,
+		&i.Format,
+		&i.ParentBlockID,
+		&i.ParentPageID,
+		&i.SpaceID,
+		&i.CreatedBy,
+		&i.ModifiedBy,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const listBlocksByTypeSpaceHandleNullParentPageID = `-- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
 SELECT
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
