@@ -1,6 +1,14 @@
 -- name: ListBlocksByTypeSpaceHandleParentPageID :many
 SELECT
-  *
+  *,
+  COALESCE((
+    SELECT
+      array_to_json(array_agg(row_to_json(tmp)))
+    FROM (
+      SELECT
+        cb.id, cb.rank FROM blocks cb
+      WHERE
+        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
 FROM
   public.blocks b
 WHERE (
@@ -20,7 +28,15 @@ WHERE (
 
 -- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
 SELECT
-  *
+  *,
+  COALESCE((
+    SELECT
+      array_to_json(array_agg(row_to_json(tmp)))
+    FROM (
+      SELECT
+        cb.id, cb.rank FROM blocks cb
+      WHERE
+        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
 FROM
   public.blocks b
 WHERE (
@@ -40,7 +56,15 @@ WHERE (
 
 -- name: ListBlocksByTypeSpaceIDParentPageID :many
 SELECT
-  *
+  *,
+  COALESCE((
+    SELECT
+      array_to_json(array_agg(row_to_json(tmp)))
+    FROM (
+      SELECT
+        cb.id, cb.rank FROM blocks cb
+      WHERE
+        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
 FROM
   public.blocks b
 WHERE (
@@ -54,7 +78,15 @@ WHERE (
 
 -- name: ListBlocksByTypeSpaceIDNullParentPageID :many
 SELECT
-  *
+  *,
+  COALESCE((
+    SELECT
+      array_to_json(array_agg(row_to_json(tmp)))
+    FROM (
+      SELECT
+        cb.id, cb.rank FROM blocks cb
+      WHERE
+        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
 FROM
   public.blocks b
 WHERE (
@@ -68,7 +100,15 @@ WHERE (
 
 -- name: GetBlockByID :one
 SELECT
-  *
+  *,
+  COALESCE((
+    SELECT
+      array_to_json(array_agg(row_to_json(tmp)))
+    FROM (
+      SELECT
+        cb.id, cb.rank FROM blocks cb
+      WHERE
+        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
 FROM
   public.blocks b
 WHERE

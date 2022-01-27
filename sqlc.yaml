@@ -25,6 +25,8 @@ overrides:
   - go_type: "github.com/jackc/pgtype.Timestamptz"
     db_type: "pg_catalog.timestamptz"
     nullable: true
+  - go_type: "github.com/immernote/immernote/internal/types.RankedChildren"
+    db_type: "children_list"
   - column: "users.settings"
     go_type: "github.com/immernote/immernote/internal/types.UserSettings"
   - column: "spaces.settings"

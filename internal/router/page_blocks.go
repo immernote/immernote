@@ -2,7 +2,6 @@ package router
 
 import (
 	"net/http"
-	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +38,7 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 			return http.StatusInternalServerError, nil, err
 		}
 
-		sort.Sort(ByRank(blocks))
+		// sort.Sort(ByRank(blocks))
 
 		return 200, blocks, nil
 
@@ -57,7 +56,7 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 			return http.StatusInternalServerError, nil, err
 		}
 
-		sort.Sort(ByRank(blocks))
+		// sort.Sort(ByRank(blocks))
 
 		return 200, blocks, nil
 
@@ -76,7 +75,7 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 			return http.StatusInternalServerError, nil, err
 		}
 
-		sort.Sort(ByRank(blocks))
+		// sort.Sort(ByRank(blocks))
 
 		return 200, blocks, nil
 
@@ -100,7 +99,10 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 			return http.StatusInternalServerError, nil, err
 		}
 
-		sort.Sort(ByRank(blocks))
+		// for _, block := range blocks {
+		// 	sort.Sort(ByRank(block.Children))
+
+		// }
 
 		return 200, blocks, nil
 

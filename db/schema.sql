@@ -22,6 +22,13 @@ CREATE TYPE public.block_access_level AS ENUM (
 
 
 --
+-- Name: children_list; Type: DOMAIN; Schema: public; Owner: -
+--
+
+CREATE DOMAIN public.children_list AS text;
+
+
+--
 -- Name: member_type; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -512,4 +519,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20211228235047'),
     ('20211229095356'),
     ('20211229095859'),
-    ('20211231194719');
+    ('20211231194719'),
+    ('20220127132505'),
+    ('20220127160503');
