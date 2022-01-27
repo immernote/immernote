@@ -11,6 +11,7 @@
     "@radix-ui/react-dropdown-menu": "^0.1.4",
     "@radix-ui/react-slot": "^0.1.2",
     "clsx": "^1.1.1",
+    "immer": "^9.0.12",
     "lucide-react": "^0.16.28",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
@@ -19,7 +20,8 @@
     "react-hook-form": "^7.25.0",
     "react-router-dom": "^6.2.1",
     "redaxios": "^0.4.1",
-    "swr": "^1.1.2"
+    "swr": "^1.1.2",
+    "zustand": "^3.6.9"
   },
   "devDependencies": {
     "@downwindcss/text-decoration": "^1.1.1",

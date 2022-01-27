@@ -69,3 +69,16 @@ export type Block = {
   /** Timestamptz */
   deleted_at: string | undefined;
 };
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                            DataStore                                           */
+/* ---------------------------------------------------------------------------------------------- */
+
+export type DataStore = {
+  spaces: {
+    [key: string]: Space;
+  };
+  blocks: {
+    [key: string]: Block;
+  };
+};
