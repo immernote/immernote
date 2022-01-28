@@ -248,13 +248,14 @@ WHERE (
       public.spaces s
     WHERE
       s.handle = $2)
-  AND b.parent_page_id = $3
+  AND (b.id = $3
+    OR b.parent_page_id = $3)
 `
 
 type ListBlocksByTypeSpaceHandleParentPageIDParams struct {
-	Type         string      `json:"type"`
-	SpaceHandle  string      `json:"space_handle"`
-	ParentPageID pgtype.UUID `json:"parent_page_id"`
+	Type         string    `json:"type"`
+	SpaceHandle  string    `json:"space_handle"`
+	ParentPageID uuid.UUID `json:"parent_page_id"`
 }
 
 type ListBlocksByTypeSpaceHandleParentPageIDRow struct {
@@ -409,13 +410,14 @@ WHERE (
     TRUE
   END)
   AND b.space_id = $2
-  AND b.parent_page_id = $3
+  AND (b.id = $3
+    OR b.parent_page_id = $3)
 `
 
 type ListBlocksByTypeSpaceIDParentPageIDParams struct {
-	Type         string      `json:"type"`
-	SpaceID      uuid.UUID   `json:"space_id"`
-	ParentPageID pgtype.UUID `json:"parent_page_id"`
+	Type         string    `json:"type"`
+	SpaceID      uuid.UUID `json:"space_id"`
+	ParentPageID uuid.UUID `json:"parent_page_id"`
 }
 
 type ListBlocksByTypeSpaceIDParentPageIDRow struct {

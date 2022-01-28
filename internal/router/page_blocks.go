@@ -38,8 +38,6 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 			return http.StatusInternalServerError, nil, err
 		}
 
-		// sort.Sort(ByRank(blocks))
-
 		return 200, blocks, nil
 
 	case qs.SpaceID != "" && qs.ParentPageID == "":
@@ -56,8 +54,6 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 			return http.StatusInternalServerError, nil, err
 		}
 
-		// sort.Sort(ByRank(blocks))
-
 		return 200, blocks, nil
 
 	case qs.SpaceHandle != "" && qs.ParentPageID != "":
@@ -69,13 +65,11 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 		blocks, err := pq.ListBlocksByTypeSpaceHandleParentPageID(c.Request.Context(), query.ListBlocksByTypeSpaceHandleParentPageIDParams{
 			Type:         qs.Type,
 			SpaceHandle:  qs.SpaceHandle,
-			ParentPageID: pgtype.UUID{Bytes: parent_page_id, Status: pgtype.Present},
+			ParentPageID: parent_page_id,
 		})
 		if err != nil {
 			return http.StatusInternalServerError, nil, err
 		}
-
-		// sort.Sort(ByRank(blocks))
 
 		return 200, blocks, nil
 
@@ -93,16 +87,11 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 		blocks, err := pq.ListBlocksByTypeSpaceIDParentPageID(c.Request.Context(), query.ListBlocksByTypeSpaceIDParentPageIDParams{
 			Type:         qs.Type,
 			SpaceID:      space_id,
-			ParentPageID: pgtype.UUID{Bytes: parent_page_id, Status: pgtype.Present},
+			ParentPageID: parent_page_id,
 		})
 		if err != nil {
 			return http.StatusInternalServerError, nil, err
 		}
-
-		// for _, block := range blocks {
-		// 	sort.Sort(ByRank(block.Children))
-
-		// }
 
 		return 200, blocks, nil
 
@@ -144,8 +133,7 @@ func GetBlock(c *gin.Context) (int, interface{}, error) {
 }
 
 type create_page_block_body struct {
-	ID uuid.UUID `json:"id" binding:"required"`
-	// Rank          string      `json:"rank"`
+	ID            uuid.UUID   `json:"id" binding:"required"`
 	Content       types.Map   `json:"content" binding:"required"`
 	Format        types.Map   `json:"format" binding:"required"`
 	ParentBlockID pgtype.UUID `json:"parent_block_id"`

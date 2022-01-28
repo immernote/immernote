@@ -24,7 +24,8 @@ WHERE (
       public.spaces s
     WHERE
       s.handle = @space_handle)
-  AND b.parent_page_id = @parent_page_id;
+  AND (b.id = @parent_page_id
+    OR b.parent_page_id = @parent_page_id);
 
 -- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
 SELECT
@@ -74,7 +75,8 @@ WHERE (
     TRUE
   END)
   AND b.space_id = @space_id
-  AND b.parent_page_id = @parent_page_id;
+  AND (b.id = @parent_page_id
+    OR b.parent_page_id = @parent_page_id);
 
 -- name: ListBlocksByTypeSpaceIDNullParentPageID :many
 SELECT
