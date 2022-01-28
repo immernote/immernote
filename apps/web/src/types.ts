@@ -68,6 +68,7 @@ export type Block = {
   modified_at: string;
   /** Timestamptz */
   deleted_at: string | undefined;
+  children: string[]
 };
 
 /* ---------------------------------------------------------------------------------------------- */
