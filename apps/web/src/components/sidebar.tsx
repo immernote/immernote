@@ -117,9 +117,11 @@ function Pages(props: { parent_page_id?: string; level: number }) {
 
     return (
       <>
-        {pages.map((page) => (
-          <Page key={page.id} level={props.level} {...page} />
-        ))}
+        {pages.map((page) =>
+          page.id === props.parent_page_id ? null : (
+            <Page key={page.id} level={props.level} {...page} />
+          )
+        )}
       </>
     );
   }
