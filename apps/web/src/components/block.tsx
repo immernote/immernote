@@ -19,9 +19,10 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
         const ids = state.blocks[id]?.children;
         if (!ids) return [];
 
-        const list: Block[] = new Array(ids.length);
+        const list: [id: string, type: string][] = new Array(ids.length);
         for (const [index, item_id] of ids.entries()) {
-          if (state.blocks[item_id]) list[index] = state.blocks[item_id]!;
+          if (state.blocks[item_id])
+            list[index] = [state.blocks[item_id]!.id, state.blocks[item_id]!.type];
         }
 
         return list;
@@ -43,7 +44,9 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
             <h1 className="text-6xl tracking-tight font-medium">{page.content.title}</h1>
           </div>
           {children.length > 0 ? (
-            children.map((child) => <div>{child.id}</div>)
+            children.map(([child_id, child_type]) => (
+              <BlockSwitch key={child_id} id={child_id} type={child_type} />
+            ))
           ) : (
             <div className="text-gray11">Empty page. Click to start writing.</div>
           )}
@@ -53,4 +56,17 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
   }
 
   return <div>Paragraph level {id}</div>;
+}
+
+function BlockSwitch({ id, type }: { id: string; type: string }) {
+  switch (type) {
+    case "page": {
+      return <PageBlock id={id} />;
+    }
+
+    default: {
+      console.error(`Unknown block type "${type}"`);
+      return null;
+    }
+  }
 }
