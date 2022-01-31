@@ -1,7 +1,13 @@
 import { useCallback } from "react";
+import { create_paragraph_block } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import { Layout } from "./layout";
+import { v4 as uuid } from "@lukeed/uuid";
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                            PageBlock                                           */
+/* ---------------------------------------------------------------------------------------------- */
 
 type PageBlockProps = {
   id: string;
@@ -51,11 +57,21 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
           )}
           <div
             className="w-full cursor-text flex-grow"
-            onClick={() => {
-              console.log("INSERT");
+            onClick={async () => {
+              await create_paragraph_block({
+                id: uuid(),
+                content: {
+                  text: ["New page"],
+                },
+                format: {},
+                parent_block_id: page.id,
+                parent_pages_ids: page.parent_pages_ids,
+                parent_page_id: page.parent_pages_ids.at(-1) ?? null,
+                space_id: page.space_id,
+              });
             }}
             role="textbox"
-          ></div>
+          />
         </div>
       </Layout>
     );
@@ -64,7 +80,16 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
   return <div>Paragraph level {id}</div>;
 }
 
-function BlockSwitch({ id, type }: { id: string; type: string }) {
+/* ---------------------------------------------------------------------------------------------- */
+/*                                           BlockSwitch                                          */
+/* ---------------------------------------------------------------------------------------------- */
+
+type BlockSwitchPrpos = {
+  id: string;
+  type: string;
+};
+
+function BlockSwitch({ id, type }: BlockSwitchPrpos) {
   switch (type) {
     case "page": {
       return <PageBlock id={id} />;

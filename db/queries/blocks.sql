@@ -116,9 +116,9 @@ FROM
 WHERE
   b.id = $1;
 
--- name: CreatePageBlock :one
-INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_page_id", "space_id", "created_by", "modified_by")
-  VALUES (@id, 'page', (
+-- name: CreateBlock :one
+INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_pages_ids", "parent_page_id", "space_id", "created_by", "modified_by")
+  VALUES (@id, @type, (
       SELECT
         -- Pages are by default inserted at the end
         -- Start at 1, in case we have to move the page to first position
@@ -137,6 +137,7 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_bl
       @content,
       @format,
       @parent_block_id,
+      @parent_pages_ids,
       @parent_page_id,
       @space_id,
       @created_by,

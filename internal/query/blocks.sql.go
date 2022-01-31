@@ -12,9 +12,9 @@ import (
 	"github.com/jackc/pgtype"
 )
 
-const createPageBlock = `-- name: CreatePageBlock :one
-INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_page_id", "space_id", "created_by", "modified_by")
-  VALUES ($1, 'page', (
+const createBlock = `-- name: CreateBlock :one
+INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_pages_ids", "parent_page_id", "space_id", "created_by", "modified_by")
+  VALUES ($1, $2, (
       SELECT
         -- Pages are by default inserted at the end
         -- Start at 1, in case we have to move the page to first position
@@ -22,43 +22,48 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_bl
       FROM
         public.blocks b
       WHERE
-        b.space_id = $2
+        b.space_id = $3
         -- Avoid comparing NULL
         AND (
-          CASE WHEN $3::uuid IS NULL THEN
+          CASE WHEN $4::uuid IS NULL THEN
             b.parent_page_id IS NULL
           ELSE
-            b.parent_page_id = $3::uuid
+            b.parent_page_id = $4::uuid
           END)),
-      $4,
       $5,
       $6,
-      $3,
-      $2,
       $7,
-      $7)
+      $8,
+      $4,
+      $3,
+      $9,
+      $9)
 RETURNING
   id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids
 `
 
-type CreatePageBlockParams struct {
-	ID            uuid.UUID   `json:"id"`
-	SpaceID       uuid.UUID   `json:"space_id"`
-	ParentPageID  pgtype.UUID `json:"parent_page_id"`
-	Content       types.Map   `json:"content"`
-	Format        types.Map   `json:"format"`
-	ParentBlockID pgtype.UUID `json:"parent_block_id"`
-	CreatedBy     uuid.UUID   `json:"created_by"`
+type CreateBlockParams struct {
+	ID             uuid.UUID   `json:"id"`
+	Type           string      `json:"type"`
+	SpaceID        uuid.UUID   `json:"space_id"`
+	ParentPageID   pgtype.UUID `json:"parent_page_id"`
+	Content        types.Map   `json:"content"`
+	Format         types.Map   `json:"format"`
+	ParentBlockID  pgtype.UUID `json:"parent_block_id"`
+	ParentPagesIds []uuid.UUID `json:"parent_pages_ids"`
+	CreatedBy      uuid.UUID   `json:"created_by"`
 }
 
-func (q *Queries) CreatePageBlock(ctx context.Context, arg CreatePageBlockParams) (Block, error) {
-	row := q.db.QueryRow(ctx, createPageBlock,
+func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) (Block, error) {
+	row := q.db.QueryRow(ctx, createBlock,
 		arg.ID,
+		arg.Type,
 		arg.SpaceID,
 		arg.ParentPageID,
 		arg.Content,
 		arg.Format,
 		arg.ParentBlockID,
+		arg.ParentPagesIds,
 		arg.CreatedBy,
 	)
 	var i Block

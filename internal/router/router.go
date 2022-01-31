@@ -29,12 +29,8 @@ func RegisterRoutes(r *gin.Engine) {
 			v0.GET("/block", middleware.Auth(), with_json(GetBlock))
 			v0.GET("/blocks", middleware.Auth(), with_json(ListBlocks))
 			v0.POST("/blocks/pages", middleware.Auth(), with_json(CreatePageBlock))
+			v0.POST("/blocks/paragraph", middleware.Auth(), with_json(CreateParagraphBlock))
 		}
-		// Login
-		// Create workspace
-		// Auth with JWT and multiple emails
-		// Get user
-		// Get workspace
 	}
 
 	if config.Get().IS_DEV {
