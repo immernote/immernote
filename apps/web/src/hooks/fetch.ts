@@ -35,7 +35,9 @@ export function useFetchPageBlocks(parent_page_id: string | undefined) {
           const root_ids = [];
           for (const page of data) {
             state.blocks[page.id] = page;
-            state.pages[page.id] = page.children;
+            state.pages[page.id] = page.children.filter(
+              (child_id) => state.blocks[child_id]?.type === "page"
+            );
 
             if (!parent_page_id) {
               root_ids.push(page.id);

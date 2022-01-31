@@ -58,6 +58,7 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
           <div
             className="w-full cursor-text flex-grow"
             onClick={async () => {
+              console.log(page.parent_pages_ids);
               await create_paragraph_block({
                 id: uuid(),
                 content: {
@@ -65,8 +66,8 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
                 },
                 format: {},
                 parent_block_id: page.id,
-                parent_pages_ids: page.parent_pages_ids,
-                parent_page_id: page.parent_pages_ids.at(-1) ?? null,
+                parent_pages_ids: [...page.parent_pages_ids, page.id],
+                parent_page_id: page.id,
                 space_id: page.space_id,
               });
             }}
@@ -94,10 +95,21 @@ function BlockSwitch({ id, type }: BlockSwitchPrpos) {
     case "page": {
       return <PageBlock id={id} />;
     }
+    case "paragraph": {
+      return <ParagraphBlock />;
+    }
 
     default: {
       console.error(`Unknown block type "${type}"`);
       return null;
     }
   }
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                         ParagraphBlock                                         */
+/* ---------------------------------------------------------------------------------------------- */
+
+function ParagraphBlock() {
+  return <p>Paragraph block</p>;
 }
