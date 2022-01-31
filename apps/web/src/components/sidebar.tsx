@@ -8,7 +8,7 @@ import {
   MoreHorizontal,
   Plus,
   Search,
-  Settings
+  Settings,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
@@ -154,7 +154,6 @@ function Pages(props: { parent_page_id?: string; level: number }) {
 
 function Page({ level, id }: { id: string; level: number }) {
   const page = useData(useCallback((state) => state.blocks[id], [id]));
-  console.log("HAS PAGE ", id, "? ", page);
   const { data: space } = useCurrentSpace();
   const [expanded, set_expanded] = useState(false);
   const [has_focus, set_has_focus] = useState(false);
