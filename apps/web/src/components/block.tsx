@@ -96,7 +96,7 @@ function BlockSwitch({ id, type }: BlockSwitchPrpos) {
       return <PageBlock id={id} />;
     }
     case "paragraph": {
-      return <ParagraphBlock />;
+      return <ParagraphBlock id={id} />;
     }
 
     default: {
@@ -110,6 +110,14 @@ function BlockSwitch({ id, type }: BlockSwitchPrpos) {
 /*                                         ParagraphBlock                                         */
 /* ---------------------------------------------------------------------------------------------- */
 
-function ParagraphBlock() {
-  return <p>Paragraph block</p>;
+type ParagraphBlockProps = {
+  id: string;
+};
+
+function ParagraphBlock({ id }: ParagraphBlockProps) {
+  useFetchBlockChildren(id);
+
+  const block = useData(useCallback((state) => state.blocks[id], [id]));
+
+  return block ? <p>Paragraph block {block.id}</p> : null;
 }
