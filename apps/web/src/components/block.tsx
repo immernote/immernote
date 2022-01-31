@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
-import { Block } from "../types";
 import { Layout } from "./layout";
 
 type PageBlockProps = {
@@ -38,7 +37,7 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
   if (root) {
     return (
       <Layout title={page.content.title}>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto min-h-full flex flex-col">
           <div className="inline-flex items-center gap-x-4 pt-16 pb-8">
             <div className="text-4xl">{page.format.icon.value}</div>
             <h1 className="text-6xl tracking-tight font-medium">{page.content.title}</h1>
@@ -50,6 +49,13 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
           ) : (
             <div className="text-gray11">Empty page. Click to start writing.</div>
           )}
+          <div
+            className="w-full cursor-text flex-grow"
+            onClick={() => {
+              console.log("INSERT");
+            }}
+            role="textbox"
+          ></div>
         </div>
       </Layout>
     );
