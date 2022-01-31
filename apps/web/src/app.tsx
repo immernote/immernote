@@ -5,10 +5,10 @@ import { fetcher } from "./utils/fetcher";
 
 export function App() {
   return (
-    <Suspense fallback={null}>
-      <SWRConfig value={{ fetcher }}>
+    <SWRConfig value={{ fetcher }}>
+      <Suspense fallback={null}>
         <Routes />
-      </SWRConfig>
-    </Suspense>
+      </Suspense>
+    </SWRConfig>
   );
 }

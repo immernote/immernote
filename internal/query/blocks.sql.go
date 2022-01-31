@@ -38,7 +38,7 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_bl
       $7,
       $7)
 RETURNING
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids
 `
 
 type CreatePageBlockParams struct {
@@ -76,13 +76,14 @@ func (q *Queries) CreatePageBlock(ctx context.Context, arg CreatePageBlockParams
 		&i.CreatedAt,
 		&i.ModifiedAt,
 		&i.DeletedAt,
+		&i.ParentPagesIds,
 	)
 	return i, err
 }
 
 const getBlockByID = `-- name: GetBlockByID :one
 SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
   COALESCE((
     SELECT
       array_to_json(array_agg(row_to_json(tmp)))
@@ -98,20 +99,21 @@ WHERE
 `
 
 type GetBlockByIDRow struct {
-	ID            uuid.UUID            `json:"id"`
-	Type          string               `json:"type"`
-	Rank          string               `json:"rank"`
-	Content       types.Map            `json:"content"`
-	Format        types.Map            `json:"format"`
-	ParentBlockID pgtype.UUID          `json:"parent_block_id"`
-	ParentPageID  pgtype.UUID          `json:"parent_page_id"`
-	SpaceID       uuid.UUID            `json:"space_id"`
-	CreatedBy     uuid.UUID            `json:"created_by"`
-	ModifiedBy    uuid.UUID            `json:"modified_by"`
-	CreatedAt     time.Time            `json:"created_at"`
-	ModifiedAt    time.Time            `json:"modified_at"`
-	DeletedAt     pgtype.Timestamptz   `json:"deleted_at"`
-	Children      types.RankedChildren `json:"children"`
+	ID             uuid.UUID            `json:"id"`
+	Type           string               `json:"type"`
+	Rank           string               `json:"rank"`
+	Content        types.Map            `json:"content"`
+	Format         types.Map            `json:"format"`
+	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
+	SpaceID        uuid.UUID            `json:"space_id"`
+	CreatedBy      uuid.UUID            `json:"created_by"`
+	ModifiedBy     uuid.UUID            `json:"modified_by"`
+	CreatedAt      time.Time            `json:"created_at"`
+	ModifiedAt     time.Time            `json:"modified_at"`
+	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
+	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
+	Children       types.RankedChildren `json:"children"`
 }
 
 func (q *Queries) GetBlockByID(ctx context.Context, id uuid.UUID) (GetBlockByIDRow, error) {
@@ -131,6 +133,7 @@ func (q *Queries) GetBlockByID(ctx context.Context, id uuid.UUID) (GetBlockByIDR
 		&i.CreatedAt,
 		&i.ModifiedAt,
 		&i.DeletedAt,
+		&i.ParentPagesIds,
 		&i.Children,
 	)
 	return i, err
@@ -138,7 +141,7 @@ func (q *Queries) GetBlockByID(ctx context.Context, id uuid.UUID) (GetBlockByIDR
 
 const listBlocksByTypeSpaceHandleNullParentPageID = `-- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
 SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
   COALESCE((
     SELECT
       array_to_json(array_agg(row_to_json(tmp)))
@@ -171,20 +174,21 @@ type ListBlocksByTypeSpaceHandleNullParentPageIDParams struct {
 }
 
 type ListBlocksByTypeSpaceHandleNullParentPageIDRow struct {
-	ID            uuid.UUID            `json:"id"`
-	Type          string               `json:"type"`
-	Rank          string               `json:"rank"`
-	Content       types.Map            `json:"content"`
-	Format        types.Map            `json:"format"`
-	ParentBlockID pgtype.UUID          `json:"parent_block_id"`
-	ParentPageID  pgtype.UUID          `json:"parent_page_id"`
-	SpaceID       uuid.UUID            `json:"space_id"`
-	CreatedBy     uuid.UUID            `json:"created_by"`
-	ModifiedBy    uuid.UUID            `json:"modified_by"`
-	CreatedAt     time.Time            `json:"created_at"`
-	ModifiedAt    time.Time            `json:"modified_at"`
-	DeletedAt     pgtype.Timestamptz   `json:"deleted_at"`
-	Children      types.RankedChildren `json:"children"`
+	ID             uuid.UUID            `json:"id"`
+	Type           string               `json:"type"`
+	Rank           string               `json:"rank"`
+	Content        types.Map            `json:"content"`
+	Format         types.Map            `json:"format"`
+	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
+	SpaceID        uuid.UUID            `json:"space_id"`
+	CreatedBy      uuid.UUID            `json:"created_by"`
+	ModifiedBy     uuid.UUID            `json:"modified_by"`
+	CreatedAt      time.Time            `json:"created_at"`
+	ModifiedAt     time.Time            `json:"modified_at"`
+	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
+	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
+	Children       types.RankedChildren `json:"children"`
 }
 
 func (q *Queries) ListBlocksByTypeSpaceHandleNullParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceHandleNullParentPageIDParams) ([]ListBlocksByTypeSpaceHandleNullParentPageIDRow, error) {
@@ -210,6 +214,7 @@ func (q *Queries) ListBlocksByTypeSpaceHandleNullParentPageID(ctx context.Contex
 			&i.CreatedAt,
 			&i.ModifiedAt,
 			&i.DeletedAt,
+			&i.ParentPagesIds,
 			&i.Children,
 		); err != nil {
 			return nil, err
@@ -224,7 +229,7 @@ func (q *Queries) ListBlocksByTypeSpaceHandleNullParentPageID(ctx context.Contex
 
 const listBlocksByTypeSpaceHandleParentPageID = `-- name: ListBlocksByTypeSpaceHandleParentPageID :many
 SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
   COALESCE((
     SELECT
       array_to_json(array_agg(row_to_json(tmp)))
@@ -259,20 +264,21 @@ type ListBlocksByTypeSpaceHandleParentPageIDParams struct {
 }
 
 type ListBlocksByTypeSpaceHandleParentPageIDRow struct {
-	ID            uuid.UUID            `json:"id"`
-	Type          string               `json:"type"`
-	Rank          string               `json:"rank"`
-	Content       types.Map            `json:"content"`
-	Format        types.Map            `json:"format"`
-	ParentBlockID pgtype.UUID          `json:"parent_block_id"`
-	ParentPageID  pgtype.UUID          `json:"parent_page_id"`
-	SpaceID       uuid.UUID            `json:"space_id"`
-	CreatedBy     uuid.UUID            `json:"created_by"`
-	ModifiedBy    uuid.UUID            `json:"modified_by"`
-	CreatedAt     time.Time            `json:"created_at"`
-	ModifiedAt    time.Time            `json:"modified_at"`
-	DeletedAt     pgtype.Timestamptz   `json:"deleted_at"`
-	Children      types.RankedChildren `json:"children"`
+	ID             uuid.UUID            `json:"id"`
+	Type           string               `json:"type"`
+	Rank           string               `json:"rank"`
+	Content        types.Map            `json:"content"`
+	Format         types.Map            `json:"format"`
+	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
+	SpaceID        uuid.UUID            `json:"space_id"`
+	CreatedBy      uuid.UUID            `json:"created_by"`
+	ModifiedBy     uuid.UUID            `json:"modified_by"`
+	CreatedAt      time.Time            `json:"created_at"`
+	ModifiedAt     time.Time            `json:"modified_at"`
+	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
+	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
+	Children       types.RankedChildren `json:"children"`
 }
 
 func (q *Queries) ListBlocksByTypeSpaceHandleParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceHandleParentPageIDParams) ([]ListBlocksByTypeSpaceHandleParentPageIDRow, error) {
@@ -298,6 +304,7 @@ func (q *Queries) ListBlocksByTypeSpaceHandleParentPageID(ctx context.Context, a
 			&i.CreatedAt,
 			&i.ModifiedAt,
 			&i.DeletedAt,
+			&i.ParentPagesIds,
 			&i.Children,
 		); err != nil {
 			return nil, err
@@ -312,7 +319,7 @@ func (q *Queries) ListBlocksByTypeSpaceHandleParentPageID(ctx context.Context, a
 
 const listBlocksByTypeSpaceIDNullParentPageID = `-- name: ListBlocksByTypeSpaceIDNullParentPageID :many
 SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
   COALESCE((
     SELECT
       array_to_json(array_agg(row_to_json(tmp)))
@@ -339,20 +346,21 @@ type ListBlocksByTypeSpaceIDNullParentPageIDParams struct {
 }
 
 type ListBlocksByTypeSpaceIDNullParentPageIDRow struct {
-	ID            uuid.UUID            `json:"id"`
-	Type          string               `json:"type"`
-	Rank          string               `json:"rank"`
-	Content       types.Map            `json:"content"`
-	Format        types.Map            `json:"format"`
-	ParentBlockID pgtype.UUID          `json:"parent_block_id"`
-	ParentPageID  pgtype.UUID          `json:"parent_page_id"`
-	SpaceID       uuid.UUID            `json:"space_id"`
-	CreatedBy     uuid.UUID            `json:"created_by"`
-	ModifiedBy    uuid.UUID            `json:"modified_by"`
-	CreatedAt     time.Time            `json:"created_at"`
-	ModifiedAt    time.Time            `json:"modified_at"`
-	DeletedAt     pgtype.Timestamptz   `json:"deleted_at"`
-	Children      types.RankedChildren `json:"children"`
+	ID             uuid.UUID            `json:"id"`
+	Type           string               `json:"type"`
+	Rank           string               `json:"rank"`
+	Content        types.Map            `json:"content"`
+	Format         types.Map            `json:"format"`
+	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
+	SpaceID        uuid.UUID            `json:"space_id"`
+	CreatedBy      uuid.UUID            `json:"created_by"`
+	ModifiedBy     uuid.UUID            `json:"modified_by"`
+	CreatedAt      time.Time            `json:"created_at"`
+	ModifiedAt     time.Time            `json:"modified_at"`
+	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
+	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
+	Children       types.RankedChildren `json:"children"`
 }
 
 func (q *Queries) ListBlocksByTypeSpaceIDNullParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceIDNullParentPageIDParams) ([]ListBlocksByTypeSpaceIDNullParentPageIDRow, error) {
@@ -378,6 +386,7 @@ func (q *Queries) ListBlocksByTypeSpaceIDNullParentPageID(ctx context.Context, a
 			&i.CreatedAt,
 			&i.ModifiedAt,
 			&i.DeletedAt,
+			&i.ParentPagesIds,
 			&i.Children,
 		); err != nil {
 			return nil, err
@@ -392,7 +401,7 @@ func (q *Queries) ListBlocksByTypeSpaceIDNullParentPageID(ctx context.Context, a
 
 const listBlocksByTypeSpaceIDParentPageID = `-- name: ListBlocksByTypeSpaceIDParentPageID :many
 SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
   COALESCE((
     SELECT
       array_to_json(array_agg(row_to_json(tmp)))
@@ -421,20 +430,21 @@ type ListBlocksByTypeSpaceIDParentPageIDParams struct {
 }
 
 type ListBlocksByTypeSpaceIDParentPageIDRow struct {
-	ID            uuid.UUID            `json:"id"`
-	Type          string               `json:"type"`
-	Rank          string               `json:"rank"`
-	Content       types.Map            `json:"content"`
-	Format        types.Map            `json:"format"`
-	ParentBlockID pgtype.UUID          `json:"parent_block_id"`
-	ParentPageID  pgtype.UUID          `json:"parent_page_id"`
-	SpaceID       uuid.UUID            `json:"space_id"`
-	CreatedBy     uuid.UUID            `json:"created_by"`
-	ModifiedBy    uuid.UUID            `json:"modified_by"`
-	CreatedAt     time.Time            `json:"created_at"`
-	ModifiedAt    time.Time            `json:"modified_at"`
-	DeletedAt     pgtype.Timestamptz   `json:"deleted_at"`
-	Children      types.RankedChildren `json:"children"`
+	ID             uuid.UUID            `json:"id"`
+	Type           string               `json:"type"`
+	Rank           string               `json:"rank"`
+	Content        types.Map            `json:"content"`
+	Format         types.Map            `json:"format"`
+	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
+	SpaceID        uuid.UUID            `json:"space_id"`
+	CreatedBy      uuid.UUID            `json:"created_by"`
+	ModifiedBy     uuid.UUID            `json:"modified_by"`
+	CreatedAt      time.Time            `json:"created_at"`
+	ModifiedAt     time.Time            `json:"modified_at"`
+	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
+	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
+	Children       types.RankedChildren `json:"children"`
 }
 
 func (q *Queries) ListBlocksByTypeSpaceIDParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceIDParentPageIDParams) ([]ListBlocksByTypeSpaceIDParentPageIDRow, error) {
@@ -460,6 +470,7 @@ func (q *Queries) ListBlocksByTypeSpaceIDParentPageID(ctx context.Context, arg L
 			&i.CreatedAt,
 			&i.ModifiedAt,
 			&i.DeletedAt,
+			&i.ParentPagesIds,
 			&i.Children,
 		); err != nil {
 			return nil, err

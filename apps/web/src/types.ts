@@ -68,7 +68,8 @@ export type Block = {
   modified_at: string;
   /** Timestamptz */
   deleted_at: string | undefined;
-  children: string[]
+  parent_pages_ids: string[];
+  children: string[];
 };
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -81,5 +82,8 @@ export type DataStore = {
   };
   blocks: {
     [key: string]: Block;
+  };
+  pages: {
+    [key: string]: string[];
   };
 };

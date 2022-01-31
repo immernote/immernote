@@ -54,19 +54,20 @@ func (e *MemberType) Scan(src interface{}) error {
 }
 
 type Block struct {
-	ID            uuid.UUID          `json:"id"`
-	Type          string             `json:"type"`
-	Rank          string             `json:"rank"`
-	Content       types.Map          `json:"content"`
-	Format        types.Map          `json:"format"`
-	ParentBlockID pgtype.UUID        `json:"parent_block_id"`
-	ParentPageID  pgtype.UUID        `json:"parent_page_id"`
-	SpaceID       uuid.UUID          `json:"space_id"`
-	CreatedBy     uuid.UUID          `json:"created_by"`
-	ModifiedBy    uuid.UUID          `json:"modified_by"`
-	CreatedAt     time.Time          `json:"created_at"`
-	ModifiedAt    time.Time          `json:"modified_at"`
-	DeletedAt     pgtype.Timestamptz `json:"deleted_at"`
+	ID             uuid.UUID          `json:"id"`
+	Type           string             `json:"type"`
+	Rank           string             `json:"rank"`
+	Content        types.Map          `json:"content"`
+	Format         types.Map          `json:"format"`
+	ParentBlockID  pgtype.UUID        `json:"parent_block_id"`
+	ParentPageID   pgtype.UUID        `json:"parent_page_id"`
+	SpaceID        uuid.UUID          `json:"space_id"`
+	CreatedBy      uuid.UUID          `json:"created_by"`
+	ModifiedBy     uuid.UUID          `json:"modified_by"`
+	CreatedAt      time.Time          `json:"created_at"`
+	ModifiedAt     time.Time          `json:"modified_at"`
+	DeletedAt      pgtype.Timestamptz `json:"deleted_at"`
+	ParentPagesIds []uuid.UUID        `json:"parent_pages_ids"`
 }
 
 type InstanceSetting struct {

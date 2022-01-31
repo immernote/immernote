@@ -75,7 +75,8 @@ CREATE TABLE public.blocks (
     modified_by uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     modified_at timestamp with time zone DEFAULT now() NOT NULL,
-    deleted_at timestamp with time zone
+    deleted_at timestamp with time zone,
+    parent_pages_ids uuid[] DEFAULT '{}'::uuid[] NOT NULL
 );
 
 
@@ -521,4 +522,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20211229095859'),
     ('20211231194719'),
     ('20220127132505'),
-    ('20220127160503');
+    ('20220127160503'),
+    ('20220130162836');

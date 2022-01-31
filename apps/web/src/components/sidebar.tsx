@@ -1,13 +1,21 @@
 import { v4 as uuid } from "@lukeed/uuid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
-import { ChevronRight, ChevronsUpDown, MoreHorizontal, Plus, Search, Settings } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronsUpDown,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Settings
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useMatch } from "react-router-dom";
 import { create_page_block } from "../actions/blocks";
-import { usePageBlocks } from "../hooks/blocks";
+import { useFetchPageBlocks } from "../hooks/fetch";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
-import { Block } from "../types";
+import { useData } from "../stores/data";
 
 export function Sidebar() {
   return (
@@ -97,7 +105,10 @@ function Links() {
 /* ---------------------------------------------------------------------------------------------- */
 
 function Pages(props: { parent_page_id?: string; level: number }) {
-  const { data: pages } = usePageBlocks(props.parent_page_id);
+  useFetchPageBlocks(props.parent_page_id);
+  const pages = useData(
+    useCallback((state) => state.pages[props.parent_page_id ?? "root"], [props.parent_page_id])
+  );
 
   if (!pages) {
     return null;
@@ -118,9 +129,7 @@ function Pages(props: { parent_page_id?: string; level: number }) {
     return (
       <>
         {pages.map((page) =>
-          page.id === props.parent_page_id ? null : (
-            <Page key={page.id} level={props.level} {...page} />
-          )
+          page === props.parent_page_id ? null : <Page key={page} id={page} level={props.level} />
         )}
       </>
     );
@@ -137,45 +146,71 @@ function Pages(props: { parent_page_id?: string; level: number }) {
   return (
     <nav className="flex flex-col items-stretch w-full flex-grow min-h-[4rem] text-sm bg-gray2 overflow-y-auto">
       {pages.map((page) => (
-        <Page key={page.id} level={props.level} {...page} />
+        <Page key={page} id={page} level={props.level} />
       ))}
     </nav>
   );
 }
 
-function Page({ level, id, format, content }: Block & { level: number }) {
+function Page({ level, id }: { id: string; level: number }) {
+  const page = useData(useCallback((state) => state.blocks[id], [id]));
+  console.log("HAS PAGE ", id, "? ", page);
   const { data: space } = useCurrentSpace();
-  const [expanded, setExpanded] = useState(false);
-  const [hasFocus, setHasFocus] = useState(false);
-  return (
+  const [expanded, set_expanded] = useState(false);
+  const [has_focus, set_has_focus] = useState(false);
+  const match = useMatch(":space/:id");
+  const default_expanded = useData(
+    useCallback(
+      (state) => {
+        const params_id = match?.params.id;
+        if (!params_id) return false;
+        if (id === params_id) return true;
+
+        const block = state.blocks[params_id];
+        if (!block) return false;
+        if (block.parent_pages_ids.indexOf(id) !== -1) return true;
+
+        return false;
+      },
+      [match?.params.id]
+    )
+  );
+
+  useEffect(() => {
+    if (default_expanded) {
+      set_expanded(true);
+    }
+  }, [default_expanded]);
+
+  return page ? (
     <>
       <div
         className={clsx({
           "flex items-center justify-between px-4 transition hover:bg-gray4 group": true,
-          "bg-gray4": hasFocus,
+          "bg-gray4": has_focus,
         })}
         style={{
           paddingLeft: `${level / 2 + 1}rem`,
         }}
       >
-        <button className="py-2" onClick={() => setExpanded((v) => !v)}>
-          <ChevronRight className="h-[1em]" />
+        <button className="py-2 hover:bg-gray6 rounded" onClick={() => set_has_focus((v) => !v)}>
+          {expanded ? <ChevronDown className="h-[1em]" /> : <ChevronRight className="h-[1em]" />}
         </button>
         <Link
           className="inline-flex items-center gap-x-2 flex-grow py-2"
           to={`/${space?.handle}/${id}`}
         >
-          <span>{format.icon.value}</span>
-          <span>{content.title ?? "Untitled"}</span>
+          <span>{page.format.icon.value}</span>
+          <span>{page.content.title ?? "Untitled"}</span>
         </Link>
         <div
           className={clsx({
             "inline-flex items-center gap-x-2 group-hover:visible py-2": true,
-            visible: hasFocus,
-            invisible: !hasFocus,
+            visible: has_focus,
+            invisible: !has_focus,
           })}
         >
-          <DropdownMenu.Root onOpenChange={(v) => setHasFocus(v)}>
+          <DropdownMenu.Root onOpenChange={(v) => set_has_focus(v)}>
             <DropdownMenu.Trigger className="transition-all">
               <MoreHorizontal className="h-[1em]" />
             </DropdownMenu.Trigger>
@@ -201,39 +236,35 @@ function Page({ level, id, format, content }: Block & { level: number }) {
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <CreateSubPage id={id} />
+          <CreateSubPage parent_pages_ids={page.parent_pages_ids} />
         </div>
       </div>
-      {expanded && <Pages parent_page_id={id} level={level + 1} />}
+      {expanded ? <Pages parent_page_id={id} level={level + 1} /> : null}
     </>
-  );
+  ) : null;
 }
 
-function CreateSubPage({ id }: { id: string }) {
+function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
   const { data: space } = useCurrentSpace();
-  const { mutate } = usePageBlocks(id);
 
   async function handleClick() {
     if (!space) return;
 
-    await create_page_block(
-      {
-        id: uuid(),
-        content: {
-          title: ["New Sub Page"],
-        },
-        format: {
-          icon: {
-            type: "emoji",
-            value: "🦄",
-          },
-        },
-        parent_block_id: id,
-        parent_page_id: id,
-        space_id: space.id,
+    await create_page_block({
+      id: uuid(),
+      content: {
+        title: ["New Sub Page"],
       },
-      mutate
-    );
+      format: {
+        icon: {
+          type: "emoji",
+          value: "🦄",
+        },
+      },
+      parent_block_id: parent_pages_ids.at(-1) ?? null,
+      parent_pages_ids: parent_pages_ids,
+      space_id: space.id,
+    });
   }
 
   return (
@@ -249,29 +280,25 @@ function CreateSubPage({ id }: { id: string }) {
 
 function CreatePage() {
   const { data: space } = useCurrentSpace();
-  const { mutate } = usePageBlocks();
 
   async function handleClick() {
     if (!space) return;
 
-    await create_page_block(
-      {
-        id: uuid(),
-        content: {
-          title: ["New page"],
-        },
-        format: {
-          icon: {
-            type: "emoji",
-            value: "🦄",
-          },
-        },
-        parent_block_id: null,
-        parent_page_id: null,
-        space_id: space.id,
+    await create_page_block({
+      id: uuid(),
+      content: {
+        title: ["New page"],
       },
-      mutate
-    );
+      format: {
+        icon: {
+          type: "emoji",
+          value: "🦄",
+        },
+      },
+      parent_block_id: null,
+      parent_pages_ids: [],
+      space_id: space.id,
+    });
   }
 
   return (
