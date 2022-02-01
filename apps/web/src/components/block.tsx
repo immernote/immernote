@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { create_paragraph_block } from "../actions/blocks";
+import { create_paragraph_block, update_block_content } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import { Layout } from "./layout";
@@ -68,7 +68,7 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
               await create_paragraph_block({
                 id: uuid(),
                 content: {
-                  text: ["New page"],
+                  nodes: [{ type: "text", text: "Maker of things" }],
                 },
                 format: {},
                 parent_block_id: page.id,
@@ -128,5 +128,14 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
     shallow
   );
 
-  return block ? <Editable key={id} id={id} /> : null;
+  return block ? (
+    <Editable
+      key={id}
+      id={id}
+      value={block.content.nodes}
+      set_value={async (v) => {
+        await update_block_content({ id, content: { nodes: v } });
+      }}
+    />
+  ) : null;
 }

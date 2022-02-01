@@ -30,6 +30,7 @@ func RegisterRoutes(r *gin.Engine) {
 			v0.GET("/blocks", middleware.Auth(), with_json(ListBlocks))
 			v0.POST("/blocks/pages", middleware.Auth(), with_json(CreatePageBlock))
 			v0.POST("/blocks/paragraph", middleware.Auth(), with_json(CreateParagraphBlock))
+			v0.PUT("/blocks/content", middleware.Auth(), with_json(UpdateBlockContent))
 		}
 	}
 

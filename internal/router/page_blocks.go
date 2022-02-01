@@ -1,7 +1,6 @@
 package router
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -188,8 +187,6 @@ func CreateParagraphBlock(c *gin.Context) (int, interface{}, error) {
 
 	pq := query.New(database.Get())
 
-	log.Println(body)
-
 	id, err := uuid.Parse(body.ID)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
@@ -230,6 +227,36 @@ func CreateParagraphBlock(c *gin.Context) (int, interface{}, error) {
 		Content:        body.Content,
 		Format:         body.Format,
 		CreatedBy:      c.MustGet("user_id").(uuid.UUID),
+	})
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	return 200, block, nil
+}
+
+type update_block_content_body struct {
+	ID      string    `json:"id" binding:"required"`
+	Content types.Map `json:"content" binding:"required"`
+}
+
+func UpdateBlockContent(c *gin.Context) (int, interface{}, error) {
+	body := new(update_block_content_body)
+
+	if err := c.BindJSON(body); err != nil {
+		return http.StatusBadRequest, nil, err
+	}
+
+	pq := query.New(database.Get())
+
+	id, err := uuid.Parse(body.ID)
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	block, err := pq.UpdateBlockContent(c.Request.Context(), query.UpdateBlockContentParams{
+		ID:      id,
+		Content: body.Content,
 	})
 	if err != nil {
 		return http.StatusInternalServerError, nil, err

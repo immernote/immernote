@@ -52,7 +52,7 @@ export type Block = {
   id: string;
   type: string;
   rank: string;
-  content: { title: string };
+  content: { title: string; nodes: any[] };
   format: { icon: { type: string; value: string } };
   parent_block_id: string | undefined;
   parent_page_id: string | undefined;

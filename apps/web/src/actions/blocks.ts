@@ -23,3 +23,7 @@ export async function create_paragraph_block(body: {
 }) {
   await aksios<Block>("/v0/blocks/paragraph", "POST", body);
 }
+
+export async function update_block_content(body: { id: string; content: {} }) {
+  await aksios<Block>("/v0/blocks/content", "PUT", body);
+}

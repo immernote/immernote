@@ -145,3 +145,13 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_bl
 RETURNING
   *;
 
+-- name: UpdateBlockContent :one
+UPDATE
+  public.blocks
+SET
+  content = @content
+WHERE
+  id = @id
+RETURNING
+  *;
+

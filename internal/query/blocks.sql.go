@@ -487,3 +487,41 @@ func (q *Queries) ListBlocksByTypeSpaceIDParentPageID(ctx context.Context, arg L
 	}
 	return items, nil
 }
+
+const updateBlockContent = `-- name: UpdateBlockContent :one
+UPDATE
+  public.blocks
+SET
+  content = $1
+WHERE
+  id = $2
+RETURNING
+  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids
+`
+
+type UpdateBlockContentParams struct {
+	Content types.Map `json:"content"`
+	ID      uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateBlockContent(ctx context.Context, arg UpdateBlockContentParams) (Block, error) {
+	row := q.db.QueryRow(ctx, updateBlockContent, arg.Content, arg.ID)
+	var i Block
+	err := row.Scan(
+		&i.ID,
+		&i.Type,
+		&i.Rank,
+		&i.Content,
+		&i.Format,
+		&i.ParentBlockID,
+		&i.ParentPageID,
+		&i.SpaceID,
+		&i.CreatedBy,
+		&i.ModifiedBy,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+		&i.DeletedAt,
+		&i.ParentPagesIds,
+	)
+	return i, err
+}
