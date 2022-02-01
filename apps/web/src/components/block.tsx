@@ -4,6 +4,7 @@ import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import { Layout } from "./layout";
 import { v4 as uuid } from "@lukeed/uuid";
+import { Editable } from "./editable";
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                            PageBlock                                           */
@@ -119,5 +120,5 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
 
   const block = useData(useCallback((state) => state.blocks[id], [id]));
 
-  return block ? <p>Paragraph block {block.id}</p> : null;
+  return block ? <Editable /> : null;
 }
