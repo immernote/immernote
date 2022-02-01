@@ -9,22 +9,22 @@ type EditableProps = {
 };
 
 export function Editable({ id }: EditableProps) {
-  const [state, setState] = useTextBlock(p);
+  const [state, set_state] = useTextBlock(p);
   return (
     <ProseMirror
       state={state}
-      onStateChange={setState}
-      onDocChange={console.log}
-      onDeleteBlock={() => {
+      on_state_change={set_state}
+      on_doc_change={console.log}
+      on_delete_block={() => {
         console.log("DELETE THIS BLOCK");
       }}
-      onInsertBlocks={(blocks) => {
+      on_insert_blocks={(blocks) => {
         console.log("INSERTS THESE BLOCKS", blocks);
       }}
-      onArrowDown={() => {}}
-      onArrowUp={() => {}}
-      isFirst={false}
-      isLast={false}
+      on_arrow_down={() => {}}
+      on_arrow_up={() => {}}
+      is_first={false}
+      is_last={false}
     />
   );
 }

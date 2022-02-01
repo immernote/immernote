@@ -30,14 +30,14 @@ import { createElement, useEffect, useRef, useState } from "react";
 
 interface ProseMirrorProps extends EditorProps {
   state: EditorState;
-  onStateChange: (state: EditorState) => void;
-  onDocChange: (doc: any) => void;
-  onDeleteBlock: () => void;
-  onArrowUp: (pos: number) => void;
-  onArrowDown: (pos: number) => void;
-  onInsertBlocks: (blocks: any[]) => void;
-  isFirst: boolean;
-  isLast: boolean;
+  on_state_change: (state: EditorState) => void;
+  on_doc_change: (doc: any) => void;
+  on_delete_block: () => void;
+  on_insert_blocks: (blocks: any[]) => void;
+  on_arrow_up: (pos: number) => void;
+  on_arrow_down: (pos: number) => void;
+  is_first: boolean;
+  is_last: boolean;
 }
 
 export function ProseMirror(props: ProseMirrorProps) {
@@ -59,7 +59,7 @@ export function ProseMirror(props: ProseMirrorProps) {
           !view.composing &&
           (view.state.doc.childCount === 0 || view.state.doc.firstChild?.childCount === 0)
         ) {
-          props.onDeleteBlock();
+          props.on_delete_block();
           return true;
         }
 
@@ -70,24 +70,24 @@ export function ProseMirror(props: ProseMirrorProps) {
         const isPointer = !!(transaction["meta"] as { [key: string]: boolean })["pointer"];
 
         if (
-          !props.isLast &&
+          !props.is_last &&
           isArrowDown &&
           !isPointer &&
           transaction.selection.empty &&
           transaction.selection.$to.pos === transaction.selection.$to.end()
         ) {
-          props.onArrowDown(viewRef.current.state.selection.anchor);
+          props.on_arrow_down(viewRef.current.state.selection.anchor);
           return;
         }
 
         if (
-          !props.isFirst &&
+          !props.is_first &&
           isArrowUp &&
           !isPointer &&
           transaction.selection.empty &&
           transaction.selection.$from.pos === transaction.selection.$from.start()
         ) {
-          props.onArrowUp(viewRef.current.state.selection.anchor);
+          props.on_arrow_up(viewRef.current.state.selection.anchor);
           return;
         }
 
@@ -104,10 +104,10 @@ export function ProseMirror(props: ProseMirrorProps) {
           newState = newState.apply(tr);
         }
         viewRef.current?.updateState(newState);
-        props.onStateChange(newState);
-        transaction.docChanged && props.onDocChange(newState.toJSON().doc);
+        props.on_state_change(newState);
+        transaction.docChanged && props.on_doc_change(newState.toJSON().doc);
         if (blocks) {
-          props.onInsertBlocks(blocks);
+          props.on_insert_blocks(blocks);
         }
       },
     });
