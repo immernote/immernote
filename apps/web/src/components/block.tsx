@@ -128,5 +128,5 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
     shallow
   );
 
-  return block ? <Editable key={id} /> : null;
+  return block ? <Editable key={id} id={id} /> : null;
 }

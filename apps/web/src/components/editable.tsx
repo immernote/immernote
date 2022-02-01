@@ -4,7 +4,11 @@ let ct = ` {"type":"doc","content":[{"type":"paragraph","content":[{"type":"text
 
 const p = JSON.parse(ct);
 
-export function Editable() {
+type EditableProps = {
+  id: string;
+};
+
+export function Editable({ id }: EditableProps) {
   const [state, setState] = useTextBlock(p);
   return (
     <ProseMirror
