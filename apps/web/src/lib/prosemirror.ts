@@ -44,15 +44,15 @@ export function ProseMirror(props: ProseMirrorProps) {
   const viewRef = useRef<EditorView>();
   const root = useRef<HTMLDivElement>();
 
-  let isArrowDown = false;
-  let isArrowUp = false;
+  const is_arrow_down = useRef(false);
+  const is_arrow_up = useRef(false);
 
   useEffect(() => {
     viewRef.current = new EditorView(root.current, {
       state: props.state,
       handleKeyDown(view, event) {
-        isArrowDown = !view.composing && event.key === "ArrowDown";
-        isArrowUp = !view.composing && event.key === "ArrowUp";
+        is_arrow_down.current = !view.composing && event.key === "ArrowDown";
+        is_arrow_up.current = !view.composing && event.key === "ArrowUp";
 
         if (
           event.key === "Backspace" &&
@@ -71,7 +71,7 @@ export function ProseMirror(props: ProseMirrorProps) {
 
         if (
           !props.is_last &&
-          isArrowDown &&
+          is_arrow_down.current &&
           !isPointer &&
           transaction.selection.empty &&
           transaction.selection.$to.pos === transaction.selection.$to.end()
@@ -82,7 +82,7 @@ export function ProseMirror(props: ProseMirrorProps) {
 
         if (
           !props.is_first &&
-          isArrowUp &&
+          is_arrow_up.current &&
           !isPointer &&
           transaction.selection.empty &&
           transaction.selection.$from.pos === transaction.selection.$from.start()
