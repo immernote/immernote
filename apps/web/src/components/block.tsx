@@ -5,6 +5,7 @@ import { useData } from "../stores/data";
 import { Layout } from "./layout";
 import { v4 as uuid } from "@lukeed/uuid";
 import { Editable } from "./editable";
+import shallow from "zustand/shallow";
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                            PageBlock                                           */
@@ -18,7 +19,10 @@ type PageBlockProps = {
 export function PageBlock({ id, root = false }: PageBlockProps) {
   useFetchBlockChildren(id);
 
-  const page = useData(useCallback((state) => state.blocks[id], [id]));
+  const page = useData(
+    useCallback((state) => state.blocks[id], [id]),
+    shallow
+  );
   const children = useData(
     useCallback(
       (state) => {
@@ -34,7 +38,8 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
         return list;
       },
       [id]
-    )
+    ),
+    shallow
   );
 
   if (!page || !children) {
@@ -94,10 +99,10 @@ type BlockSwitchPrpos = {
 function BlockSwitch({ id, type }: BlockSwitchPrpos) {
   switch (type) {
     case "page": {
-      return <PageBlock id={id} />;
+      return <PageBlock key={id} id={id} />;
     }
     case "paragraph": {
-      return <ParagraphBlock id={id} />;
+      return <ParagraphBlock key={id} id={id} />;
     }
 
     default: {
@@ -118,7 +123,10 @@ type ParagraphBlockProps = {
 function ParagraphBlock({ id }: ParagraphBlockProps) {
   useFetchBlockChildren(id);
 
-  const block = useData(useCallback((state) => state.blocks[id], [id]));
+  const block = useData(
+    useCallback((state) => state.blocks[id], [id]),
+    shallow
+  );
 
-  return block ? <Editable /> : null;
+  return block ? <Editable key={id} /> : null;
 }
