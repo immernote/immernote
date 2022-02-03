@@ -68,7 +68,7 @@ CREATE TABLE public.blocks (
     rank text DEFAULT '0'::text NOT NULL,
     content text NOT NULL,
     format text NOT NULL,
-    parent_block_id uuid,
+    parent_block_id uuid[] DEFAULT '{}'::uuid[] NOT NULL,
     parent_page_id uuid,
     space_id uuid NOT NULL,
     created_by uuid NOT NULL,
@@ -392,14 +392,6 @@ ALTER TABLE ONLY public.blocks
 
 
 --
--- Name: blocks blocks_parent_block_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blocks
-    ADD CONSTRAINT blocks_parent_block_id_fkey FOREIGN KEY (parent_block_id) REFERENCES public.blocks(id);
-
-
---
 -- Name: blocks blocks_parent_page_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -523,4 +515,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20211231194719'),
     ('20220127132505'),
     ('20220127160503'),
-    ('20220130162836');
+    ('20220130162836'),
+    ('20220203132356');

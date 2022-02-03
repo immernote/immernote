@@ -59,7 +59,7 @@ type Block struct {
 	Rank           string             `json:"rank"`
 	Content        types.Map          `json:"content"`
 	Format         types.Map          `json:"format"`
-	ParentBlockID  pgtype.UUID        `json:"parent_block_id"`
+	ParentBlockID  []uuid.UUID        `json:"parent_block_id"`
 	ParentPageID   pgtype.UUID        `json:"parent_page_id"`
 	SpaceID        uuid.UUID          `json:"space_id"`
 	CreatedBy      uuid.UUID          `json:"created_by"`

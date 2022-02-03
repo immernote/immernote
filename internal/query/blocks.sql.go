@@ -49,7 +49,7 @@ type CreateBlockParams struct {
 	ParentPageID   pgtype.UUID `json:"parent_page_id"`
 	Content        types.Map   `json:"content"`
 	Format         types.Map   `json:"format"`
-	ParentBlockID  pgtype.UUID `json:"parent_block_id"`
+	ParentBlockID  []uuid.UUID `json:"parent_block_id"`
 	ParentPagesIds []uuid.UUID `json:"parent_pages_ids"`
 	CreatedBy      uuid.UUID   `json:"created_by"`
 }
@@ -109,7 +109,7 @@ type GetBlockByIDRow struct {
 	Rank           string               `json:"rank"`
 	Content        types.Map            `json:"content"`
 	Format         types.Map            `json:"format"`
-	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
 	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
 	SpaceID        uuid.UUID            `json:"space_id"`
 	CreatedBy      uuid.UUID            `json:"created_by"`
@@ -184,7 +184,7 @@ type ListBlocksByTypeSpaceHandleNullParentPageIDRow struct {
 	Rank           string               `json:"rank"`
 	Content        types.Map            `json:"content"`
 	Format         types.Map            `json:"format"`
-	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
 	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
 	SpaceID        uuid.UUID            `json:"space_id"`
 	CreatedBy      uuid.UUID            `json:"created_by"`
@@ -274,7 +274,7 @@ type ListBlocksByTypeSpaceHandleParentPageIDRow struct {
 	Rank           string               `json:"rank"`
 	Content        types.Map            `json:"content"`
 	Format         types.Map            `json:"format"`
-	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
 	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
 	SpaceID        uuid.UUID            `json:"space_id"`
 	CreatedBy      uuid.UUID            `json:"created_by"`
@@ -356,7 +356,7 @@ type ListBlocksByTypeSpaceIDNullParentPageIDRow struct {
 	Rank           string               `json:"rank"`
 	Content        types.Map            `json:"content"`
 	Format         types.Map            `json:"format"`
-	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
 	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
 	SpaceID        uuid.UUID            `json:"space_id"`
 	CreatedBy      uuid.UUID            `json:"created_by"`
@@ -440,7 +440,7 @@ type ListBlocksByTypeSpaceIDParentPageIDRow struct {
 	Rank           string               `json:"rank"`
 	Content        types.Map            `json:"content"`
 	Format         types.Map            `json:"format"`
-	ParentBlockID  pgtype.UUID          `json:"parent_block_id"`
+	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
 	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
 	SpaceID        uuid.UUID            `json:"space_id"`
 	CreatedBy      uuid.UUID            `json:"created_by"`

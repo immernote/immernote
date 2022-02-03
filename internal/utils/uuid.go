@@ -13,6 +13,25 @@ func ParseUUID(str string) (uuid.UUID, error) {
 	return uuid.Parse(str)
 }
 
+func ParseUUIDList(ids_list []string) ([]uuid.UUID, error) {
+	parsed := make([]uuid.UUID, len(ids_list))
+
+	for index, item := range ids_list {
+		if item == "" {
+			parsed[index] = uuid.Nil
+		} else {
+			id, err := uuid.Parse(item)
+			if err != nil {
+				return parsed, err
+			}
+
+			parsed[index] = id
+		}
+	}
+
+	return parsed, nil
+}
+
 func ParseNullableUUID(str string) (pgtype.UUID, error) {
 	if str == "" {
 		return pgtype.UUID{Status: pgtype.Null}, nil

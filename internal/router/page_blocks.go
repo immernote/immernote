@@ -101,6 +101,8 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 	}
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+
 type get_block_query struct {
 	ID string `form:"id" binding:"required"`
 }
@@ -133,11 +135,13 @@ func GetBlock(c *gin.Context) (int, interface{}, error) {
 	}
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+
 type create_page_block_body struct {
 	ID            uuid.UUID   `json:"id" binding:"required"`
 	Content       types.Map   `json:"content" binding:"required"`
 	Format        types.Map   `json:"format" binding:"required"`
-	ParentBlockID pgtype.UUID `json:"parent_block_id"`
+	ParentBlockID []uuid.UUID `json:"parent_block_id"`
 	ParentPageID  pgtype.UUID `json:"parent_page_id"`
 	SpaceID       uuid.UUID   `json:"space_id" binding:"required"`
 }
@@ -168,11 +172,13 @@ func CreatePageBlock(c *gin.Context) (int, interface{}, error) {
 	return 200, block, nil
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+
 type create_paragraph_block_body struct {
 	ID             string    `json:"id" binding:"required"`
 	Content        types.Map `json:"content" binding:"required"`
 	Format         types.Map `json:"format" binding:"required"`
-	ParentBlockID  string    `json:"parent_block_id"`
+	ParentBlockID  []string    `json:"parent_block_id"`
 	ParentPageID   string    `json:"parent_page_id"`
 	ParentPagesIDs []string  `json:"parent_pages_ids" binding:"required"`
 	SpaceID        string    `json:"space_id" binding:"required"`
@@ -202,7 +208,7 @@ func CreateParagraphBlock(c *gin.Context) (int, interface{}, error) {
 		return http.StatusInternalServerError, nil, err
 	}
 
-	parent_block_id, err := utils.ParseNullableUUID(body.ParentBlockID)
+	parent_block_id, err := utils.ParseUUIDList(body.ParentBlockID)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
@@ -235,6 +241,8 @@ func CreateParagraphBlock(c *gin.Context) (int, interface{}, error) {
 	return 200, block, nil
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+
 type update_block_content_body struct {
 	ID      string    `json:"id" binding:"required"`
 	Content types.Map `json:"content" binding:"required"`
@@ -264,6 +272,8 @@ func UpdateBlockContent(c *gin.Context) (int, interface{}, error) {
 
 	return 200, block, nil
 }
+
+/* ---------------------------------------------------------------------------------------------- */
 
 type ByRank []query.Block
 
