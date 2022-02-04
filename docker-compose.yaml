@@ -1,6 +1,12 @@
 version: "3"
 
 services:
+  mem:
+      image: "redis:6-alpine"
+      container_name: merebase-mem
+      restart: always
+      expose:
+        - "6379"
   database:
     image: "postgres:14-alpine"
     container_name: immernote-database
@@ -53,6 +59,9 @@ services:
       - PGDATABASE
       - PGPASSWORD
       - PGPORT
+      - REDIS_HOST
+      - REDIS_PASSWORD
+      - REDIS_PORT
       - DATABASE_URL
       - SMTP_HOST
       - SMTP_PORT

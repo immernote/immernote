@@ -17,6 +17,10 @@ type Config struct {
 	PGPASSWORD string
 	PGPORT     int
 
+	REDIS_HOST     string
+	REDIS_PASSWORD string
+	REDIS_PORT     int
+
 	SMTP_HOST     string
 	SMTP_PORT     int
 	SMTP_SECURE   bool
@@ -53,6 +57,11 @@ func Init() Config {
 		log.Fatal(err)
 	}
 
+	REDIS_PORT, err := strconv.Atoi(get_env("REDIS_PORT"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	SMTP_PORT, err := strconv.Atoi(get_env("SMTP_PORT"))
 	if err != nil {
 		log.Fatal(err)
@@ -82,6 +91,10 @@ func Init() Config {
 		PGDATABASE: get_env("PGDATABASE"),
 		PGPASSWORD: get_env("PGPASSWORD"),
 		PGPORT:     PGPORT,
+
+		REDIS_HOST:     get_env("REDIS_HOST"),
+		REDIS_PASSWORD: get_env("REDIS_PASSWORD"),
+		REDIS_PORT:     REDIS_PORT,
 
 		SMTP_HOST:     get_env("SMTP_HOST"),
 		SMTP_PORT:     SMTP_PORT,

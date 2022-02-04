@@ -1,4 +1,4 @@
--- name: ListBlocksByTypeSpaceHandleParentPageID :many
+-- name: ListBlocksByTypeParentID :many
 SELECT
   *,
   COALESCE((
@@ -8,24 +8,26 @@ SELECT
       SELECT
         cb.id, cb.rank FROM blocks cb
       WHERE
-        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
+        cb.id = ANY (
+          SELECT
+            be.block_id FROM public.block_edges be
+          WHERE
+            be.parent_id = b.id)) AS tmp), '[]')::children_list AS children
 FROM
   public.blocks b
 WHERE (
-  CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+  CASE WHEN @set_type::boolean THEN
     b.type = @type::text
   ELSE
     TRUE
   END)
-  AND b.space_id = (
+  AND b.id = ANY (
     SELECT
-      s.id
+      be.block_id
     FROM
-      public.spaces s
+      public.block_edges be
     WHERE
-      s.handle = @space_handle)
-  AND (b.id = @parent_page_id
-    OR b.parent_page_id = @parent_page_id);
+      be.parent_id = @parent_id);
 
 -- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
 SELECT

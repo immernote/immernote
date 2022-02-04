@@ -59,6 +59,17 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: block_edges; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.block_edges (
+    parent_id uuid NOT NULL,
+    block_id uuid NOT NULL,
+    CONSTRAINT block_edges_check CHECK ((parent_id <> block_id))
+);
+
+
+--
 -- Name: blocks; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -68,15 +79,12 @@ CREATE TABLE public.blocks (
     rank text DEFAULT '0'::text NOT NULL,
     content text NOT NULL,
     format text NOT NULL,
-    parent_block_id uuid[] DEFAULT '{}'::uuid[] NOT NULL,
-    parent_page_id uuid,
     space_id uuid NOT NULL,
     created_by uuid NOT NULL,
     modified_by uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     modified_at timestamp with time zone DEFAULT now() NOT NULL,
-    deleted_at timestamp with time zone,
-    parent_pages_ids uuid[] DEFAULT '{}'::uuid[] NOT NULL
+    deleted_at timestamp with time zone
 );
 
 
@@ -90,6 +98,30 @@ CREATE TABLE public.instance_settings (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     modified_at timestamp with time zone DEFAULT now() NOT NULL,
     deleted_at timestamp with time zone
+);
+
+
+--
+-- Name: page_blocks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.page_blocks (
+    page_id uuid NOT NULL,
+    block_id uuid NOT NULL
+);
+
+
+--
+-- Name: page_sets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.page_sets (
+    root_id uuid NOT NULL,
+    page_id uuid NOT NULL,
+    lft integer NOT NULL,
+    rgt integer NOT NULL,
+    CONSTRAINT page_sets_check CHECK ((rgt > lft)),
+    CONSTRAINT page_sets_lft_check CHECK ((lft >= 1))
 );
 
 
@@ -225,6 +257,14 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: block_edges block_edges_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.block_edges
+    ADD CONSTRAINT block_edges_pkey PRIMARY KEY (parent_id, block_id);
+
+
+--
 -- Name: blocks blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -238,6 +278,38 @@ ALTER TABLE ONLY public.blocks
 
 ALTER TABLE ONLY public.instance_settings
     ADD CONSTRAINT instance_settings_pkey PRIMARY KEY (setting_key);
+
+
+--
+-- Name: page_blocks page_blocks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_blocks
+    ADD CONSTRAINT page_blocks_pkey PRIMARY KEY (page_id, block_id);
+
+
+--
+-- Name: page_sets page_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_sets
+    ADD CONSTRAINT page_sets_pkey PRIMARY KEY (page_id);
+
+
+--
+-- Name: page_sets page_sets_root_id_lft_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_sets
+    ADD CONSTRAINT page_sets_root_id_lft_key UNIQUE (root_id, lft);
+
+
+--
+-- Name: page_sets page_sets_root_id_rgt_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_sets
+    ADD CONSTRAINT page_sets_root_id_rgt_key UNIQUE (root_id, rgt);
 
 
 --
@@ -376,6 +448,22 @@ CREATE TRIGGER set_modified_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUT
 
 
 --
+-- Name: block_edges block_edges_block_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.block_edges
+    ADD CONSTRAINT block_edges_block_id_fkey FOREIGN KEY (block_id) REFERENCES public.blocks(id);
+
+
+--
+-- Name: block_edges block_edges_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.block_edges
+    ADD CONSTRAINT block_edges_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.blocks(id);
+
+
+--
 -- Name: blocks blocks_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -392,19 +480,43 @@ ALTER TABLE ONLY public.blocks
 
 
 --
--- Name: blocks blocks_parent_page_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.blocks
-    ADD CONSTRAINT blocks_parent_page_id_fkey FOREIGN KEY (parent_page_id) REFERENCES public.blocks(id);
-
-
---
 -- Name: blocks blocks_space_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blocks
     ADD CONSTRAINT blocks_space_id_fkey FOREIGN KEY (space_id) REFERENCES public.spaces(id);
+
+
+--
+-- Name: page_blocks page_blocks_block_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_blocks
+    ADD CONSTRAINT page_blocks_block_id_fkey FOREIGN KEY (block_id) REFERENCES public.blocks(id);
+
+
+--
+-- Name: page_blocks page_blocks_page_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_blocks
+    ADD CONSTRAINT page_blocks_page_id_fkey FOREIGN KEY (page_id) REFERENCES public.blocks(id);
+
+
+--
+-- Name: page_sets page_sets_page_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_sets
+    ADD CONSTRAINT page_sets_page_id_fkey FOREIGN KEY (page_id) REFERENCES public.blocks(id);
+
+
+--
+-- Name: page_sets page_sets_root_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.page_sets
+    ADD CONSTRAINT page_sets_root_id_fkey FOREIGN KEY (root_id) REFERENCES public.blocks(id);
 
 
 --
@@ -516,4 +628,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20220127132505'),
     ('20220127160503'),
     ('20220130162836'),
-    ('20220203132356');
+    ('20220203132356'),
+    ('20220204160856'),
+    ('20220204200323');

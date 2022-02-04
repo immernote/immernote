@@ -178,7 +178,7 @@ type create_paragraph_block_body struct {
 	ID             string    `json:"id" binding:"required"`
 	Content        types.Map `json:"content" binding:"required"`
 	Format         types.Map `json:"format" binding:"required"`
-	ParentBlockID  []string    `json:"parent_block_id"`
+	ParentBlockID  []string  `json:"parent_block_id"`
 	ParentPageID   string    `json:"parent_page_id"`
 	ParentPagesIDs []string  `json:"parent_pages_ids" binding:"required"`
 	SpaceID        string    `json:"space_id" binding:"required"`

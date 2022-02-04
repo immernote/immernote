@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/immernote/immernote/internal/config"
 	"github.com/immernote/immernote/internal/database"
+	"github.com/immernote/immernote/internal/mem"
 	"github.com/immernote/immernote/internal/migrate"
 	"github.com/immernote/immernote/internal/router"
 )
@@ -26,6 +27,9 @@ func main() {
 
 	db := database.Init()
 	defer db.Close()
+
+	rd := mem.Init()
+	defer rd.Close()
 
 	setup()
 
