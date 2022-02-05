@@ -31,6 +31,12 @@ func RegisterRoutes(r *gin.Engine) {
 			v0.POST("/blocks/pages", middleware.Auth(), with_json(CreatePageBlock))
 			v0.POST("/blocks/paragraph", middleware.Auth(), with_json(CreateParagraphBlock))
 			v0.PUT("/blocks/content", middleware.Auth(), with_json(UpdateBlockContent))
+
+			ws := v0.Group("/ws")
+			{
+				ws.Use(middleware.Auth())
+				ws.GET("", handleWs)
+			}
 		}
 	}
 
