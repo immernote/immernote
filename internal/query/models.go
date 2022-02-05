@@ -54,20 +54,22 @@ func (e *MemberType) Scan(src interface{}) error {
 }
 
 type Block struct {
-	ID             uuid.UUID          `json:"id"`
-	Type           string             `json:"type"`
-	Rank           string             `json:"rank"`
-	Content        types.Map          `json:"content"`
-	Format         types.Map          `json:"format"`
-	ParentBlockID  []uuid.UUID        `json:"parent_block_id"`
-	ParentPageID   pgtype.UUID        `json:"parent_page_id"`
-	SpaceID        uuid.UUID          `json:"space_id"`
-	CreatedBy      uuid.UUID          `json:"created_by"`
-	ModifiedBy     uuid.UUID          `json:"modified_by"`
-	CreatedAt      time.Time          `json:"created_at"`
-	ModifiedAt     time.Time          `json:"modified_at"`
-	DeletedAt      pgtype.Timestamptz `json:"deleted_at"`
-	ParentPagesIds []uuid.UUID        `json:"parent_pages_ids"`
+	ID         uuid.UUID          `json:"id"`
+	Type       string             `json:"type"`
+	Rank       string             `json:"rank"`
+	Content    types.Map          `json:"content"`
+	Format     types.Map          `json:"format"`
+	SpaceID    uuid.UUID          `json:"space_id"`
+	CreatedBy  uuid.UUID          `json:"created_by"`
+	ModifiedBy uuid.UUID          `json:"modified_by"`
+	CreatedAt  time.Time          `json:"created_at"`
+	ModifiedAt time.Time          `json:"modified_at"`
+	DeletedAt  pgtype.Timestamptz `json:"deleted_at"`
+}
+
+type BlockEdge struct {
+	ParentID uuid.UUID `json:"parent_id"`
+	BlockID  uuid.UUID `json:"block_id"`
 }
 
 type InstanceSetting struct {
@@ -76,6 +78,18 @@ type InstanceSetting struct {
 	CreatedAt    time.Time          `json:"created_at"`
 	ModifiedAt   time.Time          `json:"modified_at"`
 	DeletedAt    pgtype.Timestamptz `json:"deleted_at"`
+}
+
+type PageBlock struct {
+	PageID  uuid.UUID `json:"page_id"`
+	BlockID uuid.UUID `json:"block_id"`
+}
+
+type PageSet struct {
+	RootID uuid.UUID `json:"root_id"`
+	PageID uuid.UUID `json:"page_id"`
+	Lft    int32     `json:"lft"`
+	Rgt    int32     `json:"rgt"`
 }
 
 type SchemaMigration struct {

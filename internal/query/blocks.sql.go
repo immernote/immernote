@@ -12,83 +12,13 @@ import (
 	"github.com/jackc/pgtype"
 )
 
-const createBlock = `-- name: CreateBlock :one
-INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "parent_block_id", "parent_pages_ids", "parent_page_id", "space_id", "created_by", "modified_by")
-  VALUES ($1, $2, (
-      SELECT
-        -- Pages are by default inserted at the end
-        -- Start at 1, in case we have to move the page to first position
-        (COUNT(*) + 1)::text
-      FROM
-        public.blocks b
-      WHERE
-        b.space_id = $3
-        -- Avoid comparing NULL
-        AND (
-          CASE WHEN $4::uuid IS NULL THEN
-            b.parent_page_id IS NULL
-          ELSE
-            b.parent_page_id = $4::uuid
-          END)),
-      $5,
-      $6,
-      $7,
-      $8,
-      $4,
-      $3,
-      $9,
-      $9)
-RETURNING
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids
-`
+const getBlock = `-- name: GetBlock :one
 
-type CreateBlockParams struct {
-	ID             uuid.UUID   `json:"id"`
-	Type           string      `json:"type"`
-	SpaceID        uuid.UUID   `json:"space_id"`
-	ParentPageID   pgtype.UUID `json:"parent_page_id"`
-	Content        types.Map   `json:"content"`
-	Format         types.Map   `json:"format"`
-	ParentBlockID  []uuid.UUID `json:"parent_block_id"`
-	ParentPagesIds []uuid.UUID `json:"parent_pages_ids"`
-	CreatedBy      uuid.UUID   `json:"created_by"`
-}
 
-func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) (Block, error) {
-	row := q.db.QueryRow(ctx, createBlock,
-		arg.ID,
-		arg.Type,
-		arg.SpaceID,
-		arg.ParentPageID,
-		arg.Content,
-		arg.Format,
-		arg.ParentBlockID,
-		arg.ParentPagesIds,
-		arg.CreatedBy,
-	)
-	var i Block
-	err := row.Scan(
-		&i.ID,
-		&i.Type,
-		&i.Rank,
-		&i.Content,
-		&i.Format,
-		&i.ParentBlockID,
-		&i.ParentPageID,
-		&i.SpaceID,
-		&i.CreatedBy,
-		&i.ModifiedBy,
-		&i.CreatedAt,
-		&i.ModifiedAt,
-		&i.DeletedAt,
-		&i.ParentPagesIds,
-	)
-	return i, err
-}
 
-const getBlockByID = `-- name: GetBlockByID :one
+
 SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
+  id, type, rank, content, format, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
   COALESCE((
     SELECT
       array_to_json(array_agg(row_to_json(tmp)))
@@ -96,432 +26,148 @@ SELECT
       SELECT
         cb.id, cb.rank FROM blocks cb
       WHERE
-        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
+        cb.id = ANY (
+          SELECT
+            be.block_id FROM public.block_edges be
+          WHERE
+            be.parent_id = b.id)) AS tmp), '[]')::children_list AS children
 FROM
   public.blocks b
 WHERE
   b.id = $1
 `
 
-type GetBlockByIDRow struct {
-	ID             uuid.UUID            `json:"id"`
-	Type           string               `json:"type"`
-	Rank           string               `json:"rank"`
-	Content        types.Map            `json:"content"`
-	Format         types.Map            `json:"format"`
-	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
-	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
-	SpaceID        uuid.UUID            `json:"space_id"`
-	CreatedBy      uuid.UUID            `json:"created_by"`
-	ModifiedBy     uuid.UUID            `json:"modified_by"`
-	CreatedAt      time.Time            `json:"created_at"`
-	ModifiedAt     time.Time            `json:"modified_at"`
-	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
-	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
-	Children       types.RankedChildren `json:"children"`
+type GetBlockRow struct {
+	ID         uuid.UUID            `json:"id"`
+	Type       string               `json:"type"`
+	Rank       string               `json:"rank"`
+	Content    types.Map            `json:"content"`
+	Format     types.Map            `json:"format"`
+	SpaceID    uuid.UUID            `json:"space_id"`
+	CreatedBy  uuid.UUID            `json:"created_by"`
+	ModifiedBy uuid.UUID            `json:"modified_by"`
+	CreatedAt  time.Time            `json:"created_at"`
+	ModifiedAt time.Time            `json:"modified_at"`
+	DeletedAt  pgtype.Timestamptz   `json:"deleted_at"`
+	Children   types.RankedChildren `json:"children"`
 }
 
-func (q *Queries) GetBlockByID(ctx context.Context, id uuid.UUID) (GetBlockByIDRow, error) {
-	row := q.db.QueryRow(ctx, getBlockByID, id)
-	var i GetBlockByIDRow
+// -- name: ListBlocksByTypeParentID :many
+// SELECT
+//   *,
+//   COALESCE((
+//     SELECT
+//       array_to_json(array_agg(row_to_json(tmp)))
+//     FROM (
+//       SELECT
+//         cb.id, cb.rank FROM blocks cb
+//       WHERE
+//         cb.id = ANY (
+//           SELECT
+//             be.block_id FROM public.block_edges be
+//           WHERE
+//             be.parent_id = b.id)) AS tmp), '[]')::children_list AS children
+// FROM
+//   public.blocks b
+// WHERE (
+//   CASE WHEN @set_type::boolean THEN
+//     b.type = @type::text
+//   ELSE
+//     TRUE
+//   END)
+//   AND b.id = ANY (
+//     SELECT
+//       be.block_id
+//     FROM
+//       public.block_edges be
+//     WHERE
+//       be.parent_id = @parent_id);
+// -- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
+// SELECT
+//   *,
+//   COALESCE((
+//     SELECT
+//       array_to_json(array_agg(row_to_json(tmp)))
+//     FROM (
+//       SELECT
+//         cb.id, cb.rank FROM blocks cb
+//       WHERE
+//         cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
+// FROM
+//   public.blocks b
+// WHERE (
+//   CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+//     b.type = @type::text
+//   ELSE
+//     TRUE
+//   END)
+//   AND b.space_id = (
+//     SELECT
+//       s.id
+//     FROM
+//       public.spaces s
+//     WHERE
+//       s.handle = @space_handle)
+//   AND b.parent_page_id IS NULL;
+// -- name: ListBlocksByTypeSpaceIDParentPageID :many
+// SELECT
+//   *,
+//   COALESCE((
+//     SELECT
+//       array_to_json(array_agg(row_to_json(tmp)))
+//     FROM (
+//       SELECT
+//         cb.id, cb.rank FROM blocks cb
+//       WHERE
+//         cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
+// FROM
+//   public.blocks b
+// WHERE (
+//   CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+//     b.type = @type::text
+//   ELSE
+//     TRUE
+//   END)
+//   AND b.space_id = @space_id
+//   AND (b.id = @parent_page_id
+//     OR b.parent_page_id = @parent_page_id);
+// -- name: ListBlocksByTypeSpaceIDNullParentPageID :many
+// SELECT
+//   *,
+//   COALESCE((
+//     SELECT
+//       array_to_json(array_agg(row_to_json(tmp)))
+//     FROM (
+//       SELECT
+//         cb.id, cb.rank FROM blocks cb
+//       WHERE
+//         cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
+// FROM
+//   public.blocks b
+// WHERE (
+//   CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
+//     b.type = @type::text
+//   ELSE
+//     TRUE
+//   END)
+//   AND b.space_id = @space_id
+//   AND b.parent_page_id IS NULL;
+func (q *Queries) GetBlock(ctx context.Context, id uuid.UUID) (GetBlockRow, error) {
+	row := q.db.QueryRow(ctx, getBlock, id)
+	var i GetBlockRow
 	err := row.Scan(
 		&i.ID,
 		&i.Type,
 		&i.Rank,
 		&i.Content,
 		&i.Format,
-		&i.ParentBlockID,
-		&i.ParentPageID,
 		&i.SpaceID,
 		&i.CreatedBy,
 		&i.ModifiedBy,
 		&i.CreatedAt,
 		&i.ModifiedAt,
 		&i.DeletedAt,
-		&i.ParentPagesIds,
 		&i.Children,
-	)
-	return i, err
-}
-
-const listBlocksByTypeSpaceHandleNullParentPageID = `-- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
-SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
-  COALESCE((
-    SELECT
-      array_to_json(array_agg(row_to_json(tmp)))
-    FROM (
-      SELECT
-        cb.id, cb.rank FROM blocks cb
-      WHERE
-        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
-FROM
-  public.blocks b
-WHERE (
-  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
-    b.type = $1::text
-  ELSE
-    TRUE
-  END)
-  AND b.space_id = (
-    SELECT
-      s.id
-    FROM
-      public.spaces s
-    WHERE
-      s.handle = $2)
-  AND b.parent_page_id IS NULL
-`
-
-type ListBlocksByTypeSpaceHandleNullParentPageIDParams struct {
-	Type        string `json:"type"`
-	SpaceHandle string `json:"space_handle"`
-}
-
-type ListBlocksByTypeSpaceHandleNullParentPageIDRow struct {
-	ID             uuid.UUID            `json:"id"`
-	Type           string               `json:"type"`
-	Rank           string               `json:"rank"`
-	Content        types.Map            `json:"content"`
-	Format         types.Map            `json:"format"`
-	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
-	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
-	SpaceID        uuid.UUID            `json:"space_id"`
-	CreatedBy      uuid.UUID            `json:"created_by"`
-	ModifiedBy     uuid.UUID            `json:"modified_by"`
-	CreatedAt      time.Time            `json:"created_at"`
-	ModifiedAt     time.Time            `json:"modified_at"`
-	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
-	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
-	Children       types.RankedChildren `json:"children"`
-}
-
-func (q *Queries) ListBlocksByTypeSpaceHandleNullParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceHandleNullParentPageIDParams) ([]ListBlocksByTypeSpaceHandleNullParentPageIDRow, error) {
-	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceHandleNullParentPageID, arg.Type, arg.SpaceHandle)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []ListBlocksByTypeSpaceHandleNullParentPageIDRow{}
-	for rows.Next() {
-		var i ListBlocksByTypeSpaceHandleNullParentPageIDRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Type,
-			&i.Rank,
-			&i.Content,
-			&i.Format,
-			&i.ParentBlockID,
-			&i.ParentPageID,
-			&i.SpaceID,
-			&i.CreatedBy,
-			&i.ModifiedBy,
-			&i.CreatedAt,
-			&i.ModifiedAt,
-			&i.DeletedAt,
-			&i.ParentPagesIds,
-			&i.Children,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listBlocksByTypeSpaceHandleParentPageID = `-- name: ListBlocksByTypeSpaceHandleParentPageID :many
-SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
-  COALESCE((
-    SELECT
-      array_to_json(array_agg(row_to_json(tmp)))
-    FROM (
-      SELECT
-        cb.id, cb.rank FROM blocks cb
-      WHERE
-        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
-FROM
-  public.blocks b
-WHERE (
-  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
-    b.type = $1::text
-  ELSE
-    TRUE
-  END)
-  AND b.space_id = (
-    SELECT
-      s.id
-    FROM
-      public.spaces s
-    WHERE
-      s.handle = $2)
-  AND (b.id = $3
-    OR b.parent_page_id = $3)
-`
-
-type ListBlocksByTypeSpaceHandleParentPageIDParams struct {
-	Type         string    `json:"type"`
-	SpaceHandle  string    `json:"space_handle"`
-	ParentPageID uuid.UUID `json:"parent_page_id"`
-}
-
-type ListBlocksByTypeSpaceHandleParentPageIDRow struct {
-	ID             uuid.UUID            `json:"id"`
-	Type           string               `json:"type"`
-	Rank           string               `json:"rank"`
-	Content        types.Map            `json:"content"`
-	Format         types.Map            `json:"format"`
-	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
-	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
-	SpaceID        uuid.UUID            `json:"space_id"`
-	CreatedBy      uuid.UUID            `json:"created_by"`
-	ModifiedBy     uuid.UUID            `json:"modified_by"`
-	CreatedAt      time.Time            `json:"created_at"`
-	ModifiedAt     time.Time            `json:"modified_at"`
-	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
-	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
-	Children       types.RankedChildren `json:"children"`
-}
-
-func (q *Queries) ListBlocksByTypeSpaceHandleParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceHandleParentPageIDParams) ([]ListBlocksByTypeSpaceHandleParentPageIDRow, error) {
-	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceHandleParentPageID, arg.Type, arg.SpaceHandle, arg.ParentPageID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []ListBlocksByTypeSpaceHandleParentPageIDRow{}
-	for rows.Next() {
-		var i ListBlocksByTypeSpaceHandleParentPageIDRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Type,
-			&i.Rank,
-			&i.Content,
-			&i.Format,
-			&i.ParentBlockID,
-			&i.ParentPageID,
-			&i.SpaceID,
-			&i.CreatedBy,
-			&i.ModifiedBy,
-			&i.CreatedAt,
-			&i.ModifiedAt,
-			&i.DeletedAt,
-			&i.ParentPagesIds,
-			&i.Children,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listBlocksByTypeSpaceIDNullParentPageID = `-- name: ListBlocksByTypeSpaceIDNullParentPageID :many
-SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
-  COALESCE((
-    SELECT
-      array_to_json(array_agg(row_to_json(tmp)))
-    FROM (
-      SELECT
-        cb.id, cb.rank FROM blocks cb
-      WHERE
-        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
-FROM
-  public.blocks b
-WHERE (
-  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
-    b.type = $1::text
-  ELSE
-    TRUE
-  END)
-  AND b.space_id = $2
-  AND b.parent_page_id IS NULL
-`
-
-type ListBlocksByTypeSpaceIDNullParentPageIDParams struct {
-	Type    string    `json:"type"`
-	SpaceID uuid.UUID `json:"space_id"`
-}
-
-type ListBlocksByTypeSpaceIDNullParentPageIDRow struct {
-	ID             uuid.UUID            `json:"id"`
-	Type           string               `json:"type"`
-	Rank           string               `json:"rank"`
-	Content        types.Map            `json:"content"`
-	Format         types.Map            `json:"format"`
-	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
-	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
-	SpaceID        uuid.UUID            `json:"space_id"`
-	CreatedBy      uuid.UUID            `json:"created_by"`
-	ModifiedBy     uuid.UUID            `json:"modified_by"`
-	CreatedAt      time.Time            `json:"created_at"`
-	ModifiedAt     time.Time            `json:"modified_at"`
-	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
-	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
-	Children       types.RankedChildren `json:"children"`
-}
-
-func (q *Queries) ListBlocksByTypeSpaceIDNullParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceIDNullParentPageIDParams) ([]ListBlocksByTypeSpaceIDNullParentPageIDRow, error) {
-	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceIDNullParentPageID, arg.Type, arg.SpaceID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []ListBlocksByTypeSpaceIDNullParentPageIDRow{}
-	for rows.Next() {
-		var i ListBlocksByTypeSpaceIDNullParentPageIDRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Type,
-			&i.Rank,
-			&i.Content,
-			&i.Format,
-			&i.ParentBlockID,
-			&i.ParentPageID,
-			&i.SpaceID,
-			&i.CreatedBy,
-			&i.ModifiedBy,
-			&i.CreatedAt,
-			&i.ModifiedAt,
-			&i.DeletedAt,
-			&i.ParentPagesIds,
-			&i.Children,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listBlocksByTypeSpaceIDParentPageID = `-- name: ListBlocksByTypeSpaceIDParentPageID :many
-SELECT
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids,
-  COALESCE((
-    SELECT
-      array_to_json(array_agg(row_to_json(tmp)))
-    FROM (
-      SELECT
-        cb.id, cb.rank FROM blocks cb
-      WHERE
-        cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
-FROM
-  public.blocks b
-WHERE (
-  CASE WHEN nullif ($1::text, '') IS NOT NULL THEN
-    b.type = $1::text
-  ELSE
-    TRUE
-  END)
-  AND b.space_id = $2
-  AND (b.id = $3
-    OR b.parent_page_id = $3)
-`
-
-type ListBlocksByTypeSpaceIDParentPageIDParams struct {
-	Type         string    `json:"type"`
-	SpaceID      uuid.UUID `json:"space_id"`
-	ParentPageID uuid.UUID `json:"parent_page_id"`
-}
-
-type ListBlocksByTypeSpaceIDParentPageIDRow struct {
-	ID             uuid.UUID            `json:"id"`
-	Type           string               `json:"type"`
-	Rank           string               `json:"rank"`
-	Content        types.Map            `json:"content"`
-	Format         types.Map            `json:"format"`
-	ParentBlockID  []uuid.UUID          `json:"parent_block_id"`
-	ParentPageID   pgtype.UUID          `json:"parent_page_id"`
-	SpaceID        uuid.UUID            `json:"space_id"`
-	CreatedBy      uuid.UUID            `json:"created_by"`
-	ModifiedBy     uuid.UUID            `json:"modified_by"`
-	CreatedAt      time.Time            `json:"created_at"`
-	ModifiedAt     time.Time            `json:"modified_at"`
-	DeletedAt      pgtype.Timestamptz   `json:"deleted_at"`
-	ParentPagesIds []uuid.UUID          `json:"parent_pages_ids"`
-	Children       types.RankedChildren `json:"children"`
-}
-
-func (q *Queries) ListBlocksByTypeSpaceIDParentPageID(ctx context.Context, arg ListBlocksByTypeSpaceIDParentPageIDParams) ([]ListBlocksByTypeSpaceIDParentPageIDRow, error) {
-	rows, err := q.db.Query(ctx, listBlocksByTypeSpaceIDParentPageID, arg.Type, arg.SpaceID, arg.ParentPageID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []ListBlocksByTypeSpaceIDParentPageIDRow{}
-	for rows.Next() {
-		var i ListBlocksByTypeSpaceIDParentPageIDRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Type,
-			&i.Rank,
-			&i.Content,
-			&i.Format,
-			&i.ParentBlockID,
-			&i.ParentPageID,
-			&i.SpaceID,
-			&i.CreatedBy,
-			&i.ModifiedBy,
-			&i.CreatedAt,
-			&i.ModifiedAt,
-			&i.DeletedAt,
-			&i.ParentPagesIds,
-			&i.Children,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const updateBlockContent = `-- name: UpdateBlockContent :one
-UPDATE
-  public.blocks
-SET
-  content = $1
-WHERE
-  id = $2
-RETURNING
-  id, type, rank, content, format, parent_block_id, parent_page_id, space_id, created_by, modified_by, created_at, modified_at, deleted_at, parent_pages_ids
-`
-
-type UpdateBlockContentParams struct {
-	Content types.Map `json:"content"`
-	ID      uuid.UUID `json:"id"`
-}
-
-func (q *Queries) UpdateBlockContent(ctx context.Context, arg UpdateBlockContentParams) (Block, error) {
-	row := q.db.QueryRow(ctx, updateBlockContent, arg.Content, arg.ID)
-	var i Block
-	err := row.Scan(
-		&i.ID,
-		&i.Type,
-		&i.Rank,
-		&i.Content,
-		&i.Format,
-		&i.ParentBlockID,
-		&i.ParentPageID,
-		&i.SpaceID,
-		&i.CreatedBy,
-		&i.ModifiedBy,
-		&i.CreatedAt,
-		&i.ModifiedAt,
-		&i.DeletedAt,
-		&i.ParentPagesIds,
 	)
 	return i, err
 }
