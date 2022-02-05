@@ -17,17 +17,19 @@ import (
 /* ---------------------------------------------------------------------------------------------- */
 
 type Block struct {
-	ID         uuid.UUID          `json:"id"`
-	Type       string             `json:"type"`
-	Content    types.Map          `json:"content"`
-	Format     types.Map          `json:"format"`
-	SpaceID    uuid.UUID          `json:"space_id"`
-	CreatedBy  uuid.UUID          `json:"created_by"`
-	ModifiedBy uuid.UUID          `json:"modified_by"`
+	ID       uuid.UUID `json:"id"`
+	Type     string    `json:"type"`
+	Content  types.Map `json:"content"`
+	Format   types.Map `json:"format"`
+	SpaceID  uuid.UUID `json:"space_id"`
+	Children []string  `json:"children"`
+
+	CreatedBy  uuid.UUID `json:"created_by"`
+	ModifiedBy uuid.UUID `json:"modified_by"`
+
 	CreatedAt  time.Time          `json:"created_at"`
 	ModifiedAt time.Time          `json:"modified_at"`
 	DeletedAt  pgtype.Timestamptz `json:"deleted_at"`
-	Children   []string           `json:"children"`
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -73,19 +75,97 @@ func GetBlock(params GetBlockParams) (Block, error) {
 /* ---------------------------------------------------------------------------------------------- */
 
 type ListBlocksParams struct {
-	Type        string
 	IDs         []string
-	ParentID    string
 	PageID      string
-	SpaceID     string
+	ParentID    string
 	SpaceHandle string
+	SpaceID     string
+	Type        string
 
 	// List the entire subtree
 	Deep bool
+
+	Ctx context.Context
 }
 
 func ListBlocks(params ListBlocksParams) ([]Block, error) {
 	blocks := []Block{}
+
+	arg := query.ListBlocksParams{}
+	arg.SetIds = len(params.IDs) != 0
+	arg.SetPageID = params.PageID != ""
+	arg.SetParentID = params.ParentID != ""
+	arg.SetSpaceHandle = params.SpaceHandle != ""
+	arg.SetSpaceID = params.SpaceID != ""
+	arg.SetType = params.Type != ""
+
+	if arg.SetIds {
+		ids, err := utils.ParseUUIDList(params.IDs)
+		if err != nil {
+			return blocks, err
+		}
+
+		arg.Ids = ids
+	}
+
+	if arg.SetPageID {
+		id, err := uuid.Parse(params.PageID)
+		if err != nil {
+			return blocks, nil
+		}
+
+		arg.PageID = id
+	}
+
+	if arg.SetParentID {
+		id, err := uuid.Parse(params.ParentID)
+		if err != nil {
+			return blocks, nil
+		}
+
+		arg.ParentID = id
+	}
+
+	if arg.SetSpaceHandle {
+		arg.SpaceHandle = params.SpaceHandle
+	}
+
+	if arg.SetSpaceID {
+		id, err := uuid.Parse(params.SpaceID)
+		if err != nil {
+			return blocks, nil
+		}
+
+		arg.SpaceID = id
+	}
+
+	if arg.SetType {
+		arg.Type = params.Type
+	}
+
+	pq := query.New(database.Get())
+	blocks_row, err := pq.ListBlocks(params.Ctx, arg)
+	if err != nil {
+		return blocks, err
+	}
+
+	for _, row := range blocks_row {
+		blocks = append(blocks, Block{
+			ID:       row.ID,
+			Type:     row.Type,
+			Content:  row.Content,
+			Format:   row.Format,
+			SpaceID:  row.SpaceID,
+			Children: row.Children,
+
+			CreatedBy:  row.CreatedBy,
+			ModifiedBy: row.ModifiedBy,
+
+			CreatedAt:  row.CreatedAt,
+			ModifiedAt: row.ModifiedAt,
+			DeletedAt:  row.DeletedAt,
+		})
+	}
 
 	return blocks, nil
 }

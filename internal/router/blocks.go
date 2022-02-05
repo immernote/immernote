@@ -33,85 +33,13 @@ func ListBlocks(c *gin.Context) (int, interface{}, error) {
 		PageID:      qs.PageID,
 		SpaceID:     qs.SpaceID,
 		SpaceHandle: qs.SpaceHandle,
+		Ctx:         c.Request.Context(),
 	})
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
 
 	return 200, blocks, nil
-
-	// pq := query.New(database.Get())
-
-	// switch true {
-	// case qs.SpaceHandle != "" && qs.ParentPageID == "":
-	// 	blocks, err := pq.ListBlocksByTypeSpaceHandleNullParentPageID(c.Request.Context(), query.ListBlocksByTypeSpaceHandleNullParentPageIDParams{
-	// 		Type:        qs.Type,
-	// 		SpaceHandle: qs.SpaceHandle,
-	// 	})
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	return 200, blocks, nil
-
-	// case qs.SpaceID != "" && qs.ParentPageID == "":
-	// 	space_id, err := uuid.Parse(qs.SpaceID)
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	blocks, err := pq.ListBlocksByTypeSpaceIDNullParentPageID(c.Request.Context(), query.ListBlocksByTypeSpaceIDNullParentPageIDParams{
-	// 		Type:    qs.Type,
-	// 		SpaceID: space_id,
-	// 	})
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	return 200, blocks, nil
-
-	// case qs.SpaceHandle != "" && qs.ParentPageID != "":
-	// 	parent_page_id, err := uuid.Parse(qs.ParentPageID)
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	blocks, err := pq.ListBlocksByTypeSpaceHandleParentPageID(c.Request.Context(), query.ListBlocksByTypeSpaceHandleParentPageIDParams{
-	// 		Type:         qs.Type,
-	// 		SpaceHandle:  qs.SpaceHandle,
-	// 		ParentPageID: parent_page_id,
-	// 	})
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	return 200, blocks, nil
-
-	// case qs.SpaceID != "" && qs.ParentPageID != "":
-	// 	space_id, err := uuid.Parse(qs.SpaceID)
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	parent_page_id, err := uuid.Parse(qs.ParentPageID)
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	blocks, err := pq.ListBlocksByTypeSpaceIDParentPageID(c.Request.Context(), query.ListBlocksByTypeSpaceIDParentPageIDParams{
-	// 		Type:         qs.Type,
-	// 		SpaceID:      space_id,
-	// 		ParentPageID: parent_page_id,
-	// 	})
-	// 	if err != nil {
-	// 		return http.StatusInternalServerError, nil, err
-	// 	}
-
-	// 	return 200, blocks, nil
-
-	// default:
-	// 	return http.StatusBadRequest, nil, nil
-	// }
 }
 
 /* ---------------------------------------------------------------------------------------------- */

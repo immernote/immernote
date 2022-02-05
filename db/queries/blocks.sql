@@ -1,33 +1,80 @@
--- -- name: ListBlocksByTypeParentID :many
--- SELECT
---   *,
---   COALESCE((
---     SELECT
---       array_to_json(array_agg(row_to_json(tmp)))
---     FROM (
---       SELECT
---         cb.id, cb.rank FROM blocks cb
---       WHERE
---         cb.id = ANY (
---           SELECT
---             be.block_id FROM public.block_edges be
---           WHERE
---             be.parent_id = b.id)) AS tmp), '[]')::children_list AS children
--- FROM
---   public.blocks b
--- WHERE (
---   CASE WHEN @set_type::boolean THEN
---     b.type = @type::text
---   ELSE
---     TRUE
---   END)
---   AND b.id = ANY (
---     SELECT
---       be.block_id
---     FROM
---       public.block_edges be
---     WHERE
---       be.parent_id = @parent_id);
+-- name: ListBlocks :many
+SELECT
+  *,
+  COALESCE((
+    SELECT
+      array_to_json(array_agg(row_to_json(tmp)))
+    FROM (
+      SELECT
+        cb.id, cb.rank FROM blocks cb
+      WHERE
+        cb.id = ANY (
+          SELECT
+            be.block_id FROM public.block_edges be
+          WHERE
+            be.parent_id = b.id)) AS tmp), '[]')::children_list AS children
+FROM
+  public.blocks b
+WHERE (
+  -- Type
+  CASE WHEN @set_type::boolean THEN
+    b.type = @type::text
+  ELSE
+    TRUE
+  END)
+  AND (
+    -- IDs
+    CASE WHEN @set_ids::boolean THEN
+      b.id = ANY (@ids::uuid[])
+    ELSE
+      TRUE
+    END)
+  AND (
+    -- ParentID
+    CASE WHEN @set_parent_id::boolean THEN
+      b.id = (
+        SELECT
+          be.block_id
+        FROM
+          public.block_edges be
+        WHERE
+          be.parent_id = @parent_id::uuid)
+      ELSE
+        TRUE
+    END)
+AND (
+  -- PageID
+  CASE WHEN @set_page_id::boolean THEN
+    b.id = (
+      SELECT
+        be.block_id
+      FROM
+        public.page_blocks pb
+      WHERE
+        pb.page_id = @page_id::uuid)
+    ELSE
+      TRUE
+  END)
+AND (
+  -- SpaceID
+  CASE WHEN @set_space_id::boolean THEN
+    b.space_id = @space_id::uuid
+  ELSE
+    TRUE
+  END)
+AND (
+  -- SpaceHandle
+  CASE WHEN @set_space_handle::boolean THEN
+    b.space_id = (
+      SELECT
+        s.id
+      FROM
+        public.spaces s
+      WHERE
+        s.handle = @space_handle::text)
+    ELSE
+      TRUE
+  END);
 
 -- -- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
 -- SELECT
@@ -56,7 +103,6 @@
 --     WHERE
 --       s.handle = @space_handle)
 --   AND b.parent_page_id IS NULL;
-
 -- -- name: ListBlocksByTypeSpaceIDParentPageID :many
 -- SELECT
 --   *,
@@ -79,7 +125,6 @@
 --   AND b.space_id = @space_id
 --   AND (b.id = @parent_page_id
 --     OR b.parent_page_id = @parent_page_id);
-
 -- -- name: ListBlocksByTypeSpaceIDNullParentPageID :many
 -- SELECT
 --   *,
@@ -101,7 +146,6 @@
 --   END)
 --   AND b.space_id = @space_id
 --   AND b.parent_page_id IS NULL;
-
 -- name: GetBlock :one
 SELECT
   *,
@@ -150,7 +194,6 @@ WHERE
 --       @created_by)
 -- RETURNING
 --   *;
-
 -- -- name: UpdateBlockContent :one
 -- UPDATE
 --   public.blocks
@@ -160,4 +203,3 @@ WHERE
 --   id = @id
 -- RETURNING
 --   *;
-
