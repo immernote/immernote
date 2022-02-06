@@ -1,14 +1,14 @@
 import { useCallback, useEffect } from "react";
+import { useMatch, useParams } from "react-router-dom";
 import Sockette from "sockette";
 import { useData } from "../stores/data";
 import { set_is_ready, set_ws, useWs } from "../stores/ws";
-import { useSpaceHandle } from "./params";
 
 const WS_HOST = import.meta.env.VITE_WS_HOST as string;
 
 export function usePubSub() {
   const ws = useWs(useCallback((state) => state.ws, []));
-  const space_handle = useSpaceHandle();
+  const { space: space_handle } = useParams();
   const space_id = useData(
     useCallback(
       (state) =>
@@ -20,11 +20,12 @@ export function usePubSub() {
   );
 
   useEffect(() => {
+    console.log(`space_id: `, space_handle, space_id);
     if (!space_id) {
       return;
     }
 
-    const socket = new Sockette(`${WS_HOST}/api/ws?space_id=${space_id}`, {
+    const socket = new Sockette(`${WS_HOST}/api/v0/ws?space_id=${space_id}`, {
       timeout: 5e3,
       onopen() {
         console.log("[MULTIPLAYER]:\tConnected");

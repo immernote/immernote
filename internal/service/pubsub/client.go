@@ -2,7 +2,6 @@ package pubsub
 
 import (
 	"encoding/json"
-	"errors"
 	"log"
 	"time"
 
@@ -57,9 +56,11 @@ type Client struct {
 	CurrentPage string
 }
 
-// readPump pumps messages from the websocket connection to the hub.
+/* ---------------------------------------------------------------------------------------------- */
+
+// ReadPump pumps messages from the websocket connection to the hub.
 //
-// The application runs readPump in a per-connection goroutine. The application
+// The application runs ReadPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
 // reads from this goroutine.
 func (c *Client) ReadPump() {
@@ -82,23 +83,11 @@ func (c *Client) ReadPump() {
 		}
 
 		if messageType == websocket.TextMessage {
+			// Parse and apply message
 			msg, err := HandleMessage(message, c)
 			if err != nil {
-				switch err.(type) {
-				case *VersionMismatchError:
-					// Ignore it for now
-					// TODO: Better handling for version mismatches
-					break
-				default:
-					log.Println(err)
-					return
-				}
-			}
-
-			var vmerr *VersionMismatchError
-			if errors.As(err, &vmerr) {
 				log.Println(err)
-				continue
+				return
 			}
 
 			str, err := json.Marshal(msg)
@@ -107,7 +96,7 @@ func (c *Client) ReadPump() {
 				return
 			}
 
-			// message = bytes.TrimSpace(bytes.ReplaceAll(message, newline, space))
+			// Broadcast message to other clients
 			c.Hub.Broadcast <- PubSubMessage{
 				Payload: string(str),
 				Channel: c.Channel,
@@ -117,9 +106,11 @@ func (c *Client) ReadPump() {
 	}
 }
 
-// writePump pumps messages from the hub to the websocket connection.
+/* ---------------------------------------------------------------------------------------------- */
+
+// WritePump pumps messages from the hub to the websocket connection.
 //
-// A goroutine running writePump is started for each connection. The
+// A goroutine running WritePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
 // executing all writes from this goroutine.
 func (c *Client) WritePump() {
@@ -142,8 +133,8 @@ func (c *Client) WritePump() {
 				// The hub closed the channel.
 				if err := c.Conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
 					log.Println(err)
-					return
 				}
+
 				return
 			}
 
@@ -151,6 +142,7 @@ func (c *Client) WritePump() {
 			if err != nil {
 				return
 			}
+
 			if _, err := w.Write(message); err != nil {
 				return
 			}

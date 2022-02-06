@@ -21,13 +21,13 @@ var upgrader = websocket.Upgrader{
 }
 
 func handleWs(c *gin.Context) {
-	if len(c.Query("spaceID")) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "`spaceID` is missing"})
+	if len(c.Query("space_id")) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "`space_id` is missing"})
 		return
 	}
 
-	if _, err := uuid.Parse(c.Query("spaceID")); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "`spaceID` is malformed"})
+	if _, err := uuid.Parse(c.Query("space_id")); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "`space_id` is malformed"})
 		return
 	}
 
@@ -37,11 +37,11 @@ func handleWs(c *gin.Context) {
 		return
 	}
 
-	pbChn := "space:" + c.Query("spaceID")
+	pbChn := "space:" + c.Query("space_id")
 
-	tableID, err := uuid.Parse(c.Query("spaceID"))
+	tableID, err := uuid.Parse(c.Query("space_id"))
 	if err != nil {
-		log.Println(c.Query("spaceID"), err)
+		log.Println(c.Query("space_id"), err)
 		return
 	}
 
@@ -55,7 +55,7 @@ func handleWs(c *gin.Context) {
 		Hub:     pubsub.RunningHub,
 		Conn:    conn,
 		Send:    make(chan []byte, 256),
-		ID:      c.MustGet("userID").(uuid.UUID),
+		ID:      c.MustGet("user_id").(uuid.UUID),
 		ConnID:  connID,
 		Table:   "spaces",
 		TableID: tableID,

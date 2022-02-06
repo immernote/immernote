@@ -13,7 +13,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
 import { create_page_block } from "../actions/blocks";
-import { useFetchPageBlocks } from "../hooks/fetch";
+import { useFetchPageBlocks, useFetchSpaces } from "../hooks/fetch";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 import { useData } from "../stores/data";
 
@@ -48,6 +48,7 @@ function Workspaces() {
 }
 
 function WorkspacesTrigger() {
+  useFetchSpaces()
   const { data: space } = useCurrentSpace();
 
   return (

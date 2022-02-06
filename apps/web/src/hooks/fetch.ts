@@ -1,7 +1,19 @@
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { set } from "../stores/data";
-import type { Block } from "../types";
+import type { Block, Space } from "../types";
+
+export function useFetchSpaces() {
+  useSWR<Space[]>(`/api/v0/spaces`, {
+    onSuccess: (data) => {
+      set((state) => {
+        for (const space of data) {
+          state.spaces[space.id] = space;
+        }
+      });
+    },
+  });
+}
 
 export function useFetchBlockChildren(id: string | undefined) {
   const { space } = useParams();

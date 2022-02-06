@@ -47,7 +47,7 @@ AND (
   CASE WHEN @set_page_id::boolean THEN
     b.id = (
       SELECT
-        be.block_id
+        pb.block_id
       FROM
         public.page_blocks pb
       WHERE
@@ -76,76 +76,6 @@ AND (
       TRUE
   END);
 
--- -- name: ListBlocksByTypeSpaceHandleNullParentPageID :many
--- SELECT
---   *,
---   COALESCE((
---     SELECT
---       array_to_json(array_agg(row_to_json(tmp)))
---     FROM (
---       SELECT
---         cb.id, cb.rank FROM blocks cb
---       WHERE
---         cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
--- FROM
---   public.blocks b
--- WHERE (
---   CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
---     b.type = @type::text
---   ELSE
---     TRUE
---   END)
---   AND b.space_id = (
---     SELECT
---       s.id
---     FROM
---       public.spaces s
---     WHERE
---       s.handle = @space_handle)
---   AND b.parent_page_id IS NULL;
--- -- name: ListBlocksByTypeSpaceIDParentPageID :many
--- SELECT
---   *,
---   COALESCE((
---     SELECT
---       array_to_json(array_agg(row_to_json(tmp)))
---     FROM (
---       SELECT
---         cb.id, cb.rank FROM blocks cb
---       WHERE
---         cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
--- FROM
---   public.blocks b
--- WHERE (
---   CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
---     b.type = @type::text
---   ELSE
---     TRUE
---   END)
---   AND b.space_id = @space_id
---   AND (b.id = @parent_page_id
---     OR b.parent_page_id = @parent_page_id);
--- -- name: ListBlocksByTypeSpaceIDNullParentPageID :many
--- SELECT
---   *,
---   COALESCE((
---     SELECT
---       array_to_json(array_agg(row_to_json(tmp)))
---     FROM (
---       SELECT
---         cb.id, cb.rank FROM blocks cb
---       WHERE
---         cb.parent_page_id = b.id) AS tmp), '[]')::children_list AS children
--- FROM
---   public.blocks b
--- WHERE (
---   CASE WHEN nullif (@type::text, '') IS NOT NULL THEN
---     b.type = @type::text
---   ELSE
---     TRUE
---   END)
---   AND b.space_id = @space_id
---   AND b.parent_page_id IS NULL;
 -- name: GetBlock :one
 SELECT
   *,

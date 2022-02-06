@@ -18,6 +18,7 @@ import (
 	"github.com/immernote/immernote/internal/mem"
 	"github.com/immernote/immernote/internal/migrate"
 	"github.com/immernote/immernote/internal/router"
+	"github.com/immernote/immernote/internal/service/pubsub"
 )
 
 func main() {
@@ -32,6 +33,10 @@ func main() {
 	defer rd.Close()
 
 	setup()
+
+	hub := pubsub.NewHub()
+	go hub.Run()
+	go hub.RunTunnel()
 
 	r := gin.New()
 	r.Use(gin.Logger())
