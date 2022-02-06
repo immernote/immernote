@@ -48,7 +48,7 @@ function Workspaces() {
 }
 
 function WorkspacesTrigger() {
-  useFetchSpaces()
+  useFetchSpaces();
   const { data: space } = useCurrentSpace();
 
   return (
@@ -253,7 +253,7 @@ function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
     await create_page_block({
       id: uuid(),
       content: {
-        title: ["New Sub Page"],
+        title: "New Sub Page",
       },
       format: {
         icon: {
@@ -261,9 +261,14 @@ function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
           value: "🦄",
         },
       },
-      parent_block_id: parent_pages_ids.at(-1) ?? null,
-      parent_pages_ids: parent_pages_ids,
       space_id: space.id,
+      children: [],
+      created_at: Date.toString(),
+      modified_at: Date.toString(),
+      deleted_at: null,
+      type: "page",
+      created_by: "me",
+      modified_by: "me",
     });
   }
 
@@ -287,7 +292,7 @@ function CreatePage() {
     await create_page_block({
       id: uuid(),
       content: {
-        title: ["New page"],
+        title: "New Page",
       },
       format: {
         icon: {
@@ -295,9 +300,14 @@ function CreatePage() {
           value: "🦄",
         },
       },
-      parent_block_id: null,
-      parent_pages_ids: [],
       space_id: space.id,
+      children: [],
+      created_at: Date.toString(),
+      modified_at: Date.toString(),
+      deleted_at: null,
+      type: "page",
+      created_by: "me",
+      modified_by: "me",
     });
   }
 

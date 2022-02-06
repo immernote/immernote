@@ -49,28 +49,28 @@ export type SpaceSettings = {};
 /*                                              Block                                             */
 /* ---------------------------------------------------------------------------------------------- */
 
-export type Block = {
-  /** UUID */
+export type Block = (
+  | {
+      type: "paragraph";
+      content: { nodes: any[] };
+      format: {};
+    }
+  | {
+      type: "page";
+      content: { title: string };
+      format: { icon: { type: string; value: string } };
+    }
+) & {
   id: string;
-  type: string;
-  rank: string;
-  content: { title: string; nodes: any[] };
-  format: { icon: { type: string; value: string } };
-  parent_block_id: string | undefined;
-  parent_page_id: string | undefined;
-  /** UUID */
   space_id: string;
-  /** UUID */
+
   created_by: string;
-  /** UUID */
   modified_by: string;
-  /** Timestamptz */
+
   created_at: string;
-  /** Timestamptz */
   modified_at: string;
-  /** Timestamptz */
-  deleted_at: string | undefined;
-  parent_pages_ids: string[];
+  deleted_at: string | null;
+
   children: string[];
 };
 
@@ -113,6 +113,6 @@ export type Msg = {
     op: "replace" | "remove" | "add";
     path: (string | number)[];
     value?: any;
-    modified_at: string;
+    modified_at?: string;
   }[];
 };
