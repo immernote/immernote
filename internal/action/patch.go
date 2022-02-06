@@ -45,7 +45,19 @@ func ApplyPatches(params ApplyPatchesParams) error {
 			switch value.Type {
 			/* ------------------------------------------ Add Page ------------------------------------------ */
 			case "page":
-				
+				if err := pq.WithTx(tx).CreateBlock(context.Background(), query.CreateBlockParams{
+					ID:          value.ID,
+					Type:        value.Type,
+					Content:     value.Content,
+					Format:      value.Format,
+					SpaceID:     value.SpaceID,
+					CreatedBy:   params.UserID,
+					SetParentID: false,
+				}); err != nil {
+					tx.Rollback(context.Background())
+					return err
+				}
+				// Create Page Set
 			/* ---------------------------------------- Add Paragraph --------------------------------------- */
 			case "paragraph":
 			}

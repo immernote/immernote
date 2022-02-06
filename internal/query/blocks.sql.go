@@ -12,6 +12,75 @@ import (
 	"github.com/jackc/pgtype"
 )
 
+const createBlock = `-- name: CreateBlock :exec
+INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id", "created_by", "modified_by")
+  VALUES ($1, $2, (
+      SELECT
+        -- Pages are by default inserted at the end
+        -- Start at 1, in case we have to move the page to first position
+        (COUNT(*) + 1)::text
+      FROM
+        public.blocks b
+      WHERE
+        b.space_id = $3
+        -- Avoid comparing NULL
+        AND (
+          CASE WHEN $4::boolean THEN
+            -- Lookup all siblings from block_edges
+            b.id = ANY (
+              SELECT
+                be.block_id
+              FROM
+                public.block_edges be
+              WHERE
+                be.parent_id = $5::uuid)
+            ELSE
+              -- Only root pages have no parent_id, so select those from page_sets
+              b.id = ANY ( SELECT DISTINCT
+                  ps.root_id
+                FROM
+                  public.page_sets ps
+                WHERE
+                  ps.root_id = ANY (
+                    SELECT
+                      bb.id
+                    FROM
+                      public.blocks bb
+                    WHERE
+                      bb.space_id = $3))
+          END)),
+      $6,
+      $7,
+      $3,
+      $8,
+      $8)
+`
+
+type CreateBlockParams struct {
+	ID          uuid.UUID `json:"id"`
+	Type        string    `json:"type"`
+	SpaceID     uuid.UUID `json:"space_id"`
+	SetParentID bool      `json:"set_parent_id"`
+	ParentID    uuid.UUID `json:"parent_id"`
+	Content     types.Map `json:"content"`
+	Format      types.Map `json:"format"`
+	CreatedBy   uuid.UUID `json:"created_by"`
+}
+
+func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) error {
+	_, err := q.db.Exec(ctx, createBlock,
+		arg.ID,
+		arg.Type,
+		arg.SpaceID,
+		arg.SetParentID,
+		arg.ParentID,
+		arg.Content,
+		arg.Format,
+		arg.CreatedBy,
+	)
+	return err
+}
+
 const getBlock = `-- name: GetBlock :one
 SELECT
   id, type, rank, content, format, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
@@ -221,4 +290,39 @@ func (q *Queries) ListBlocks(ctx context.Context, arg ListBlocksParams) ([]ListB
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateBlockContent = `-- name: UpdateBlockContent :one
+UPDATE
+  public.blocks
+SET
+  content = $1
+WHERE
+  id = $2
+RETURNING
+  id, type, rank, content, format, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+`
+
+type UpdateBlockContentParams struct {
+	Content types.Map `json:"content"`
+	ID      uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateBlockContent(ctx context.Context, arg UpdateBlockContentParams) (Block, error) {
+	row := q.db.QueryRow(ctx, updateBlockContent, arg.Content, arg.ID)
+	var i Block
+	err := row.Scan(
+		&i.ID,
+		&i.Type,
+		&i.Rank,
+		&i.Content,
+		&i.Format,
+		&i.SpaceID,
+		&i.CreatedBy,
+		&i.ModifiedBy,
+		&i.CreatedAt,
+		&i.ModifiedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }
