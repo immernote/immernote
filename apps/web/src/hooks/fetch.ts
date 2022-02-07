@@ -1,7 +1,18 @@
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { set } from "../stores/data";
-import type { Block, Space } from "../types";
+import type { Block, Space, User } from "../types";
+
+export function useFetchUser() {
+  useSWR<User>(`/api/v0/users`, {
+    onSuccess: (data) => {
+      set((state) => {
+        state.users[data.id] = data;
+        state.user = data.id;
+      });
+    },
+  });
+}
 
 export function useFetchSpaces() {
   useSWR<Space[]>(`/api/v0/spaces`, {

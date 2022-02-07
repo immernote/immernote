@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/immernote/immernote/internal/action"
-	"github.com/immernote/immernote/internal/types"
 )
 
 type Message map[string]interface{}
@@ -28,10 +27,10 @@ func HandleMessage(msg []byte, c *Client) (Message, error) {
 		log.Printf("\n%+v\n", message)
 		if err := action.AddPage(action.AddPageParams{
 			ID:       message["id"].(string),
-			ParentID: message["parent_id"].(string),
+			ParentID: message["parent_id"],
 			SpaceID:  string(c.TableID.String()),
-			Content:  message["content"].(types.Map),
-			Format:   message["format"].(types.Map),
+			Content:  message["content"].(map[string]interface{}),
+			Format:   message["format"].(map[string]interface{}),
 			UserID:   c.ID,
 		}); err != nil {
 			return message, err

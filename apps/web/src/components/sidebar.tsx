@@ -16,6 +16,7 @@ import { add_page } from "../actions/blocks";
 import { useFetchPageBlocks, useFetchSpaces } from "../hooks/fetch";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 import { useData } from "../stores/data";
+import { Block } from "../types";
 
 export function Sidebar() {
   return (
@@ -154,7 +155,7 @@ function Pages(props: { parent_page_id?: string; level: number }) {
 }
 
 function Page({ level, id }: { id: string; level: number }) {
-  const page = useData(useCallback((state) => state.blocks[id], [id]));
+  const page = useData(useCallback((state) => state.blocks[id] as Block<"page">, [id]));
   const { data: space } = useCurrentSpace();
   const [expanded, set_expanded] = useState(false);
   const [has_focus, set_has_focus] = useState(false);
@@ -168,7 +169,7 @@ function Page({ level, id }: { id: string; level: number }) {
 
         const block = state.blocks[params_id];
         if (!block) return false;
-        if (block.parent_pages_ids.indexOf(id) !== -1) return true;
+        // if (block.parent_pages_ids.indexOf(id) !== -1) return true;
 
         return false;
       },
@@ -236,7 +237,7 @@ function Page({ level, id }: { id: string; level: number }) {
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>
-          <CreateSubPage parent_pages_ids={page.parent_pages_ids} />
+          <CreateSubPage page_id={page.id} />
         </div>
       </div>
       {expanded ? <Pages parent_page_id={id} level={level + 1} /> : null}
@@ -244,7 +245,7 @@ function Page({ level, id }: { id: string; level: number }) {
   ) : null;
 }
 
-function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
+function CreateSubPage({ page_id }: { page_id: string }) {
   const { data: space } = useCurrentSpace();
 
   async function handleClick() {
@@ -253,7 +254,7 @@ function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
     await add_page({
       id: uuid(),
       content: {
-        title: "New Page",
+        title: "New Sub Page",
       },
       format: {
         icon: {
@@ -261,7 +262,7 @@ function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
           value: "🦄",
         },
       },
-      parent_id: null,
+      parent_id: page_id,
     });
   }
 

@@ -93,7 +93,7 @@ export type DataStore = {
   users: {
     [key: string]: User;
   };
-  user: DataStore["users"][string] | undefined;
+  user: DataStore["users"][string]["id"] | undefined;
 };
 
 /* ---------------------------------------------------------------------------------------------- */

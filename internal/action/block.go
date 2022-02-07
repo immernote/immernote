@@ -220,8 +220,9 @@ func DeleteBlock(params CreateBlockParams) ([]string, error) {
 /* ---------------------------------------------------------------------------------------------- */
 
 type AddPageParams struct {
-	ID       string
-	ParentID string
+	ID string
+	// Could be nil
+	ParentID interface{}
 	SpaceID  string
 	Content  types.Map
 	Format   types.Map
@@ -248,7 +249,12 @@ func AddPage(params AddPageParams) error {
 		return err
 	}
 
-	parent_id, err := utils.ParseUUID(params.ParentID)
+	parent_id_str := ""
+	if str, ok := params.ParentID.(string); ok {
+		parent_id_str = str
+	}
+
+	parent_id, err := utils.ParseUUID(parent_id_str)
 	if err != nil {
 		tx.Rollback(context.Background())
 		return err

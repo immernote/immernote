@@ -37,7 +37,7 @@ SELECT
   ps.root_id,
   $1,
   ps.rgt - 2,
-  ps.lft - 1
+  ps.rgt - 1
 FROM
   public.page_sets ps
 WHERE
@@ -118,30 +118,30 @@ func (q *Queries) ListPageSets(ctx context.Context, rootID uuid.UUID) ([]PageSet
 
 const preparePageSets = `-- name: PreparePageSets :exec
 UPDATE
-  public.page_sets ps
+  public.page_sets
 SET
-  ps.rgt = CASE WHEN ps.rgt > parent_set.rgt - 1 THEN
-    ps.rgt + 2
+  rgt = CASE WHEN rgt > parent_set.parent_rgt - 1 THEN
+    rgt + 2
   ELSE
-    ps.rgt
+    rgt
   END,
-  ps.lft = CASE WHEN ps.lft > parent_set.rgt - 1 THEN
-    ps.lft + 2
+  lft = CASE WHEN lft > parent_set.parent_rgt - 1 THEN
+    lft + 2
   ELSE
-    ps.lft
+    lft
   END
 FROM (
   SELECT
-    parent_ps.root_id,
-    parent_ps.rgt
+    parent_ps.root_id AS parent_root_id,
+    parent_ps.rgt AS parent_rgt
   FROM
     public.page_sets parent_ps
   WHERE
     parent_ps.page_id = $1) AS parent_set
 WHERE
-  ps.root_id = parent_ps.root_id
-  AND (ps.lft > parent_set.rgt - 1
-    OR ps.rgt > parent_set.rgt - 1)
+  root_id = parent_set.parent_root_id
+  AND (lft > parent_set.parent_rgt - 1
+    OR rgt > parent_set.parent_rgt - 1)
 `
 
 func (q *Queries) PreparePageSets(ctx context.Context, parentID uuid.UUID) error {

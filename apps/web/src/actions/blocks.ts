@@ -3,8 +3,8 @@ import { send } from "../stores/msg";
 import type { Block, MsgParams } from "../types";
 import { aksios } from "../utils/aksios";
 
-export async function add_block(params: MsgParams<"add_page">) {
-  const user_id = useData.getState().user?.id;
+export async function add_page(params: MsgParams<"add_page">) {
+  const user_id = useData.getState().user;
   if (!user_id) return;
 
   const new_block: Block<"page"> = {

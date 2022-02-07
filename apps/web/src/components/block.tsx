@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { create_paragraph_block, update_block_content } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
-import { patch, useData } from "../stores/data";
+import { useData } from "../stores/data";
 import { Layout } from "./layout";
 import { v4 as uuid } from "@lukeed/uuid";
 import { Editable } from "./editable";
@@ -134,12 +134,12 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
       id={id}
       value={block.content.nodes}
       set_value={async (v) => {
-        patch((state) => {
-          // @ts-ignore
-          state.blocks[id]!.content = {
-            nodes: v,
-          };
-        });
+        // patch((state) => {
+        //   // @ts-ignore
+        //   state.blocks[id]!.content = {
+        //     nodes: v,
+        //   };
+        // });
         // await update_block_content({ id, content: { nodes: v } });
       }}
     />

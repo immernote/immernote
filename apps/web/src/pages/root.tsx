@@ -1,9 +1,12 @@
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "../components/sidebar";
+import { useFetchUser } from "../hooks/fetch";
 import { usePubSub } from "../hooks/pubsub";
 
 export default function Root() {
   usePubSub();
+  useFetchUser();
+
   return (
     <div className="h-screen w-full tracking-tight flex items-center">
       <Sidebar />
