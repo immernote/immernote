@@ -101,38 +101,19 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
   VALUES (@id, @type, (
       SELECT
         -- Pages are by default inserted at the end
-        -- Start at 1, in case we have to move the page to first position
-        (COUNT(*) + 1)::text
-      FROM
-        public.blocks b
-      WHERE
-        b.space_id = @space_id
-        -- Avoid comparing NULL
-        AND (
-          CASE WHEN @set_parent_id::boolean THEN
-            -- Lookup all siblings from block_edges
-            b.id = ANY (
+        ((
+            CASE WHEN @set_parent_id::boolean THEN
+            (
               SELECT
-                be.block_id
+                COUNT(*)
               FROM
                 public.block_edges be
               WHERE
                 be.parent_id = @parent_id::uuid)
             ELSE
-              -- Only root pages have no parent_id, so select those from page_sets
-              b.id = ANY ( SELECT DISTINCT
-                  ps.root_id
-                FROM
-                  public.page_sets ps
-                WHERE
-                  ps.root_id = ANY (
-                    SELECT
-                      bb.id
-                    FROM
-                      public.blocks bb
-                    WHERE
-                      bb.space_id = @space_id))
-          END)),
+              0
+              -- Start at 1, in case we have to move the page to first position
+            END) + 1)::text),
       @content,
       @format,
       @space_id,

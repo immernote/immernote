@@ -214,3 +214,166 @@ type DeleteBlockParams struct {
 func DeleteBlock(params CreateBlockParams) ([]string, error) {
 	return nil, nil
 }
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                             AddPage                                            */
+/* ---------------------------------------------------------------------------------------------- */
+
+type AddPageParams struct {
+	ID       string
+	ParentID string
+	SpaceID  string
+	Content  types.Map
+	Format   types.Map
+	UserID   uuid.UUID
+}
+
+func AddPage(params AddPageParams) error {
+	pq := query.New(database.Get())
+
+	tx, err := database.Get().Begin(context.Background())
+	if err != nil {
+		return err
+	}
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	space_id, err := uuid.Parse(params.SpaceID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	parent_id, err := utils.ParseUUID(params.ParentID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	has_parent := parent_id != uuid.Nil
+
+	if err := pq.WithTx(tx).CreateBlock(context.Background(), query.CreateBlockParams{
+		ID:          id,
+		Type:        "page",
+		Content:     params.Content,
+		Format:      params.Format,
+		SpaceID:     space_id,
+		CreatedBy:   params.UserID,
+		SetParentID: has_parent,
+		ParentID:    parent_id,
+	}); err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	if has_parent {
+		if err := pq.WithTx(tx).CreateBlockEdge(context.Background(), query.CreateBlockEdgeParams{
+			ParentID: parent_id,
+			BlockID:  id,
+		}); err != nil {
+			tx.Rollback(context.Background())
+			return err
+		}
+
+		if err := pq.WithTx(tx).PreparePageSets(context.Background(), parent_id); err != nil {
+			tx.Rollback(context.Background())
+			return err
+		}
+
+		if err := pq.WithTx(tx).CreatePageSetByParentID(context.Background(), query.CreatePageSetByParentIDParams{
+			PageID:   id,
+			ParentID: parent_id,
+		}); err != nil {
+			tx.Rollback(context.Background())
+			return err
+		}
+	} else {
+		if err := pq.WithTx(tx).CreatePageSet(context.Background(), query.CreatePageSetParams{
+			RootID: id,
+			PageID: id,
+			Lft:    1,
+			Rgt:    2,
+		}); err != nil {
+			tx.Rollback(context.Background())
+			return err
+		}
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                          AddParagraph                                          */
+/* ---------------------------------------------------------------------------------------------- */
+
+type AddParagraphParams struct {
+	ID       string
+	ParentID string
+	SpaceID  string
+	Content  types.Map
+	Format   types.Map
+	UserID   uuid.UUID
+}
+
+func AddParagraph(params AddParagraphParams) error {
+	pq := query.New(database.Get())
+
+	tx, err := database.Get().Begin(context.Background())
+	if err != nil {
+		return err
+	}
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	space_id, err := uuid.Parse(params.SpaceID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	parent_id, err := uuid.Parse(params.ParentID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	if err := pq.WithTx(tx).CreateBlock(context.Background(), query.CreateBlockParams{
+		ID:          id,
+		Type:        "paragraph",
+		Content:     params.Content,
+		Format:      params.Format,
+		SpaceID:     space_id,
+		CreatedBy:   params.UserID,
+		SetParentID: true,
+		ParentID:    parent_id,
+	}); err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	if err := pq.WithTx(tx).CreateBlockEdge(context.Background(), query.CreateBlockEdgeParams{
+		ParentID: parent_id,
+		BlockID:  id,
+	}); err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+
+	"github.com/immernote/immernote/internal/action"
+	"github.com/immernote/immernote/internal/types"
 )
 
 type Message map[string]interface{}
@@ -21,9 +24,18 @@ func HandleMessage(msg []byte, c *Client) (Message, error) {
 
 	switch msg_type := message["type"].(string); msg_type {
 	case "add_page":
-		// Create same front-end actions in here (Add Page, etc)
 		log.Println("Add Page Message")
-		log.Println(message)
+		log.Printf("\n%+v\n", message)
+		if err := action.AddPage(action.AddPageParams{
+			ID:       message["id"].(string),
+			ParentID: message["parent_id"].(string),
+			SpaceID:  string(c.TableID.String()),
+			Content:  message["content"].(types.Map),
+			Format:   message["format"].(types.Map),
+			UserID:   c.ID,
+		}); err != nil {
+			return message, err
+		}
 		// if err := action.ApplyPatches(action.ApplyPatchesParams{Patches: message.Data, UserID: message.SenderID}); err != nil {
 		// 	return message, nil
 		// }

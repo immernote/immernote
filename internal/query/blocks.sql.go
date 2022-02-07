@@ -17,41 +17,22 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
   VALUES ($1, $2, (
       SELECT
         -- Pages are by default inserted at the end
-        -- Start at 1, in case we have to move the page to first position
-        (COUNT(*) + 1)::text
-      FROM
-        public.blocks b
-      WHERE
-        b.space_id = $3
-        -- Avoid comparing NULL
-        AND (
-          CASE WHEN $4::boolean THEN
-            -- Lookup all siblings from block_edges
-            b.id = ANY (
+        ((
+            CASE WHEN $3::boolean THEN
+            (
               SELECT
-                be.block_id
+                COUNT(*)
               FROM
                 public.block_edges be
               WHERE
-                be.parent_id = $5::uuid)
+                be.parent_id = $4::uuid)
             ELSE
-              -- Only root pages have no parent_id, so select those from page_sets
-              b.id = ANY ( SELECT DISTINCT
-                  ps.root_id
-                FROM
-                  public.page_sets ps
-                WHERE
-                  ps.root_id = ANY (
-                    SELECT
-                      bb.id
-                    FROM
-                      public.blocks bb
-                    WHERE
-                      bb.space_id = $3))
-          END)),
+              0
+              -- Start at 1, in case we have to move the page to first position
+            END) + 1)::text),
+      $5,
       $6,
       $7,
-      $3,
       $8,
       $8)
 `
@@ -59,11 +40,11 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
 type CreateBlockParams struct {
 	ID          uuid.UUID `json:"id"`
 	Type        string    `json:"type"`
-	SpaceID     uuid.UUID `json:"space_id"`
 	SetParentID bool      `json:"set_parent_id"`
 	ParentID    uuid.UUID `json:"parent_id"`
 	Content     types.Map `json:"content"`
 	Format      types.Map `json:"format"`
+	SpaceID     uuid.UUID `json:"space_id"`
 	CreatedBy   uuid.UUID `json:"created_by"`
 }
 
@@ -71,11 +52,11 @@ func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) error 
 	_, err := q.db.Exec(ctx, createBlock,
 		arg.ID,
 		arg.Type,
-		arg.SpaceID,
 		arg.SetParentID,
 		arg.ParentID,
 		arg.Content,
 		arg.Format,
+		arg.SpaceID,
 		arg.CreatedBy,
 	)
 	return err

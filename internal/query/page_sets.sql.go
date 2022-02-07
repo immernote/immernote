@@ -30,3 +30,121 @@ func (q *Queries) CreatePageSet(ctx context.Context, arg CreatePageSetParams) er
 	)
 	return err
 }
+
+const createPageSetByParentID = `-- name: CreatePageSetByParentID :exec
+INSERT INTO public.page_sets ("root_id", "page_id", "lft", "rgt")
+SELECT
+  ps.root_id,
+  $1,
+  ps.rgt - 2,
+  ps.lft - 1
+FROM
+  public.page_sets ps
+WHERE
+  ps.page_id = $2
+`
+
+type CreatePageSetByParentIDParams struct {
+	PageID   uuid.UUID `json:"page_id"`
+	ParentID uuid.UUID `json:"parent_id"`
+}
+
+func (q *Queries) CreatePageSetByParentID(ctx context.Context, arg CreatePageSetByParentIDParams) error {
+	_, err := q.db.Exec(ctx, createPageSetByParentID, arg.PageID, arg.ParentID)
+	return err
+}
+
+const getPageSet = `-- name: GetPageSet :one
+SELECT
+  root_id, page_id, lft, rgt
+FROM
+  public.page_sets ps
+WHERE
+  ps.page_id = $1
+`
+
+func (q *Queries) GetPageSet(ctx context.Context, pageID uuid.UUID) (PageSet, error) {
+	row := q.db.QueryRow(ctx, getPageSet, pageID)
+	var i PageSet
+	err := row.Scan(
+		&i.RootID,
+		&i.PageID,
+		&i.Lft,
+		&i.Rgt,
+	)
+	return i, err
+}
+
+const listPageSets = `-- name: ListPageSets :many
+SELECT
+  root_id, page_id, lft, rgt
+FROM
+  public.page_sets ps
+WHERE
+  ps.root_id = $1
+  OR ps.root_id = (
+    SELECT
+      pss.root_id
+    FROM
+      public.page_sets pss
+    WHERE
+      pss.page_id = $1)
+`
+
+func (q *Queries) ListPageSets(ctx context.Context, rootID uuid.UUID) ([]PageSet, error) {
+	rows, err := q.db.Query(ctx, listPageSets, rootID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PageSet{}
+	for rows.Next() {
+		var i PageSet
+		if err := rows.Scan(
+			&i.RootID,
+			&i.PageID,
+			&i.Lft,
+			&i.Rgt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const preparePageSets = `-- name: PreparePageSets :exec
+UPDATE
+  public.page_sets ps
+SET
+  ps.rgt = CASE WHEN ps.rgt > parent_set.rgt - 1 THEN
+    ps.rgt + 2
+  ELSE
+    ps.rgt
+  END,
+  ps.lft = CASE WHEN ps.lft > parent_set.rgt - 1 THEN
+    ps.lft + 2
+  ELSE
+    ps.lft
+  END
+FROM (
+  SELECT
+    parent_ps.root_id,
+    parent_ps.rgt
+  FROM
+    public.page_sets parent_ps
+  WHERE
+    parent_ps.page_id = $1) AS parent_set
+WHERE
+  ps.root_id = parent_ps.root_id
+  AND (ps.lft > parent_set.rgt - 1
+    OR ps.rgt > parent_set.rgt - 1)
+`
+
+func (q *Queries) PreparePageSets(ctx context.Context, parentID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, preparePageSets, parentID)
+	return err
+}
