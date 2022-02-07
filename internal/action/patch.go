@@ -57,6 +57,17 @@ func ApplyPatches(params ApplyPatchesParams) error {
 					tx.Rollback(context.Background())
 					return err
 				}
+
+				if err := pq.WithTx(tx).CreatePageSet(context.Background(), query.CreatePageSetParams{
+					RootID: value.ID,
+					PageID: value.ID,
+					Lft:    1,
+					Rgt:    2,
+				}); err != nil {
+					tx.Rollback(context.Background())
+					return err
+				}
+
 				// Create Page Set
 				// re-rank
 			/* ---------------------------------------- Add Paragraph --------------------------------------- */
