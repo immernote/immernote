@@ -58,8 +58,24 @@ func ApplyPatches(params ApplyPatchesParams) error {
 					return err
 				}
 				// Create Page Set
+				// re-rank
 			/* ---------------------------------------- Add Paragraph --------------------------------------- */
 			case "paragraph":
+				if err := pq.WithTx(tx).CreateBlock(context.Background(), query.CreateBlockParams{
+					ID:          value.ID,
+					Type:        value.Type,
+					Content:     value.Content,
+					Format:      value.Format,
+					SpaceID:     value.SpaceID,
+					CreatedBy:   params.UserID,
+					SetParentID: false,
+				}); err != nil {
+					tx.Rollback(context.Background())
+					return err
+				}
+				// Add edge
+				// Add block page
+				// re-rank
 			}
 		/* ------------------------------------------- Remove ------------------------------------------- */
 		case "remove":
