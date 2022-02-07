@@ -1,15 +1,42 @@
-import { patch } from "../stores/data";
-import type { Block } from "../types";
+import { set, useData } from "../stores/data";
+import { send } from "../stores/msg";
+import type { Block, MsgParams } from "../types";
 import { aksios } from "../utils/aksios";
 
-export async function create_page_block(block: { type: "page" } & Block, parent_id?: string) {
-  patch((state) => {
-    state.blocks[block.id] = block;
-    state.pages[block.id] = [];
+export async function add_block(params: MsgParams<"add_page">) {
+  const user_id = useData.getState().user?.id;
+  if (!user_id) return;
 
-    if (parent_id && state.blocks[parent_id]) {
-      state.blocks[parent_id]!.children = [...state.blocks[parent_id]!.children, block.id];
+  const new_block: Block<"page"> = {
+    id: params.id,
+    content: params.content,
+    format: params.format,
+
+    type: "page",
+    space_id: "",
+
+    children: [],
+
+    created_by: user_id,
+    modified_by: user_id,
+
+    created_at: Date.now(),
+    modified_at: Date.now(),
+    deleted_at: null,
+  };
+
+  set((state) => {
+    state.blocks[new_block.id] = new_block;
+    state.pages[new_block.id] = [];
+
+    if (params.parent_id && state.blocks[params.parent_id]) {
+      state.blocks[params.parent_id]!.children.push(new_block.id);
     }
+  });
+
+  send({
+    type: "add_page",
+    ...params,
   });
 }
 

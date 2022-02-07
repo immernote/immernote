@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
-import { create_page_block } from "../actions/blocks";
+import { add_page } from "../actions/blocks";
 import { useFetchPageBlocks, useFetchSpaces } from "../hooks/fetch";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 import { useData } from "../stores/data";
@@ -250,10 +250,10 @@ function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
   async function handleClick() {
     if (!space) return;
 
-    await create_page_block({
+    await add_page({
       id: uuid(),
       content: {
-        title: "New Sub Page",
+        title: "New Page",
       },
       format: {
         icon: {
@@ -261,14 +261,7 @@ function CreateSubPage({ parent_pages_ids }: { parent_pages_ids: string[] }) {
           value: "🦄",
         },
       },
-      space_id: space.id,
-      children: [],
-      created_at: Date.toString(),
-      modified_at: Date.toString(),
-      deleted_at: null,
-      type: "page",
-      created_by: "me",
-      modified_by: "me",
+      parent_id: null,
     });
   }
 
@@ -289,7 +282,7 @@ function CreatePage() {
   async function handleClick() {
     if (!space) return;
 
-    await create_page_block({
+    await add_page({
       id: uuid(),
       content: {
         title: "New Page",
@@ -300,14 +293,7 @@ function CreatePage() {
           value: "🦄",
         },
       },
-      space_id: space.id,
-      children: [],
-      created_at: Date.toString(),
-      modified_at: Date.toString(),
-      deleted_at: null,
-      type: "page",
-      created_by: "me",
-      modified_by: "me",
+      parent_id: null,
     });
   }
 

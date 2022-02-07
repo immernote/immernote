@@ -49,27 +49,29 @@ export type SpaceSettings = {};
 /*                                              Block                                             */
 /* ---------------------------------------------------------------------------------------------- */
 
-export type Block = (
-  | {
-      type: "paragraph";
-      content: { nodes: any[] };
-      format: {};
-    }
+export type BlocksMain =
   | {
       type: "page";
       content: { title: string };
       format: { icon: { type: string; value: string } };
     }
-) & {
+  | {
+      type: "paragraph";
+      content: { nodes: any[] };
+      format: {};
+    };
+
+export type Block<T extends BlocksMain["type"] = "paragraph"> = Extract<BlocksMain, { type: T }> & {
+  type: T;
   id: string;
   space_id: string;
 
   created_by: string;
   modified_by: string;
 
-  created_at: string;
-  modified_at: string;
-  deleted_at: string | null;
+  created_at: number;
+  modified_at: number;
+  deleted_at: number | null;
 
   children: string[];
 };
@@ -83,11 +85,15 @@ export type DataStore = {
     [key: string]: Space;
   };
   blocks: {
-    [key: string]: Block;
+    [key: string]: Block<any>;
   };
   pages: {
     [key: string]: string[];
   };
+  users: {
+    [key: string]: User;
+  };
+  user: DataStore["users"][string] | undefined;
 };
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -107,12 +113,35 @@ export type MsgStore = {
   queue: Msg[];
 };
 
-export type Msg = {
-  type: "patch";
-  data: {
-    op: "replace" | "remove" | "add";
-    path: (string | number)[];
-    value?: any;
-    modified_at?: string;
-  }[];
-};
+export type Msg =
+  | {
+      type: "ping";
+      page_id: string;
+    }
+  | {
+      type: "add_page";
+      id: string;
+      parent_id: string | null;
+      content: Block<"page">["content"];
+      format: Block<"page">["format"];
+    }
+  | {
+      type: "add_block";
+      id: string;
+      parent_id: string;
+      content: Block<"paragraph">["content"];
+      format: Block<"paragraph">["format"];
+    }
+  | {
+      type: "replace_block_content";
+      id: string;
+      content: Block["content"];
+    }
+  | {
+      type: "replace_block_format";
+      id: string;
+      content: Block["format"];
+    };
+
+type ExcludeTypeField<A> = { [K in Exclude<keyof A, "type">]: A[K] };
+export type MsgParams<T extends Msg["type"]> = ExcludeTypeField<Extract<Msg, { type: T }>>;

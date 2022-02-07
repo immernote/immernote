@@ -4,34 +4,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-
-	"github.com/google/uuid"
-	"github.com/immernote/immernote/internal/types"
 )
 
-type Message struct {
-	Type     string        `json:"type"`
-	Page     string        `json:"page,omitempty"`
-	Data     []types.Patch `json:"data,omitempty"`
-	SenderID uuid.UUID     `json:"senderID"`
-	ConnID   string        `json:"connID"`
-}
+type Message map[string]interface{}
 
 // Shortcut to parse, apply, and broadcast the message
-func HandleMessage(msg []byte, c *Client) (*Message, error) {
+func HandleMessage(msg []byte, c *Client) (Message, error) {
 	message, err := NewMessage(msg)
 	if err != nil {
 		return message, err
 	}
 
 	// Append senderID
-	message.SenderID = c.ID
-	message.ConnID = c.ConnID
+	message["sender_id"] = c.ID
+	message["conn_id"] = c.ConnID
 
-	switch message.Type {
-	case "patch":
-		log.Println("Patch Message")
-		log.Println(message.Data)
+	switch msg_type := message["type"].(string); msg_type {
+	case "add_page":
+		// Create same front-end actions in here (Add Page, etc)
+		log.Println("Add Page Message")
+		log.Println(message)
 		// if err := action.ApplyPatches(action.ApplyPatchesParams{Patches: message.Data, UserID: message.SenderID}); err != nil {
 		// 	return message, nil
 		// }
@@ -40,17 +32,17 @@ func HandleMessage(msg []byte, c *Client) (*Message, error) {
 	case "ping":
 		log.Println("Ping Message")
 	default:
-		return message, fmt.Errorf("unsupported op %s", message.Type)
+		return message, fmt.Errorf("unsupported op %s", msg_type)
 	}
 
 	return message, nil
 }
 
 // Parse and return the message
-func NewMessage(msg []byte) (*Message, error) {
-	parsed := new(Message)
+func NewMessage(msg []byte) (Message, error) {
+	parsed := make(Message)
 
-	if err := json.Unmarshal(msg, parsed); err != nil {
+	if err := json.Unmarshal(msg, &parsed); err != nil {
 		return nil, err
 	}
 

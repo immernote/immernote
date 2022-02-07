@@ -49,15 +49,6 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.Register:
-			// 			if Collections[connection.SpaceID.String()] == nil {
-			// 				Collections[connection.SpaceID.String()] = map[*websocket.Conn]Client{}
-			// 			}
-
-			// 			Collections[connection.SpaceID.String()][connection.Conn] = Client{
-			// 				ID:      connection.UserID,
-			// 				Table:   connection.Table,
-			// 				TableID: connection.TableID,
-			// 			}
 			if h.Clients[client.Channel] == nil {
 				h.Clients[client.Channel] = map[*Client]bool{}
 			}
@@ -80,13 +71,13 @@ func (h *Hub) Run() {
 				return
 			}
 		case message := <-h.Repeat:
-			p := new(Message)
-			if err := json.Unmarshal([]byte(message.Payload), p); err != nil {
+			p := make(Message)
+			if err := json.Unmarshal([]byte(message.Payload), &p); err != nil {
 				return
 			}
 
 			for client := range h.Clients[message.Channel] {
-				if client.ConnID != p.ConnID {
+				if client.ConnID != p["conn_id"].(string) {
 					select {
 					case client.Send <- []byte(message.Payload):
 					default:
