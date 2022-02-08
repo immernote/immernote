@@ -126,7 +126,7 @@ export type Msg =
       format: Block<"page">["format"];
     }
   | {
-      type: "add_block";
+      type: "add_paragraph";
       id: string;
       parent_id: string;
       content: Block<"paragraph">["content"];

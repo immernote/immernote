@@ -35,6 +35,19 @@ func HandleMessage(msg []byte, c *Client) (Message, error) {
 		}); err != nil {
 			return message, err
 		}
+	case "add_paragraph":
+		log.Println("Add Page Message")
+		log.Printf("\n%+v\n", message)
+		if err := action.AddParagraph(action.AddParagraphParams{
+			ID:       message["id"].(string),
+			ParentID: message["parent_id"].(string),
+			SpaceID:  string(c.TableID.String()),
+			Content:  message["content"].(map[string]interface{}),
+			Format:   message["format"].(map[string]interface{}),
+			UserID:   c.ID,
+		}); err != nil {
+			return message, err
+		}
 		// if err := action.ApplyPatches(action.ApplyPatchesParams{Patches: message.Data, UserID: message.SenderID}); err != nil {
 		// 	return message, nil
 		// }

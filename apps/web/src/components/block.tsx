@@ -1,11 +1,12 @@
 import { useCallback } from "react";
-import { create_paragraph_block, update_block_content } from "../actions/blocks";
+import { add_paragraph, update_block_content } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import { Layout } from "./layout";
 import { v4 as uuid } from "@lukeed/uuid";
 import { Editable } from "./editable";
 import shallow from "zustand/shallow";
+import type { Block } from "../types";
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                            PageBlock                                           */
@@ -20,7 +21,7 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
   useFetchBlockChildren(id);
 
   const page = useData(
-    useCallback((state) => state.blocks[id], [id]),
+    useCallback((state) => state.blocks[id] as Block<"page">, [id]),
     shallow
   );
   const children = useData(
@@ -64,17 +65,13 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
           <div
             className="w-full cursor-text flex-grow"
             onClick={async () => {
-              console.log(page.parent_pages_ids);
-              await create_paragraph_block({
+              await add_paragraph({
                 id: uuid(),
                 content: {
                   nodes: [{ type: "text", text: "Maker of things" }],
                 },
                 format: {},
-                parent_block_id: page.id,
-                parent_pages_ids: [...page.parent_pages_ids, page.id],
-                parent_page_id: page.id,
-                space_id: page.space_id,
+                parent_id: page.id,
               });
             }}
             role="textbox"
@@ -124,7 +121,7 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
   useFetchBlockChildren(id);
 
   const block = useData(
-    useCallback((state) => state.blocks[id], [id]),
+    useCallback((state) => state.blocks[id] as Block<"paragraph">, [id]),
     shallow
   );
 

@@ -40,6 +40,37 @@ export async function add_page(params: MsgParams<"add_page">) {
   });
 }
 
+export async function add_paragraph(params: MsgParams<"add_paragraph">) {
+  const user_id = useData.getState().user;
+  if (!user_id) return;
+
+  const new_block: Block<"paragraph"> = {
+    id: params.id,
+    content: params.content,
+    format: params.format,
+
+    type: "paragraph",
+    space_id: "",
+
+    children: [],
+
+    created_by: user_id,
+    modified_by: user_id,
+
+    created_at: Date.now(),
+    modified_at: Date.now(),
+    deleted_at: null,
+  };
+
+  set((state) => {
+    state.blocks[new_block.id] = new_block;
+
+    if (params.parent_id && state.blocks[params.parent_id]) {
+      state.blocks[params.parent_id]!.children.push(new_block.id);
+    }
+  });
+}
+
 export async function create_paragraph_block(body: {
   id: string;
   content: {};
