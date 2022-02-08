@@ -383,3 +383,48 @@ func AddParagraph(params AddParagraphParams) error {
 
 	return nil
 }
+
+/* ---------------------------------------------------------------------------------------------- */
+/*                                        ReplaceParagraph                                        */
+/* ---------------------------------------------------------------------------------------------- */
+
+type ReplaceParagraphParams struct {
+	ID      string
+	Content interface{}
+	Format  interface{}
+}
+
+func ReplaceParagraph(params ReplaceParagraphParams) error {
+	pq := query.New(database.Get())
+
+	tx, err := database.Get().Begin(context.Background())
+	if err != nil {
+		return err
+	}
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	content, set_content := params.Content.(map[string]interface{})
+	format, set_format := params.Format.(map[string]interface{})
+
+	if err := pq.WithTx(tx).UpdateBlock(context.Background(), query.UpdateBlockParams{
+		ID:         id,
+		SetContent: set_content,
+		Content:    content,
+		SetFormat:  set_format,
+		Format:     format,
+	}); err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -48,9 +48,16 @@ func HandleMessage(msg []byte, c *Client) (Message, error) {
 		}); err != nil {
 			return message, err
 		}
-		// if err := action.ApplyPatches(action.ApplyPatchesParams{Patches: message.Data, UserID: message.SenderID}); err != nil {
-		// 	return message, nil
-		// }
+	case "replace_paragraph":
+		log.Println("Replace Page Message")
+		log.Printf("\n%+v\n", message)
+		if err := action.ReplaceParagraph(action.ReplaceParagraphParams{
+			ID:      message["id"].(string),
+			Content: message["content"],
+			Format:  message["format"],
+		}); err != nil {
+			return message, err
+		}
 	case "fetch":
 		log.Println("Fetch Message")
 	case "ping":

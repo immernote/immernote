@@ -120,13 +120,20 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
       @created_by,
       @created_by);
 
--- name: UpdateBlockContent :one
+-- name: UpdateBlock :exec
 UPDATE
   public.blocks
 SET
-  content = @content
+  content = CASE WHEN @set_content::boolean THEN
+    @content
+  ELSE
+    content
+  END,
+  format = CASE WHEN @set_format::boolean THEN
+    @format
+  ELSE
+    format
+  END
 WHERE
-  id = @id
-RETURNING
-  *;
+  id = @id;
 

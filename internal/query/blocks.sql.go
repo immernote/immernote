@@ -273,37 +273,39 @@ func (q *Queries) ListBlocks(ctx context.Context, arg ListBlocksParams) ([]ListB
 	return items, nil
 }
 
-const updateBlockContent = `-- name: UpdateBlockContent :one
+const updateBlock = `-- name: UpdateBlock :exec
 UPDATE
   public.blocks
 SET
-  content = $1
+  content = CASE WHEN $1::boolean THEN
+    $2
+  ELSE
+    content
+  END,
+  format = CASE WHEN $3::boolean THEN
+    $4
+  ELSE
+    format
+  END
 WHERE
-  id = $2
-RETURNING
-  id, type, rank, content, format, space_id, created_by, modified_by, created_at, modified_at, deleted_at
+  id = $5
 `
 
-type UpdateBlockContentParams struct {
-	Content types.Map `json:"content"`
-	ID      uuid.UUID `json:"id"`
+type UpdateBlockParams struct {
+	SetContent bool      `json:"set_content"`
+	Content    types.Map `json:"content"`
+	SetFormat  bool      `json:"set_format"`
+	Format     types.Map `json:"format"`
+	ID         uuid.UUID `json:"id"`
 }
 
-func (q *Queries) UpdateBlockContent(ctx context.Context, arg UpdateBlockContentParams) (Block, error) {
-	row := q.db.QueryRow(ctx, updateBlockContent, arg.Content, arg.ID)
-	var i Block
-	err := row.Scan(
-		&i.ID,
-		&i.Type,
-		&i.Rank,
-		&i.Content,
-		&i.Format,
-		&i.SpaceID,
-		&i.CreatedBy,
-		&i.ModifiedBy,
-		&i.CreatedAt,
-		&i.ModifiedAt,
-		&i.DeletedAt,
+func (q *Queries) UpdateBlock(ctx context.Context, arg UpdateBlockParams) error {
+	_, err := q.db.Exec(ctx, updateBlock,
+		arg.SetContent,
+		arg.Content,
+		arg.SetFormat,
+		arg.Format,
+		arg.ID,
 	)
-	return i, err
+	return err
 }

@@ -17,6 +17,7 @@ import { useFetchPageBlocks, useFetchSpaces } from "../hooks/fetch";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 import { useData } from "../stores/data";
 import { Block } from "../types";
+import { dequal } from "dequal/lite";
 
 export function Sidebar() {
   return (
@@ -109,7 +110,8 @@ function Links() {
 function Pages(props: { parent_page_id?: string; level: number }) {
   useFetchPageBlocks(props.parent_page_id);
   const pages = useData(
-    useCallback((state) => state.pages[props.parent_page_id ?? "root"], [props.parent_page_id])
+    useCallback((state) => state.pages[props.parent_page_id ?? "root"], [props.parent_page_id]),
+    dequal
   );
 
   if (!pages) {
@@ -155,7 +157,10 @@ function Pages(props: { parent_page_id?: string; level: number }) {
 }
 
 function Page({ level, id }: { id: string; level: number }) {
-  const page = useData(useCallback((state) => state.blocks[id] as Block<"page">, [id]));
+  const page = useData(
+    useCallback((state) => state.blocks[id] as Block<"page">, [id]),
+    dequal
+  );
   const { data: space } = useCurrentSpace();
   const [expanded, set_expanded] = useState(false);
   const [has_focus, set_has_focus] = useState(false);

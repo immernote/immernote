@@ -133,14 +133,10 @@ export type Msg =
       format: Block<"paragraph">["format"];
     }
   | {
-      type: "replace_block_content";
+      type: "replace_paragraph";
       id: string;
-      content: Block["content"];
-    }
-  | {
-      type: "replace_block_format";
-      id: string;
-      content: Block["format"];
+      content: Block["content"] | null;
+      format: Block["format"] | null;
     };
 
 type ExcludeTypeField<A> = { [K in Exclude<keyof A, "type">]: A[K] };

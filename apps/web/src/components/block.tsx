@@ -1,12 +1,12 @@
 import { useCallback } from "react";
-import { add_paragraph, update_block_content } from "../actions/blocks";
+import { add_paragraph, replace_paragraph } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import { Layout } from "./layout";
 import { v4 as uuid } from "@lukeed/uuid";
 import { Editable } from "./editable";
-import shallow from "zustand/shallow";
 import type { Block } from "../types";
+import { dequal } from "dequal/lite";
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                            PageBlock                                           */
@@ -22,8 +22,9 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
 
   const page = useData(
     useCallback((state) => state.blocks[id] as Block<"page">, [id]),
-    shallow
+    dequal
   );
+
   const children = useData(
     useCallback(
       (state) => {
@@ -40,7 +41,7 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
       },
       [id]
     ),
-    shallow
+    dequal
   );
 
   if (!page || !children) {
@@ -122,23 +123,21 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
 
   const block = useData(
     useCallback((state) => state.blocks[id] as Block<"paragraph">, [id]),
-    shallow
+    dequal
+  );
+
+  const set_value = useCallback(
+    (v: any[]) => {
+      replace_paragraph({
+        id: id,
+        content: { nodes: v },
+        format: null,
+      });
+    },
+    [id]
   );
 
   return block ? (
-    <Editable
-      key={id}
-      id={id}
-      value={block.content.nodes}
-      set_value={async (v) => {
-        // patch((state) => {
-        //   // @ts-ignore
-        //   state.blocks[id]!.content = {
-        //     nodes: v,
-        //   };
-        // });
-        // await update_block_content({ id, content: { nodes: v } });
-      }}
-    />
+    <Editable key={id} id={id} value={block.content.nodes} set_value={set_value} />
   ) : null;
 }
