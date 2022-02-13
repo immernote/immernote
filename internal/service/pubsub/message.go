@@ -22,36 +22,24 @@ func HandleMessage(msg []byte, c *Client) (Message, error) {
 	message["conn_id"] = c.ConnID
 
 	switch msg_type := message["type"].(string); msg_type {
-	case "add_page":
-		log.Println("Add Page Message")
+	case "add_block":
+		log.Println("Add Block Message")
 		log.Printf("\n%+v\n", message)
-		if err := action.AddPage(action.AddPageParams{
+		if err := action.AddBlock(action.AddBlockParams{
 			ID:       message["id"].(string),
 			ParentID: message["parent_id"],
 			SpaceID:  string(c.TableID.String()),
 			Content:  message["content"].(map[string]interface{}),
 			Format:   message["format"].(map[string]interface{}),
 			UserID:   c.ID,
+			Type:     message["type"].(string),
 		}); err != nil {
 			return message, err
 		}
-	case "add_paragraph":
-		log.Println("Add Page Message")
+	case "replace_block":
+		log.Println("Replace Block Message")
 		log.Printf("\n%+v\n", message)
-		if err := action.AddParagraph(action.AddParagraphParams{
-			ID:       message["id"].(string),
-			ParentID: message["parent_id"].(string),
-			SpaceID:  string(c.TableID.String()),
-			Content:  message["content"].(map[string]interface{}),
-			Format:   message["format"].(map[string]interface{}),
-			UserID:   c.ID,
-		}); err != nil {
-			return message, err
-		}
-	case "replace_paragraph":
-		log.Println("Replace Page Message")
-		log.Printf("\n%+v\n", message)
-		if err := action.ReplaceParagraph(action.ReplaceParagraphParams{
+		if err := action.ReplaceBlock(action.ReplaceBlockParams{
 			ID:      message["id"].(string),
 			Content: message["content"],
 			Format:  message["format"],
