@@ -17,12 +17,12 @@ import (
 /* ---------------------------------------------------------------------------------------------- */
 
 type Block struct {
-	ID       uuid.UUID `json:"id"`
-	Type     string    `json:"type"`
-	Content  types.Map `json:"content"`
-	Format   types.Map `json:"format"`
-	SpaceID  uuid.UUID `json:"space_id"`
-	Children []string  `json:"children"`
+	ID       uuid.UUID   `json:"id"`
+	Type     string      `json:"type"`
+	Content  types.Map   `json:"content"`
+	Format   types.Map   `json:"format"`
+	SpaceID  uuid.UUID   `json:"space_id"`
+	Children []uuid.UUID `json:"children"`
 
 	CreatedBy  uuid.UUID `json:"created_by"`
 	ModifiedBy uuid.UUID `json:"modified_by"`
