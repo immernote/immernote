@@ -15,22 +15,16 @@ export const useMsg = create(
   )
 );
 
-export const send = (msg: Msg) =>
+export const send = (...msgs: Msg[]) =>
   useMsg.setState((state) => {
     const ws_state = useWs.getState();
     if (!ws_state.is_ready || !ws_state.ws) {
       return {
-        queue: [...state.queue, msg],
+        queue: [...state.queue, ...msgs],
       };
     }
 
-    if (state.queue.length > 0) {
-      for (const item of state.queue) {
-        ws_state.ws.json(item);
-      }
-    }
-
-    ws_state.ws.json(msg);
+    ws_state.ws.json([...state.queue, ...msgs]);
 
     return { queue: [] };
   });
