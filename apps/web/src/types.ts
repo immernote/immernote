@@ -110,34 +110,31 @@ export type WsStore = {
 /* ---------------------------------------------------------------------------------------------- */
 
 export type MsgStore = {
-  queue: Msg[];
+  queue: Msg<any>[];
 };
 
-export type Msg =
+export type Msg<BlockType extends BlocksMain["type"]> =
   | {
-      type: "ping";
-      page_id: string;
+      type: "add_block";
+      payload: {
+        id: string;
+        type: BlockType;
+        parent_id: string | null;
+        content: Block<BlockType>["content"];
+        format: Block<BlockType>["format"];
+      };
     }
   | {
-      type: "add_page";
-      id: string;
-      parent_id: string | null;
-      content: Block<"page">["content"];
-      format: Block<"page">["format"];
-    }
-  | {
-      type: "add_paragraph";
-      id: string;
-      parent_id: string;
-      content: Block<"paragraph">["content"];
-      format: Block<"paragraph">["format"];
-    }
-  | {
-      type: "replace_paragraph";
-      id: string;
-      content: Block["content"] | null;
-      format: Block["format"] | null;
+      type: "replace_block";
+      payload: {
+        id: string;
+        content: Block<BlockType>["content"] | null;
+        format: Block<BlockType>["format"] | null;
+      };
     };
 
 type ExcludeTypeField<A> = { [K in Exclude<keyof A, "type">]: A[K] };
-export type MsgParams<T extends Msg["type"]> = ExcludeTypeField<Extract<Msg, { type: T }>>;
+export type MsgParams<T extends Msg<any>["type"], BlockType extends BlocksMain["type"]> = Extract<
+  Msg<BlockType>,
+  { type: T }
+>["payload"];

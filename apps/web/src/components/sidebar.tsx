@@ -258,6 +258,7 @@ function CreateSubPage({ page_id }: { page_id: string }) {
 
     await add_page({
       id: uuid(),
+      type: "page",
       content: {
         title: "New Sub Page",
       },
@@ -290,6 +291,7 @@ function CreatePage() {
 
     await add_page({
       id: uuid(),
+      type: "page",
       content: {
         title: "New Page",
       },

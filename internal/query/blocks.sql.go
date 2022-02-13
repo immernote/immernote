@@ -152,7 +152,7 @@ WHERE (
   AND (
     -- ParentID
     CASE WHEN $5::boolean THEN
-      b.id = (
+      b.id = ANY (
         SELECT
           be.block_id
         FROM
@@ -165,7 +165,7 @@ WHERE (
 AND (
   -- PageID
   CASE WHEN $7::boolean THEN
-    b.id = (
+    b.id = ANY (
       SELECT
         pb.block_id
       FROM
@@ -195,6 +195,8 @@ AND (
     ELSE
       TRUE
   END)
+ORDER BY
+  "rank"::real
 `
 
 type ListBlocksParams struct {
@@ -282,10 +284,10 @@ SET
   ELSE
     content
   END,
-  format = CASE WHEN $3::boolean THEN
+  "format" = CASE WHEN $3::boolean THEN
     $4
   ELSE
-    format
+    "format"
   END
 WHERE
   id = $5

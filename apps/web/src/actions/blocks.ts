@@ -2,7 +2,7 @@ import { set, useData } from "../stores/data";
 import { send } from "../stores/msg";
 import type { Block, MsgParams } from "../types";
 
-export async function add_page(params: MsgParams<"add_page">) {
+export async function add_page(params: MsgParams<"add_block", "page">) {
   const user_id = useData.getState().user;
   if (!user_id) return;
 
@@ -34,12 +34,12 @@ export async function add_page(params: MsgParams<"add_page">) {
   });
 
   send({
-    type: "add_page",
-    ...params,
+    type: "add_block",
+    payload: params,
   });
 }
 
-export async function add_paragraph(params: MsgParams<"add_paragraph">) {
+export async function add_paragraph(params: MsgParams<"add_block", "paragraph">) {
   const user_id = useData.getState().user;
   if (!user_id) return;
 
@@ -70,12 +70,12 @@ export async function add_paragraph(params: MsgParams<"add_paragraph">) {
   });
 
   send({
-    type: "add_paragraph",
-    ...params,
+    type: "add_block",
+    payload: params,
   });
 }
 
-export async function replace_paragraph(params: MsgParams<"replace_paragraph">) {
+export async function replace_paragraph(params: MsgParams<"replace_block", "paragraph">) {
   const user_id = useData.getState().user;
   if (!user_id) return;
 
@@ -85,7 +85,7 @@ export async function replace_paragraph(params: MsgParams<"replace_paragraph">) 
   });
 
   send({
-    type: "replace_paragraph",
-    ...params,
+    type: "replace_block",
+    payload: params,
   });
 }

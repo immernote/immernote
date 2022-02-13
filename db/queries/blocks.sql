@@ -32,7 +32,7 @@ WHERE (
   AND (
     -- ParentID
     CASE WHEN @set_parent_id::boolean THEN
-      b.id = (
+      b.id = ANY (
         SELECT
           be.block_id
         FROM
@@ -45,7 +45,7 @@ WHERE (
 AND (
   -- PageID
   CASE WHEN @set_page_id::boolean THEN
-    b.id = (
+    b.id = ANY (
       SELECT
         pb.block_id
       FROM
@@ -74,7 +74,9 @@ AND (
         s.handle = @space_handle::text)
     ELSE
       TRUE
-  END);
+  END)
+ORDER BY
+  "rank"::real;
 
 -- name: GetBlock :one
 SELECT
@@ -129,10 +131,10 @@ SET
   ELSE
     content
   END,
-  format = CASE WHEN @set_format::boolean THEN
+  "format" = CASE WHEN @set_format::boolean THEN
     @format
   ELSE
-    format
+    "format"
   END
 WHERE
   id = @id;

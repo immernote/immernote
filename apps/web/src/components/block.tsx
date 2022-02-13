@@ -64,12 +64,13 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
             <div className="text-gray11">Empty page. Click to start writing.</div>
           )}
           <div
-            className="w-full cursor-text flex-grow"
+            className="w-full cursor-text flex-grow h-32"
             onClick={async () => {
               await add_paragraph({
                 id: uuid(),
+                type: "paragraph",
                 content: {
-                  nodes: [{ type: "text", text: "Maker of things" }],
+                  nodes: [{ type: "text", text: `Paragraph n. ${children.length}` }],
                 },
                 format: {},
                 parent_id: page.id,

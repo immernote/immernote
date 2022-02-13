@@ -8,7 +8,12 @@ import (
 	"github.com/immernote/immernote/internal/action"
 )
 
-type Message map[string]interface{}
+type Message struct {
+	Type     string                 `json:"type"`
+	Payload  map[string]interface{} `json:"payload"`
+	SenderID string                 `json:"sender_id"`
+	ConnID   string                 `json:"connd_id"`
+}
 
 // Shortcut to parse, apply, and broadcast the message
 func HandleMessage(msg []byte, c *Client) ([]Message, error) {
@@ -19,21 +24,21 @@ func HandleMessage(msg []byte, c *Client) ([]Message, error) {
 
 	for index, message := range messages {
 		// Append senderID
-		messages[index]["sender_id"] = c.ID
-		messages[index]["conn_id"] = c.ConnID
+		messages[index].SenderID = c.ID.String()
+		messages[index].ConnID = c.ConnID
 
-		switch msg_type := message["type"].(string); msg_type {
+		switch msg_type := message.Type; msg_type {
 		case "add_block":
-			log.Println("Add Block Message")
+			log.Println(">>>>>>>>>>>>>>>>> Add Block Message")
 			log.Printf("\n%+v\n", message)
 			if err := action.AddBlock(action.AddBlockParams{
-				ID:       message["id"].(string),
-				ParentID: message["parent_id"],
+				ID:       message.Payload["id"].(string),
+				ParentID: message.Payload["parent_id"],
 				SpaceID:  string(c.TableID.String()),
-				Content:  message["content"].(map[string]interface{}),
-				Format:   message["format"].(map[string]interface{}),
+				Content:  message.Payload["content"].(map[string]interface{}),
+				Format:   message.Payload["format"].(map[string]interface{}),
 				UserID:   c.ID,
-				Type:     message["type"].(string),
+				Type:     message.Payload["type"].(string),
 			}); err != nil {
 				return messages, err
 			}
@@ -41,9 +46,9 @@ func HandleMessage(msg []byte, c *Client) ([]Message, error) {
 			log.Println("Replace Block Message")
 			log.Printf("\n%+v\n", message)
 			if err := action.ReplaceBlock(action.ReplaceBlockParams{
-				ID:      message["id"].(string),
-				Content: message["content"],
-				Format:  message["format"],
+				ID:      message.Payload["id"].(string),
+				Content: message.Payload["content"],
+				Format:  message.Payload["format"],
 			}); err != nil {
 				return messages, err
 			}

@@ -71,13 +71,19 @@ func (h *Hub) Run() {
 				return
 			}
 		case message := <-h.Repeat:
-			p := make(Message)
+			p := []Message{}
 			if err := json.Unmarshal([]byte(message.Payload), &p); err != nil {
 				return
 			}
 
+			// Skip sending if msg is empty
+			if len(p) == 0 {
+				break
+			}
+
 			for client := range h.Clients[message.Channel] {
-				if client.ConnID != p["conn_id"].(string) {
+				// Send msg to all listeners except sender
+				if client.ConnID != p[0].ConnID {
 					select {
 					case client.Send <- []byte(message.Payload):
 					default:
