@@ -65,23 +65,20 @@ func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) error 
 const getBlock = `-- name: GetBlock :one
 SELECT
   id, type, rank, content, format, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
-  (
+  COALESCE((
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
-    FROM
-      blocks cb
-    WHERE
-      cb.id = ANY (
-        SELECT
-          be.block_id
-        FROM
-          block_edges be
-        WHERE
-          be.parent_id = b.id))::uuid[] AS children
-  FROM
-    public.blocks b
+    FROM blocks cb
   WHERE
-    b.id = $1
+    cb.id = ANY (
+      SELECT
+        be.block_id FROM block_edges be
+      WHERE
+        be.parent_id = b.id)), '{}')::uuid[] AS children
+FROM
+  public.blocks b
+WHERE
+  b.id = $1
 `
 
 type GetBlockRow struct {
@@ -122,28 +119,25 @@ func (q *Queries) GetBlock(ctx context.Context, id uuid.UUID) (GetBlockRow, erro
 const listBlocks = `-- name: ListBlocks :many
 SELECT
   id, type, rank, content, format, space_id, created_by, modified_by, created_at, modified_at, deleted_at,
-  (
+  COALESCE((
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
-    FROM
-      blocks cb
-    WHERE
-      cb.id = ANY (
-        SELECT
-          be.block_id
-        FROM
-          block_edges be
-        WHERE
-          be.parent_id = b.id))::uuid[] AS children
-  FROM
-    public.blocks b
-  WHERE (
-    -- Type
-    CASE WHEN $1::boolean THEN
-      b.type = $2::text
-    ELSE
-      TRUE
-    END)
+    FROM blocks cb
+  WHERE
+    cb.id = ANY (
+      SELECT
+        be.block_id FROM block_edges be
+      WHERE
+        be.parent_id = b.id)), '{}')::uuid[] AS children
+FROM
+  public.blocks b
+WHERE (
+  -- Type
+  CASE WHEN $1::boolean THEN
+    b.type = $2::text
+  ELSE
+    TRUE
+  END)
   AND (
     -- IDs
     CASE WHEN $3::boolean THEN

@@ -1,28 +1,25 @@
 -- name: ListBlocks :many
 SELECT
   *,
-  (
+  COALESCE((
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
-    FROM
-      blocks cb
-    WHERE
-      cb.id = ANY (
-        SELECT
-          be.block_id
-        FROM
-          block_edges be
-        WHERE
-          be.parent_id = b.id))::uuid[] AS children
-  FROM
-    public.blocks b
-  WHERE (
-    -- Type
-    CASE WHEN @set_type::boolean THEN
-      b.type = @type::text
-    ELSE
-      TRUE
-    END)
+    FROM blocks cb
+  WHERE
+    cb.id = ANY (
+      SELECT
+        be.block_id FROM block_edges be
+      WHERE
+        be.parent_id = b.id)), '{}')::uuid[] AS children
+FROM
+  public.blocks b
+WHERE (
+  -- Type
+  CASE WHEN @set_type::boolean THEN
+    b.type = @type::text
+  ELSE
+    TRUE
+  END)
   AND (
     -- IDs
     CASE WHEN @set_ids::boolean THEN
@@ -82,23 +79,20 @@ ORDER BY
 -- name: GetBlock :one
 SELECT
   *,
-  (
+  COALESCE((
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
-    FROM
-      blocks cb
-    WHERE
-      cb.id = ANY (
-        SELECT
-          be.block_id
-        FROM
-          block_edges be
-        WHERE
-          be.parent_id = b.id))::uuid[] AS children
-  FROM
-    public.blocks b
+    FROM blocks cb
   WHERE
-    b.id = $1;
+    cb.id = ANY (
+      SELECT
+        be.block_id FROM block_edges be
+      WHERE
+        be.parent_id = b.id)), '{}')::uuid[] AS children
+FROM
+  public.blocks b
+WHERE
+  b.id = $1;
 
 -- name: CreateBlock :exec
 INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id", "created_by", "modified_by")
