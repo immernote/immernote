@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { PageBlock } from "../components/block";
+import { PageBlock, RootPageBlock, RootPageBlockChildren } from "../components/block";
 import { Layout } from "../components/layout";
 import { useFetchBlockChildren } from "../hooks/fetch";
 
@@ -9,7 +9,11 @@ export default function Page() {
 
   return (
     <Layout title="Page">
-      <PageBlock id={id!} root />
+      <RootPageBlock id={id!}>
+        <RootPageBlockChildren id={id!}>
+          <p>Write something</p>
+        </RootPageBlockChildren>
+      </RootPageBlock>
     </Layout>
   );
 }

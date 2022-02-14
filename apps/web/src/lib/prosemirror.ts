@@ -449,6 +449,6 @@ export function createKeymap(schema, mapKeys?) {
     });
   }
 
-  console.log(keys);
+  // console.log(keys);
   return keys;
 }

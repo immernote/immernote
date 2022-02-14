@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
+import type { ReactNode } from "react";
 import { add_paragraph, replace_paragraph } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
@@ -9,23 +10,77 @@ import type { Block } from "../types";
 import { dequal } from "dequal/lite";
 
 /* ---------------------------------------------------------------------------------------------- */
-/*                                            PageBlock                                           */
+/*                                          RootPageBlock                                         */
 /* ---------------------------------------------------------------------------------------------- */
 
-type PageBlockProps = {
+type RootPageBlockProps = {
   id: string;
-  root?: boolean;
+  children: ReactNode;
 };
 
-export function PageBlock({ id, root = false }: PageBlockProps) {
+export function RootPageBlock({ id, children }: RootPageBlockProps) {
   useFetchBlockChildren(id);
 
   const page = useData(
-    useCallback((state) => state.blocks[id] as Block<"page">, [id]),
+    useCallback(
+      (state) => {
+        const item = state.blocks[id] as Block<"page"> | undefined;
+        if (!item) return;
+
+        return {
+          id: item.id,
+          content: item.content,
+          format: item.format,
+        };
+      },
+      [id]
+    ),
     dequal
   );
 
-  const children = useData(
+  if (!page) {
+    return <div>Loading... </div>;
+  }
+
+  return (
+    <Layout title={page.content.title}>
+      <div className="w-full min-h-full max-h-screen overflow-y-auto">
+        <div className="max-w-4xl mx-auto flex flex-col">
+          <div className="inline-flex items-center gap-x-4 pt-16 pb-8">
+            <div className="text-4xl">{page.format.icon.value}</div>
+            <h1 className="text-6xl tracking-tight font-medium">{page.content.title}</h1>
+          </div>
+          {children}
+          <div
+            className="w-full cursor-text flex-grow h-32"
+            onClick={async () => {
+              await add_paragraph({
+                id: uuid(),
+                type: "paragraph",
+                content: {
+                  nodes: [{ type: "text", text: `Paragraph n. x` }],
+                },
+                format: {},
+                parent_id: page.id,
+              });
+            }}
+            role="textbox"
+          />
+        </div>
+      </div>
+    </Layout>
+  );
+}
+
+/* ------------------------------------ RootPageBlockChildren ----------------------------------- */
+
+type RootPageBlockChildrenProps = {
+  id: string;
+  children: ReactNode;
+};
+
+export function RootPageBlockChildren({ id, children }: RootPageBlockChildrenProps) {
+  const chldrn = useData(
     useCallback(
       (state) => {
         const ids = state.blocks[id]?.children;
@@ -44,46 +99,34 @@ export function PageBlock({ id, root = false }: PageBlockProps) {
     dequal
   );
 
-  if (!page || !children) {
-    return <div>Loading... </div>;
-  }
+  return (
+    <>
+      {chldrn.length > 0
+        ? chldrn.map(([child_id, child_type]) => (
+            <BlockSwitch key={child_id} id={child_id} type={child_type} />
+          ))
+        : children}
+    </>
+  );
+}
 
-  if (root) {
-    return (
-      <Layout title={page.content.title}>
-        <div className="max-w-4xl mx-auto min-h-full flex flex-col">
-          <div className="inline-flex items-center gap-x-4 pt-16 pb-8">
-            <div className="text-4xl">{page.format.icon.value}</div>
-            <h1 className="text-6xl tracking-tight font-medium">{page.content.title}</h1>
-          </div>
-          {children.length > 0 ? (
-            children.map(([child_id, child_type]) => (
-              <BlockSwitch key={child_id} id={child_id} type={child_type} />
-            ))
-          ) : (
-            <div className="text-gray11">Empty page. Click to start writing.</div>
-          )}
-          <div
-            className="w-full cursor-text flex-grow h-32"
-            onClick={async () => {
-              await add_paragraph({
-                id: uuid(),
-                type: "paragraph",
-                content: {
-                  nodes: [{ type: "text", text: `Paragraph n. ${children.length}` }],
-                },
-                format: {},
-                parent_id: page.id,
-              });
-            }}
-            role="textbox"
-          />
-        </div>
-      </Layout>
-    );
-  }
+/* ---------------------------------------------------------------------------------------------- */
+/*                                            PageBlock                                           */
+/* ---------------------------------------------------------------------------------------------- */
 
-  return <div>Paragraph level {id}</div>;
+type PageBlockProps = {
+  id: string;
+};
+
+export function PageBlock({ id }: PageBlockProps) {
+  useFetchBlockChildren(id);
+
+  const page = useData(
+    useCallback((state) => state.blocks[id] as Block<"page">, [id]),
+    dequal
+  );
+
+  return page ? <div>Paragraph level {id}</div> : null;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -95,7 +138,7 @@ type BlockSwitchPrpos = {
   type: string;
 };
 
-function BlockSwitch({ id, type }: BlockSwitchPrpos) {
+const BlockSwitch = memo(function BlockSwitch({ id, type }: BlockSwitchPrpos) {
   switch (type) {
     case "page": {
       return <PageBlock key={id} id={id} />;
@@ -109,7 +152,7 @@ function BlockSwitch({ id, type }: BlockSwitchPrpos) {
       return null;
     }
   }
-}
+}, dequal);
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                         ParagraphBlock                                         */

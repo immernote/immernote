@@ -158,7 +158,19 @@ function Pages(props: { parent_page_id?: string; level: number }) {
 
 function Page({ level, id }: { id: string; level: number }) {
   const page = useData(
-    useCallback((state) => state.blocks[id] as Block<"page">, [id]),
+    useCallback(
+      (state) => {
+        const item = state.blocks[id] as Block<"page"> | undefined;
+        if (!item) return;
+
+        return {
+          id: item.id,
+          content: item.content,
+          format: item.format,
+        };
+      },
+      [id]
+    ),
     dequal
   );
   const { data: space } = useCurrentSpace();
