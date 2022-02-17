@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "migrate": "dbmate -e HDU -d \"./database/migrations\" -s \"./database/schema.sql\" migrate"
   },
   "devDependencies": {
     "prettier": "^2.5.1"

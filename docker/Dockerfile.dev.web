@@ -8,7 +8,7 @@ WORKDIR /app
 COPY pnpm-lock.yaml ./
 RUN pnpm fetch
 COPY pnpm-workspace.yaml ./
-COPY ./apps/web/package.json ./apps/web/package.json
+COPY ./packages/web/package.json ./packages/web/package.json
 RUN pnpm i --frozen-lockfile
 COPY . .
 EXPOSE 3000

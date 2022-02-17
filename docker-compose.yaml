@@ -74,7 +74,6 @@ services:
       - AWS_DEFAULT_REGION
       - ROOT_EMAIL
     volumes:
-      - ./apps/api:/app/apps/api
       - ./internal:/app/internal
       - ./db:/app/db
     command: bash -c "air -c .air.toml"
@@ -90,7 +89,7 @@ services:
       - NODE_ENV
       - VITE_WS_HOST
     volumes:
-      - "./apps/web:/app/apps/web"
+      - "./packages/web:/app/packages/web"
     command: "pnpm --filter web dev"
     ports:
       - 3000:3000

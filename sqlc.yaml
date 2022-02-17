@@ -2,8 +2,8 @@ version: "1"
 packages:
   - name: "query"
     path: "internal/query"
-    queries: "db/queries/"
-    schema: "db/schema.sql"
+    queries: "database/queries/"
+    schema: "database/schema.sql"
     engine: "postgresql"
     sql_package: "pgx/v4"
     emit_prepared_queries: true
