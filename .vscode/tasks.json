@@ -6,7 +6,7 @@
 		{
 			"label": "dev:docker",
 			"type": "shell",
-			"command": "docker-compose -f docker-compose.yaml up --build --remove-orphans",
+			"command": "export $(echo $((cat .env.development; cat .env.development.local) | sed 's/#.*//g' | sed 's/\r//g' | xargs) | envsubst) && docker-compose -f docker-compose.yaml up --build --remove-orphans",
 			"presentation": {
 				"reveal": "always",
 				"panel": "new"

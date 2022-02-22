@@ -75,7 +75,7 @@ services:
       - ROOT_EMAIL
     volumes:
       - ./internal:/app/internal
-      - ./db:/app/db
+      - ./database:/app/database
     command: bash -c "air -c .air.toml"
     ports:
       - 4000:4000
