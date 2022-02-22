@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
-import { add_page } from "../actions/blocks";
+import { add_block } from "../actions/blocks";
 import { useFetchPageBlocks, useFetchSpaces } from "../hooks/fetch";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 import { useData } from "../stores/data";
@@ -268,7 +268,7 @@ function CreateSubPage({ page_id }: { page_id: string }) {
   async function handleClick() {
     if (!space) return;
 
-    await add_page({
+    await add_block<"page">({
       id: uuid(),
       type: "page",
       content: {
@@ -301,7 +301,7 @@ function CreatePage() {
   async function handleClick() {
     if (!space) return;
 
-    await add_page({
+    await add_block<"page">({
       id: uuid(),
       type: "page",
       content: {

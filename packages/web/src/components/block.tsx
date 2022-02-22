@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 import type { ReactNode } from "react";
-import { add_paragraph, replace_paragraph } from "../actions/blocks";
+import { add_block, replace_block } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import { Layout } from "./layout";
@@ -54,7 +54,7 @@ export function RootPageBlock({ id, children }: RootPageBlockProps) {
           <div
             className="w-full cursor-text flex-grow h-32"
             onClick={async () => {
-              await add_paragraph({
+              await add_block<"paragraph">({
                 id: uuid(),
                 type: "paragraph",
                 content: {
@@ -172,7 +172,7 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
 
   const set_value = useCallback(
     (v: any[]) => {
-      replace_paragraph({
+      replace_block({
         id: id,
         content: { nodes: v },
         format: null,

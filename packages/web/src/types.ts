@@ -56,6 +56,11 @@ export type BlocksMain =
       format: { icon: { type: string; value: string } };
     }
   | {
+      type: "database";
+      content: { title: string };
+      format: { icon: { type: string; value: string } };
+    }
+  | {
       type: "paragraph";
       content: { nodes: any[] };
       format: {};
@@ -133,7 +138,6 @@ export type Msg<BlockType extends BlocksMain["type"]> =
       };
     };
 
-type ExcludeTypeField<A> = { [K in Exclude<keyof A, "type">]: A[K] };
 export type MsgParams<T extends Msg<any>["type"], BlockType extends BlocksMain["type"]> = Extract<
   Msg<BlockType>,
   { type: T }
