@@ -49,37 +49,94 @@ export type SpaceSettings = {};
 /*                                              Block                                             */
 /* ---------------------------------------------------------------------------------------------- */
 
-export type BlocksMain =
+export type Block =
   | {
       type: "page";
       content: { title: string };
       format: { icon: { type: string; value: string } };
+
+      id: string;
+      space_id: string;
+
+      created_by: string;
+      modified_by: string;
+
+      created_at: number;
+      modified_at: number;
+      deleted_at: number | null;
+
+      children: string[];
     }
   | {
       type: "database";
       content: { title: string };
       format: { icon: { type: string; value: string } };
+
+      id: string;
+      space_id: string;
+
+      created_by: string;
+      modified_by: string;
+
+      created_at: number;
+      modified_at: number;
+      deleted_at: number | null;
+
+      children: string[];
+    }
+  | {
+      type: "field";
+      content: { title: string };
+      format: { icon: { type: string; value: string } };
+
+      id: string;
+      space_id: string;
+
+      created_by: string;
+      modified_by: string;
+
+      created_at: number;
+      modified_at: number;
+      deleted_at: number | null;
+
+      children: string[];
+    }
+  | {
+      type: "view";
+      content: { title: string };
+      format: { icon: { type: string; value: string } };
+
+      id: string;
+      space_id: string;
+
+      created_by: string;
+      modified_by: string;
+
+      created_at: number;
+      modified_at: number;
+      deleted_at: number | null;
+
+      children: string[];
     }
   | {
       type: "paragraph";
       content: { nodes: any[] };
       format: {};
+
+      id: string;
+      space_id: string;
+
+      created_by: string;
+      modified_by: string;
+
+      created_at: number;
+      modified_at: number;
+      deleted_at: number | null;
+
+      children: string[];
     };
 
-export type Block<T extends BlocksMain["type"] = "paragraph"> = Extract<BlocksMain, { type: T }> & {
-  type: T;
-  id: string;
-  space_id: string;
-
-  created_by: string;
-  modified_by: string;
-
-  created_at: number;
-  modified_at: number;
-  deleted_at: number | null;
-
-  children: string[];
-};
+export type BlockType = Block["type"];
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                            DataStore                                           */
@@ -90,7 +147,7 @@ export type DataStore = {
     [key: string]: Space;
   };
   blocks: {
-    [key: string]: Block<any>;
+    [key: string]: Block;
   };
   pages: {
     [key: string]: string[];
@@ -115,30 +172,115 @@ export type WsStore = {
 /* ---------------------------------------------------------------------------------------------- */
 
 export type MsgStore = {
-  queue: Msg<any>[];
+  queue: Msg[];
 };
 
-export type Msg<BlockType extends BlocksMain["type"]> =
+export type Msg =
   | {
       type: "add_block";
       payload: {
         id: string;
-        type: BlockType;
+        type: "page";
         parent_id: string | null;
-        content: Block<BlockType>["content"];
-        format: Block<BlockType>["format"];
+        content: Extract<Block, { type: "page" }>["content"];
+        format: Extract<Block, { type: "page" }>["format"];
+      };
+    }
+  | {
+      type: "add_block";
+      payload: {
+        id: string;
+        type: "paragraph";
+        parent_id: string | null;
+        content: Extract<Block, { type: "paragraph" }>["content"];
+        format: Extract<Block, { type: "paragraph" }>["format"];
+      };
+    }
+  | {
+      type: "add_block";
+      payload: {
+        id: string;
+        type: "database";
+        parent_id: string | null;
+        content: Extract<Block, { type: "database" }>["content"];
+        format: Extract<Block, { type: "database" }>["format"];
+      };
+    }
+  | {
+      type: "add_block";
+      payload: {
+        id: string;
+        type: "view";
+        parent_id: string | null;
+        content: Extract<Block, { type: "view" }>["content"];
+        format: Extract<Block, { type: "view" }>["format"];
+      };
+    }
+  | {
+      type: "add_block";
+      payload: {
+        id: string;
+        type: "field";
+        parent_id: string | null;
+        content: Extract<Block, { type: "field" }>["content"];
+        format: Extract<Block, { type: "field" }>["format"];
+      };
+    }
+  | {
+      type: "add_database";
+      payload: {
+        database_id: string;
+        type: "database";
+        parent_id: string | null;
       };
     }
   | {
       type: "replace_block";
       payload: {
         id: string;
-        content: Block<BlockType>["content"] | null;
-        format: Block<BlockType>["format"] | null;
+        type: "page";
+        content: Extract<Block, { type: "page" }>["content"] | null;
+        format: Extract<Block, { type: "page" }>["format"] | null;
+      };
+    }
+  | {
+      type: "replace_block";
+      payload: {
+        id: string;
+        type: "paragraph";
+        content: Extract<Block, { type: "paragraph" }>["content"] | null;
+        format: Extract<Block, { type: "paragraph" }>["format"] | null;
+      };
+    }
+  | {
+      type: "replace_block";
+      payload: {
+        id: string;
+        type: "database";
+        content: Extract<Block, { type: "database" }>["content"] | null;
+        format: Extract<Block, { type: "database" }>["format"] | null;
+      };
+    }
+  | {
+      type: "replace_block";
+      payload: {
+        id: string;
+        type: "view";
+        content: Extract<Block, { type: "view" }>["content"] | null;
+        format: Extract<Block, { type: "view" }>["format"] | null;
+      };
+    }
+  | {
+      type: "replace_block";
+      payload: {
+        id: string;
+        type: "field";
+        content: Extract<Block, { type: "field" }>["content"] | null;
+        format: Extract<Block, { type: "field" }>["format"] | null;
       };
     };
 
-export type MsgParams<T extends Msg<any>["type"], BlockType extends BlocksMain["type"]> = Extract<
-  Msg<BlockType>,
-  { type: T }
->["payload"];
+export type MsgParams<T extends Msg["type"], S extends BlockType> = Extract<
+  Extract<Msg, { type: T }>["payload"],
+  { type: S }
+>;

@@ -24,7 +24,7 @@ export function RootPageBlock({ id, children }: RootPageBlockProps) {
   const page = useData(
     useCallback(
       (state) => {
-        const item = state.blocks[id] as Block<"page"> | undefined;
+        const item = state.blocks[id] as Extract<Block, { type: "page" }> | undefined;
         if (!item) return;
 
         return {
@@ -122,7 +122,7 @@ export function PageBlock({ id }: PageBlockProps) {
   useFetchBlockChildren(id);
 
   const page = useData(
-    useCallback((state) => state.blocks[id] as Block<"page">, [id]),
+    useCallback((state) => state.blocks[id] as Extract<Block, { type: "page" }>, [id]),
     dequal
   );
 
@@ -166,7 +166,7 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
   useFetchBlockChildren(id);
 
   const block = useData(
-    useCallback((state) => state.blocks[id] as Block<"paragraph">, [id]),
+    useCallback((state) => state.blocks[id] as Extract<Block, { type: "paragraph" }>, [id]),
     dequal
   );
 
@@ -174,6 +174,7 @@ function ParagraphBlock({ id }: ParagraphBlockProps) {
     (v: any[]) => {
       replace_block({
         id: id,
+        type: "paragraph",
         content: { nodes: v },
         format: null,
       });

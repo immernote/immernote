@@ -1,16 +1,17 @@
 import { set, useData } from "../stores/data";
 import { send } from "../stores/msg";
-import type { Block, BlocksMain, MsgParams } from "../types";
+import type { Block, BlockType, MsgParams } from "../types";
+import { v4 as uuid } from "@lukeed/uuid";
 
-export async function add_block<T extends BlocksMain["type"]>(
+export async function add_block<T extends BlockType>(
   params: MsgParams<"add_block", T>,
   broadcast: boolean = true
 ) {
   const user_id = useData.getState().user;
   if (!user_id) return;
 
-  // @ts-ignore no idea how to fix this
-  const new_block: Block<T> = {
+  // @ts-ignore
+  const new_block: Extract<Block, { type: T }> = {
     id: params.id,
     content: params.content,
     format: params.format,
@@ -48,7 +49,65 @@ export async function add_block<T extends BlocksMain["type"]>(
   }
 }
 
-export async function replace_block<T extends BlocksMain["type"]>(
+export async function add_database(
+  params: MsgParams<"add_database", "database">,
+  broadcast: boolean = true
+) {
+  // Database
+  add_block(
+    {
+      id: uuid(),
+      content: { title: "" },
+      format: { icon: { type: "", value: "" } },
+      parent_id: params.parent_id,
+      type: "database",
+    },
+    false
+  );
+
+  // Field
+  add_block(
+    {
+      id: uuid(),
+      content: { title: "" },
+      format: { icon: { type: "", value: "" } },
+      parent_id: params.parent_id,
+      type: "field",
+    },
+    false
+  );
+
+  // View
+  add_block(
+    {
+      id: uuid(),
+      content: { title: "" },
+      format: { icon: { type: "", value: "" } },
+      parent_id: params.parent_id,
+      type: "view",
+    },
+    false
+  );
+
+  if (broadcast) {
+    send(
+      {
+        type: "add_block",
+        payload: params,
+      },
+      {
+        type: "add_block",
+        payload: params,
+      },
+      {
+        type: "add_block",
+        payload: params,
+      }
+    );
+  }
+}
+
+export async function replace_block<T extends BlockType>(
   params: MsgParams<"replace_block", T>,
   broadcast: boolean = true
 ) {

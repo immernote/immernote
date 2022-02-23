@@ -160,7 +160,7 @@ function Page({ level, id }: { id: string; level: number }) {
   const page = useData(
     useCallback(
       (state) => {
-        const item = state.blocks[id] as Block<"page"> | undefined;
+        const item = state.blocks[id] as Extract<Block, { type: "page" }> | undefined;
         if (!item) return;
 
         return {
