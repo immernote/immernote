@@ -29,8 +29,6 @@ func HandleMessage(msg []byte, c *Client) ([]Message, error) {
 
 		switch msg_type := message.Type; msg_type {
 		case "add_block":
-			log.Println(">>>>>>>>>>>>>>>>> Add Block Message")
-			log.Printf("\n%+v\n", message)
 			if err := action.AddBlock(action.AddBlockParams{
 				ID:       message.Payload["id"].(string),
 				ParentID: message.Payload["parent_id"],
@@ -39,6 +37,18 @@ func HandleMessage(msg []byte, c *Client) ([]Message, error) {
 				Format:   message.Payload["format"].(map[string]interface{}),
 				UserID:   c.ID,
 				Type:     message.Payload["type"].(string),
+			}); err != nil {
+				return messages, err
+			}
+		case "add_blocks":
+			if err := action.AddBlocks(action.AddBlocksParams{
+				IDs:       message.Payload["ids"].([]interface{}),
+				Types:     message.Payload["types"].([]interface{}),
+				Contents:  message.Payload["contents"].([]interface{}),
+				Formats:   message.Payload["formats"].([]interface{}),
+				ParentIDs: message.Payload["parent_ids"].([]interface{}),
+				UserID:    c.ID,
+				SpaceID:   string(c.TableID.String()),
 			}); err != nil {
 				return messages, err
 			}

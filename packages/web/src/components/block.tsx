@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 import type { ReactNode } from "react";
-import { add_block, replace_block } from "../actions/blocks";
+import { add_block, add_database, replace_block } from "../actions/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import { Layout } from "./layout";
@@ -54,13 +54,19 @@ export function RootPageBlock({ id, children }: RootPageBlockProps) {
           <div
             className="w-full cursor-text flex-grow h-32"
             onClick={async () => {
-              await add_block<"paragraph">({
-                id: uuid(),
-                type: "paragraph",
-                content: {
-                  nodes: [{ type: "text", text: `Paragraph n. x` }],
-                },
-                format: {},
+              // await add_block<"paragraph">({
+              //   id: uuid(),
+              //   type: "paragraph",
+              //   content: {
+              //     nodes: [{ type: "text", text: `Paragraph n. x` }],
+              //   },
+              //   format: {},
+              //   parent_id: page.id,
+              // });
+
+              await add_database({
+                database_id: uuid(),
+                type: "database",
                 parent_id: page.id,
               });
             }}
@@ -145,6 +151,15 @@ const BlockSwitch = memo(function BlockSwitch({ id, type }: BlockSwitchPrpos) {
     }
     case "paragraph": {
       return <ParagraphBlock key={id} id={id} />;
+    }
+    case "database": {
+      return <PageBlock key={id} id={id} />;
+    }
+    case "field": {
+      return <PageBlock key={id} id={id} />;
+    }
+    case "view": {
+      return <PageBlock key={id} id={id} />;
     }
 
     default: {

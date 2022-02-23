@@ -15,7 +15,7 @@ export const useMsg = create(
   )
 );
 
-export const send = (...msgs: Msg<any>[]) =>
+export const send = (...msgs: Msg[]) =>
   useMsg.setState((state) => {
     const ws_state = useWs.getState();
     if (!ws_state.is_ready || !ws_state.ws) {

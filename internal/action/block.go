@@ -322,6 +322,114 @@ func AddBlock(params AddBlockParams) error {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
+/*                                            AddBlocks                                           */
+/* ---------------------------------------------------------------------------------------------- */
+
+type AddBlocksParams struct {
+	IDs      []interface{}
+	Types    []interface{}
+	Contents []interface{}
+	Formats  []interface{}
+	// Could be nil
+	ParentIDs []interface{}
+	SpaceID   string
+	UserID    uuid.UUID
+}
+
+func AddBlocks(params AddBlocksParams) error {
+	pq := query.New(database.Get())
+
+	tx, err := database.Get().Begin(context.Background())
+	if err != nil {
+		return err
+	}
+
+	space_id, err := uuid.Parse(params.SpaceID)
+	if err != nil {
+		tx.Rollback(context.Background())
+		return err
+	}
+
+	for index, str_id := range params.IDs {
+		id, err := uuid.Parse(str_id.(string))
+		if err != nil {
+			tx.Rollback(context.Background())
+			return err
+		}
+
+		parent_id_str := ""
+		if str, ok := params.ParentIDs[index].(string); ok {
+			parent_id_str = str
+		}
+
+		parent_id, err := utils.ParseUUID(parent_id_str)
+		if err != nil {
+			tx.Rollback(context.Background())
+			return err
+		}
+
+		has_parent := parent_id != uuid.Nil
+
+		if err := pq.WithTx(tx).CreateBlock(context.Background(), query.CreateBlockParams{
+			ID:          id,
+			Type:        params.Types[index].(string),
+			Content:     params.Contents[index].(map[string]interface{}),
+			Format:      params.Formats[index].(map[string]interface{}),
+			SpaceID:     space_id,
+			CreatedBy:   params.UserID,
+			SetParentID: has_parent,
+			ParentID:    parent_id,
+		}); err != nil {
+			tx.Rollback(context.Background())
+			return err
+		}
+
+		if has_parent {
+			if err := pq.WithTx(tx).CreateBlockEdge(context.Background(), query.CreateBlockEdgeParams{
+				ParentID: parent_id,
+				BlockID:  id,
+			}); err != nil {
+				tx.Rollback(context.Background())
+				return err
+			}
+		}
+
+		if params.Types[index] == "page" || params.Types[index] == "database" {
+			if has_parent {
+				if err := pq.WithTx(tx).PreparePageSets(context.Background(), parent_id); err != nil {
+					tx.Rollback(context.Background())
+					return err
+				}
+
+				if err := pq.WithTx(tx).CreatePageSetByParentID(context.Background(), query.CreatePageSetByParentIDParams{
+					PageID:   id,
+					ParentID: parent_id,
+				}); err != nil {
+					tx.Rollback(context.Background())
+					return err
+				}
+			} else {
+				if err := pq.WithTx(tx).CreatePageSet(context.Background(), query.CreatePageSetParams{
+					RootID: id,
+					PageID: id,
+					Lft:    1,
+					Rgt:    2,
+				}); err != nil {
+					tx.Rollback(context.Background())
+					return err
+				}
+			}
+		}
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+/* ---------------------------------------------------------------------------------------------- */
 /*                                          ReplaceBlock                                          */
 /* ---------------------------------------------------------------------------------------------- */
 

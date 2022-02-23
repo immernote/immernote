@@ -177,6 +177,16 @@ export type MsgStore = {
 
 export type Msg =
   | {
+      type: "add_blocks";
+      payload: {
+        ids: string[];
+        types: BlockType[];
+        parent_ids: (string | null)[];
+        contents: Block["content"][];
+        formats: Block["format"][];
+      };
+    }
+  | {
       type: "add_block";
       payload: {
         id: string;
