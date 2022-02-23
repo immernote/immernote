@@ -136,6 +136,25 @@ export function PageBlock({ id }: PageBlockProps) {
 }
 
 /* ---------------------------------------------------------------------------------------------- */
+/*                                          DatabaseBlock                                         */
+/* ---------------------------------------------------------------------------------------------- */
+
+type DatabaseBlockProps = {
+  id: string;
+};
+
+export function DatabaseBlock({ id }: DatabaseBlockProps) {
+  useFetchBlockChildren(id);
+
+  const database = useData(
+    useCallback((state) => state.blocks[id] as Extract<Block, { type: "database" }>, [id]),
+    dequal
+  );
+
+  return database ? <div>Database {id}</div> : null;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
 /*                                           BlockSwitch                                          */
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -153,7 +172,7 @@ const BlockSwitch = memo(function BlockSwitch({ id, type }: BlockSwitchPrpos) {
       return <ParagraphBlock key={id} id={id} />;
     }
     case "database": {
-      return <PageBlock key={id} id={id} />;
+      return <DatabaseBlock key={id} id={id} />;
     }
     case "field": {
       return <PageBlock key={id} id={id} />;
