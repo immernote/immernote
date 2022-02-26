@@ -22,6 +22,8 @@ services:
       - 5432:5432
   pgadmin:
     image: dpage/pgadmin4
+    logging:
+      driver: none 
     container_name: immernote-pdadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
