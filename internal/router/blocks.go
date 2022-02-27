@@ -11,11 +11,11 @@ import (
 
 func ListBlocks(c *gin.Context) (int, interface{}, error) {
 	qs := new(struct {
-		Type        string `form:"type"`
-		SpaceHandle string `form:"space_handle" binding:"required_without=SpaceID"`
-		SpaceID     string `form:"space_id" binding:"required_without=SpaceHandle"`
-		PageID      string `form:"page_id"`
-		ParentID    string `form:"parent_id"`
+		Type        []string `form:"type"`
+		SpaceHandle string   `form:"space_handle" binding:"required_without=SpaceID"`
+		SpaceID     string   `form:"space_id" binding:"required_without=SpaceHandle"`
+		PageID      string   `form:"page_id"`
+		ParentID    string   `form:"parent_id"`
 	})
 
 	if err := c.BindQuery(qs); err != nil {

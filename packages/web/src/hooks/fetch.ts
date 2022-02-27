@@ -48,7 +48,7 @@ export function useFetchPageBlocks(parent_page_id: string | undefined) {
 
   useSWR<Block[]>(
     space
-      ? `/api/v0/blocks/?type=page&space_handle=${space}${
+      ? `/api/v0/blocks/?type=page&type=database&space_handle=${space}${
           parent_page_id ? `&parent_page_id=${parent_page_id}` : ""
         }`
       : null,
@@ -59,7 +59,9 @@ export function useFetchPageBlocks(parent_page_id: string | undefined) {
           for (const page of data) {
             state.blocks[page.id] = page;
             state.pages[page.id] = page.children.filter(
-              (child_id) => state.blocks[child_id]?.type === "page"
+              (child_id) =>
+                state.blocks[child_id]?.type === "page" ||
+                state.blocks[child_id]?.type === "database"
             );
 
             if (!parent_page_id) {

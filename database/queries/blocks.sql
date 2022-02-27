@@ -5,18 +5,19 @@ SELECT
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
     FROM blocks cb
-  WHERE
-    cb.id = ANY (
-      SELECT
-        be.block_id FROM block_edges be
-      WHERE
-        be.parent_id = b.id)), '{}')::uuid[] AS children
+    WHERE
+      cb.id = ANY (
+        SELECT
+          be.block_id
+        FROM block_edges be
+        WHERE
+          be.parent_id = b.id)), '{}')::uuid[] AS children
 FROM
   public.blocks b
 WHERE (
   -- Type
   CASE WHEN @set_type::boolean THEN
-    b.type = @type::text
+    b.type = ANY (@type::text[])
   ELSE
     TRUE
   END)
@@ -83,12 +84,13 @@ SELECT
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
     FROM blocks cb
-  WHERE
-    cb.id = ANY (
-      SELECT
-        be.block_id FROM block_edges be
-      WHERE
-        be.parent_id = b.id)), '{}')::uuid[] AS children
+    WHERE
+      cb.id = ANY (
+        SELECT
+          be.block_id
+        FROM block_edges be
+        WHERE
+          be.parent_id = b.id)), '{}')::uuid[] AS children
 FROM
   public.blocks b
 WHERE

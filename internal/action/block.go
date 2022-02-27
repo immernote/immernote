@@ -80,7 +80,7 @@ type ListBlocksParams struct {
 	ParentID    string
 	SpaceHandle string
 	SpaceID     string
-	Type        string
+	Type        []string
 
 	// List the entire subtree
 	Deep bool
@@ -97,7 +97,7 @@ func ListBlocks(params ListBlocksParams) ([]Block, error) {
 	arg.SetParentID = params.ParentID != ""
 	arg.SetSpaceHandle = params.SpaceHandle != ""
 	arg.SetSpaceID = params.SpaceID != ""
-	arg.SetType = params.Type != ""
+	arg.SetType = len(params.Type) != 0
 
 	if arg.SetIds {
 		ids, err := utils.ParseUUIDList(params.IDs)

@@ -69,12 +69,13 @@ SELECT
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
     FROM blocks cb
-  WHERE
-    cb.id = ANY (
-      SELECT
-        be.block_id FROM block_edges be
-      WHERE
-        be.parent_id = b.id)), '{}')::uuid[] AS children
+    WHERE
+      cb.id = ANY (
+        SELECT
+          be.block_id
+        FROM block_edges be
+        WHERE
+          be.parent_id = b.id)), '{}')::uuid[] AS children
 FROM
   public.blocks b
 WHERE
@@ -123,18 +124,19 @@ SELECT
     SELECT
       array_agg(cb.id ORDER BY cb.rank::real)
     FROM blocks cb
-  WHERE
-    cb.id = ANY (
-      SELECT
-        be.block_id FROM block_edges be
-      WHERE
-        be.parent_id = b.id)), '{}')::uuid[] AS children
+    WHERE
+      cb.id = ANY (
+        SELECT
+          be.block_id
+        FROM block_edges be
+        WHERE
+          be.parent_id = b.id)), '{}')::uuid[] AS children
 FROM
   public.blocks b
 WHERE (
   -- Type
   CASE WHEN $1::boolean THEN
-    b.type = $2::text
+    b.type = ANY ($2::text[])
   ELSE
     TRUE
   END)
@@ -197,7 +199,7 @@ ORDER BY
 
 type ListBlocksParams struct {
 	SetType        bool        `json:"set_type"`
-	Type           string      `json:"type"`
+	Type           []string    `json:"type"`
 	SetIds         bool        `json:"set_ids"`
 	Ids            []uuid.UUID `json:"ids"`
 	SetParentID    bool        `json:"set_parent_id"`
