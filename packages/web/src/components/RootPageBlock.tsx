@@ -1,0 +1,73 @@
+import { useCallback } from "react";
+import { ReactNode } from "react";
+import { add_database } from "../actions/add_database";
+import { useFetchBlockChildren } from "../hooks/fetch";
+import { useData } from "../stores/data";
+import { Layout } from "./layout";
+import { v4 as uuid } from "@lukeed/uuid";
+import { Block } from "../types";
+import { dequal } from "dequal/lite";
+
+type RootPageBlockProps = {
+  id: string;
+  children: ReactNode;
+};
+
+export function RootPageBlock({ id, children }: RootPageBlockProps) {
+  useFetchBlockChildren(id);
+
+  const page = useData(
+    useCallback(
+      (state) => {
+        const item = state.blocks[id] as Extract<Block, { type: "page" }> | undefined;
+        if (!item) return;
+
+        return {
+          id: item.id,
+          content: item.content,
+          format: item.format,
+        };
+      },
+      [id]
+    ),
+    dequal
+  );
+
+  if (!page) {
+    return <div>Loading... </div>;
+  }
+
+  return (
+    <Layout title={page.content.title}>
+      <div className="w-full min-h-full max-h-screen overflow-y-auto">
+        <div className="max-w-4xl mx-auto flex flex-col">
+          <div className="inline-flex items-center gap-x-4 pt-16 pb-8">
+            <div className="text-4xl">{page.format.icon.value}</div>
+            <h1 className="text-6xl tracking-tight font-medium">{page.content.title}</h1>
+          </div>
+          {children}
+          <div
+            className="w-full cursor-text flex-grow h-32"
+            onClick={async () => {
+              // await add_block<"paragraph">({
+              //   id: uuid(),
+              //   type: "paragraph",
+              //   content: {
+              //     nodes: [{ type: "text", text: `Paragraph n. x` }],
+              //   },
+              //   format: {},
+              //   parent_id: page.id,
+              // });
+              await add_database({
+                database_id: uuid(),
+                type: "database",
+                parent_id: page.id,
+              });
+            }}
+            role="textbox"
+          />
+        </div>
+      </div>
+    </Layout>
+  );
+}

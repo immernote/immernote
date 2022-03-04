@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { confirm } from "../actions/auth";
+import { confirm } from "../actions/confirm";
 import { Button } from "../components/button";
 import { Header } from "../components/header";
 import { Layout } from "../components/layout";

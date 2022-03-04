@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
-import { RootPageBlock, RootPageBlockChildren } from "../components/block";
+import { RootPageBlockChildren } from "../components/RootPageBlockChildren";
+import { RootPageBlock } from "../components/RootPageBlock";
 import { Layout } from "../components/layout";
 import { useFetchBlockChildren } from "../hooks/fetch";
 

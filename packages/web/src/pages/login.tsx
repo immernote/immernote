@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { login } from "../actions/auth";
+import { login } from "../actions/login";
 import { Button } from "../components/button";
 import { Header } from "../components/header";
 import { Layout } from "../components/layout";

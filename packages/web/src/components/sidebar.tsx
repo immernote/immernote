@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
-import { add_block } from "../actions/blocks";
+import { add_block } from "../actions/add_block";
 import { useFetchPageBlocks, useFetchSpaces } from "../hooks/fetch";
 import { useCurrentSpace, useSpaces } from "../hooks/spaces";
 import { useData } from "../stores/data";
