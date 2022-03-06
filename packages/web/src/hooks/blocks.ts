@@ -16,6 +16,18 @@ export function usePageBlocks(parent_page_id?: string) {
   );
 }
 
+export function useViewBlocks(parent_page_id?: string) {
+  const { space } = useParams();
+
+  return useSWR<(Block & { type: "view" })[]>(
+    space
+      ? `/api/v0/blocks/?type=view&space_handle=${space}${
+          parent_page_id ? `&parent_page_id=${parent_page_id}` : ""
+        }`
+      : null
+  );
+}
+
 export function usePageBlock(id: string | undefined) {
   return useSWR<Block & { type: "page" }>(id ? `/api/v0/block?id=${id}` : null);
 }

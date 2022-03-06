@@ -2,6 +2,7 @@ import { v4 as uuid } from "@lukeed/uuid";
 import { dequal } from "dequal/lite";
 import { lazy, useCallback } from "react";
 import { add_database } from "../actions/add_database";
+import { useViewBlocks } from "../hooks/blocks";
 import { useFetchBlockChildren } from "../hooks/fetch";
 import { useData } from "../stores/data";
 import type { Block, BlockType } from "../types";
@@ -18,6 +19,7 @@ export default function RootDatabaseBlock({ id }: RootDatabaseBlockProps) {
   // get view id from querystring or redirect to a default one
   // fetch view details
   // render correct view component
+  const { data: views } = useViewBlocks(id);
 
   const page = useData(
     useCallback(

@@ -6,7 +6,7 @@ import { dequal } from "dequal/lite";
 
 const blocks_map = {
   page: lazy(() => import("./RootPageBlock")),
-  database: lazy(() => import("./RootPageBlock")),
+  database: lazy(() => import("./RootDatabaseBlock")),
 };
 
 type RootBlockProps = {

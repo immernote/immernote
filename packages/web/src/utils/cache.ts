@@ -15,7 +15,6 @@ const h = new Map();
 
 const cache: Cache = {
   get(key) {
-    console.log(useData.getState());
     const _key = typeof key === "function" ? key() : key;
     if (!_key) return;
 

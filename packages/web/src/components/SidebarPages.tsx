@@ -7,7 +7,6 @@ import { Link, useMatch } from "react-router-dom";
 import { add_block } from "../actions/add_block";
 import { useFetchPageBlocks } from "../hooks/fetch";
 import { useCurrentSpace } from "../hooks/spaces";
-import { useData } from "../stores/data";
 import { usePageBlock, usePageBlocks } from "../hooks/blocks";
 import Database from "./SidebarDatabase";
 
