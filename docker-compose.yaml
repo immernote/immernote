@@ -3,7 +3,7 @@ version: "3"
 services:
   mem:
       image: "redis:6-alpine"
-      container_name: merebase-mem
+      container_name: immernote-mem
       restart: always
       expose:
         - "6379"

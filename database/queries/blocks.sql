@@ -11,7 +11,14 @@ SELECT
           be.block_id
         FROM block_edges be
         WHERE
-          be.parent_id = b.id)), '{}')::uuid[] AS children
+          be.parent_id = b.id)), '{}')::uuid[] AS children,
+  (
+    SELECT
+      ps.root_id
+    FROM
+      public.page_sets ps
+    WHERE
+      ps.page_id = b.id) AS root_page_id
 FROM
   public.blocks b
 WHERE (
@@ -90,7 +97,14 @@ SELECT
           be.block_id
         FROM block_edges be
         WHERE
-          be.parent_id = b.id)), '{}')::uuid[] AS children
+          be.parent_id = b.id)), '{}')::uuid[] AS children,
+  (
+    SELECT
+      ps.root_id
+    FROM
+      public.page_sets ps
+    WHERE
+      ps.page_id = b.id) AS root_page_id
 FROM
   public.blocks b
 WHERE

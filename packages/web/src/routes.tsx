@@ -1,13 +1,13 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes as RRRoutes } from "react-router-dom";
 import { SWRConfig } from "swr";
-import Root from "./pages/root";
+import Root from "./pages/Root";
 import { fetcher } from "./utils/fetcher";
 
-const Confirm = lazy(() => import("./pages/confirm"));
-const Home = lazy(() => import("./pages/home"));
-const Login = lazy(() => import("./pages/login"));
-const Page = lazy(() => import("./pages/page"));
+const Confirm = lazy(() => import("./pages/Confirm"));
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Page = lazy(() => import("./pages/Page"));
 
 export function Routes() {
   return (

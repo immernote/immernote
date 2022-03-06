@@ -8,7 +8,7 @@ type DatabaseBlockProps = {
   id: string;
 };
 
-export function DatabaseBlock({ id }: DatabaseBlockProps) {
+export default function DatabaseBlock({ id }: DatabaseBlockProps) {
   useFetchBlockChildren(id);
 
   const database = useData(

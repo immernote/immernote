@@ -10,7 +10,7 @@ type ParagraphBlockProps = {
   id: string;
 };
 
-export function ParagraphBlock({ id }: ParagraphBlockProps) {
+export default function ParagraphBlock({ id }: ParagraphBlockProps) {
   useFetchBlockChildren(id);
 
   const block = useData(

@@ -8,7 +8,7 @@ type PageBlockProps = {
   id: string;
 };
 
-export function PageBlock({ id }: PageBlockProps) {
+export default function PageBlock({ id }: PageBlockProps) {
   useFetchBlockChildren(id);
 
   const page = useData(

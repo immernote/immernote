@@ -17,12 +17,13 @@ import (
 /* ---------------------------------------------------------------------------------------------- */
 
 type Block struct {
-	ID       uuid.UUID   `json:"id"`
-	Type     string      `json:"type"`
-	Content  types.Map   `json:"content"`
-	Format   types.Map   `json:"format"`
-	SpaceID  uuid.UUID   `json:"space_id"`
-	Children []uuid.UUID `json:"children"`
+	ID         uuid.UUID   `json:"id"`
+	Type       string      `json:"type"`
+	Content    types.Map   `json:"content"`
+	Format     types.Map   `json:"format"`
+	SpaceID    uuid.UUID   `json:"space_id"`
+	Children   []uuid.UUID `json:"children"`
+	RootPageID *uuid.UUID  `json:"root_page_id"`
 
 	CreatedBy  uuid.UUID `json:"created_by"`
 	ModifiedBy uuid.UUID `json:"modified_by"`
@@ -65,6 +66,7 @@ func GetBlock(params GetBlockParams) (Block, error) {
 		ModifiedAt: block_row.ModifiedAt,
 		DeletedAt:  block_row.DeletedAt,
 		Children:   block_row.Children,
+		RootPageID: &block_row.RootPageID,
 	}
 
 	return block, nil
@@ -164,6 +166,7 @@ func ListBlocks(params ListBlocksParams) ([]Block, error) {
 			CreatedAt:  row.CreatedAt,
 			ModifiedAt: row.ModifiedAt,
 			DeletedAt:  row.DeletedAt,
+			RootPageID: &row.RootPageID,
 		})
 	}
 

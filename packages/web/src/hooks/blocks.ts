@@ -1,13 +1,15 @@
+import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { Block } from "../types";
 import { useCurrentSpace } from "./spaces";
 
 export function usePageBlocks(parent_page_id?: string) {
-  const { data: space } = useCurrentSpace();
+  // const { data: space } = useCurrentSpace();
+  const { space } = useParams();
 
   return useSWR<Block[]>(
-    space?.handle
-      ? `/api/v0/blocks/?type=page&space_handle=${space.handle}${
+    space
+      ? `/api/v0/blocks/?type=page&type=database&space_handle=${space}${
           parent_page_id ? `&parent_page_id=${parent_page_id}` : ""
         }`
       : null
@@ -15,7 +17,7 @@ export function usePageBlocks(parent_page_id?: string) {
 }
 
 export function usePageBlock(id: string | undefined) {
-  return useSWR<Block>(id ? `/api/v0/block?id=${id}` : null);
+  return useSWR<Block & { type: "page" }>(id ? `/api/v0/block?id=${id}` : null);
 }
 
 export function usePageBlockChildren(parent_page_id: string | undefined) {

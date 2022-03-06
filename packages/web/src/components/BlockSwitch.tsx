@@ -1,61 +1,22 @@
-import { memo } from "react";
+import { lazy, memo } from "react";
 import { dequal } from "dequal/lite";
-import { ParagraphBlock } from "./ParagraphBlock";
-import { DatabaseBlock } from "./DatabaseBlock";
-import { PageBlock } from "./PageBlock";
+
+const blocks_map = {
+  page: lazy(() => import("./PageBlock")),
+  paragraph: lazy(() => import("./ParagraphBlock")),
+  database: lazy(() => import("./DatabaseBlock")),
+  field: lazy(() => import("./PageBlock")),
+  view: lazy(() => import("./PageBlock")),
+};
 
 type BlockSwitchPrpos = {
   id: string;
-  type: string;
-  is_root?: boolean;
+  type: keyof typeof blocks_map;
 };
 
-export const BlockSwitch = memo(function BlockSwitch({ id, type, is_root }: BlockSwitchPrpos) {
-  if (is_root) {
-    switch (type) {
-      case "page": {
-        return <PageBlock key={id} id={id} />;
-      }
-      case "paragraph": {
-        return <ParagraphBlock key={id} id={id} />;
-      }
-      case "database": {
-        return <DatabaseBlock key={id} id={id} />;
-      }
-      case "field": {
-        return <PageBlock key={id} id={id} />;
-      }
-      case "view": {
-        return <PageBlock key={id} id={id} />;
-      }
-
-      default: {
-        console.error(`Unknown block type "${type}"`);
-        return null;
-      }
-    }
-  }
-
-  switch (type) {
-    case "page": {
-      return <PageBlock key={id} id={id} />;
-    }
-    case "paragraph": {
-      return <ParagraphBlock key={id} id={id} />;
-    }
-    case "database": {
-      return <DatabaseBlock key={id} id={id} />;
-    }
-    case "field": {
-      return <PageBlock key={id} id={id} />;
-    }
-    case "view": {
-      return <PageBlock key={id} id={id} />;
-    }
-
-    default: {
-      console.error(`Unknown block type "${type}"`);
-      return null;
-    }
-  }
+export const BlockSwitch = memo(function BlockSwitch({ id, type }: BlockSwitchPrpos) {
+  const Comp = blocks_map[type];
+  return <Comp key={id} id={id} />;
 }, dequal);
+
+export default BlockSwitch;

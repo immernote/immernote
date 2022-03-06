@@ -75,7 +75,14 @@ SELECT
           be.block_id
         FROM block_edges be
         WHERE
-          be.parent_id = b.id)), '{}')::uuid[] AS children
+          be.parent_id = b.id)), '{}')::uuid[] AS children,
+  (
+    SELECT
+      ps.root_id
+    FROM
+      public.page_sets ps
+    WHERE
+      ps.page_id = b.id) AS root_page_id
 FROM
   public.blocks b
 WHERE
@@ -95,6 +102,7 @@ type GetBlockRow struct {
 	ModifiedAt time.Time          `json:"modified_at"`
 	DeletedAt  pgtype.Timestamptz `json:"deleted_at"`
 	Children   []uuid.UUID        `json:"children"`
+	RootPageID uuid.UUID          `json:"root_page_id"`
 }
 
 func (q *Queries) GetBlock(ctx context.Context, id uuid.UUID) (GetBlockRow, error) {
@@ -113,6 +121,7 @@ func (q *Queries) GetBlock(ctx context.Context, id uuid.UUID) (GetBlockRow, erro
 		&i.ModifiedAt,
 		&i.DeletedAt,
 		&i.Children,
+		&i.RootPageID,
 	)
 	return i, err
 }
@@ -130,7 +139,14 @@ SELECT
           be.block_id
         FROM block_edges be
         WHERE
-          be.parent_id = b.id)), '{}')::uuid[] AS children
+          be.parent_id = b.id)), '{}')::uuid[] AS children,
+  (
+    SELECT
+      ps.root_id
+    FROM
+      public.page_sets ps
+    WHERE
+      ps.page_id = b.id) AS root_page_id
 FROM
   public.blocks b
 WHERE (
@@ -225,6 +241,7 @@ type ListBlocksRow struct {
 	ModifiedAt time.Time          `json:"modified_at"`
 	DeletedAt  pgtype.Timestamptz `json:"deleted_at"`
 	Children   []uuid.UUID        `json:"children"`
+	RootPageID uuid.UUID          `json:"root_page_id"`
 }
 
 func (q *Queries) ListBlocks(ctx context.Context, arg ListBlocksParams) ([]ListBlocksRow, error) {
@@ -262,6 +279,7 @@ func (q *Queries) ListBlocks(ctx context.Context, arg ListBlocksParams) ([]ListB
 			&i.ModifiedAt,
 			&i.DeletedAt,
 			&i.Children,
+			&i.RootPageID,
 		); err != nil {
 			return nil, err
 		}

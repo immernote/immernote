@@ -9,17 +9,20 @@ import { Layout } from "./layout";
 
 const BlockSwitch = lazy(() => import("./BlockSwitch"));
 
-type RootPageBlockProps = {
+type RootDatabaseBlockProps = {
   id: string;
 };
 
-export default function RootPageBlock({ id }: RootPageBlockProps) {
+export default function RootDatabaseBlock({ id }: RootDatabaseBlockProps) {
   useFetchBlockChildren(id);
+  // get view id from querystring or redirect to a default one
+  // fetch view details
+  // render correct view component
 
   const page = useData(
     useCallback(
       (state) => {
-        const item = state.blocks[id] as Extract<Block, { type: "page" }> | undefined;
+        const item = state.blocks[id] as Extract<Block, { type: "database" }> | undefined;
         if (!item) return;
 
         return {

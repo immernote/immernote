@@ -66,6 +66,7 @@ export type Block =
       deleted_at: number | null;
 
       children: string[];
+      root_page_id: string;
     }
   | {
       type: "database";
