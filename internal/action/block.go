@@ -66,7 +66,10 @@ func GetBlock(params GetBlockParams) (Block, error) {
 		ModifiedAt: block_row.ModifiedAt,
 		DeletedAt:  block_row.DeletedAt,
 		Children:   block_row.Children,
-		RootPageID: &block_row.RootPageID,
+	}
+
+	if block_row.RootPageID != uuid.Nil {
+		block.RootPageID = &block_row.RootPageID
 	}
 
 	return block, nil
@@ -152,7 +155,7 @@ func ListBlocks(params ListBlocksParams) ([]Block, error) {
 	}
 
 	for _, row := range blocks_row {
-		blocks = append(blocks, Block{
+		b := Block{
 			ID:       row.ID,
 			Type:     row.Type,
 			Content:  row.Content,
@@ -166,8 +169,13 @@ func ListBlocks(params ListBlocksParams) ([]Block, error) {
 			CreatedAt:  row.CreatedAt,
 			ModifiedAt: row.ModifiedAt,
 			DeletedAt:  row.DeletedAt,
-			RootPageID: &row.RootPageID,
-		})
+		}
+
+		if row.RootPageID != uuid.Nil {
+			b.RootPageID = &row.RootPageID
+		}
+
+		blocks = append(blocks, b)
 	}
 
 	return blocks, nil
