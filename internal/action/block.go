@@ -145,7 +145,7 @@ func ListBlocks(params ListBlocksParams) ([]Block, error) {
 	}
 
 	if arg.SetType {
-		arg.Type = params.Type
+		arg.Type = utils.ExpandTypes(params.Type)
 	}
 
 	pq := query.New(database.Get())
