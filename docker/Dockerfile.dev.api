@@ -1,4 +1,4 @@
-FROM golang:1.17-alpine AS base
+FROM golang:1.18-alpine AS base
 
 RUN apk --no-cache add curl bash
 RUN curl -fLo install.sh https://raw.githubusercontent.com/cosmtrek/air/master/install.sh \

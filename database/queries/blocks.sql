@@ -123,10 +123,17 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
               FROM
                 public.block_edges be
               WHERE
-                be.parent_id = @parent_id::uuid)
-            ELSE
-              0
-              -- Start at 1, in case we have to move the page to first position
+                be.parent_id = @parent_id::uuid
+                AND (
+                  SELECT
+                    b.type
+                  FROM
+                    public.blocks b
+                  WHERE
+                    b.id = be.block_id) = ANY (@type_likes::text[]))
+              ELSE
+                0
+                -- Start at 1, in case we have to move the page to first position
             END) + 1)::text),
       @content,
       @format,

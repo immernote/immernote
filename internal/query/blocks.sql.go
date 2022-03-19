@@ -25,16 +25,23 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
               FROM
                 public.block_edges be
               WHERE
-                be.parent_id = $4::uuid)
-            ELSE
-              0
-              -- Start at 1, in case we have to move the page to first position
+                be.parent_id = $4::uuid
+                AND (
+                  SELECT
+                    b.type
+                  FROM
+                    public.blocks b
+                  WHERE
+                    b.id = be.block_id) = ANY ($5::text[]))
+              ELSE
+                0
+                -- Start at 1, in case we have to move the page to first position
             END) + 1)::text),
-      $5,
       $6,
       $7,
       $8,
-      $8)
+      $9,
+      $9)
 `
 
 type CreateBlockParams struct {
@@ -42,6 +49,7 @@ type CreateBlockParams struct {
 	Type        string    `json:"type"`
 	SetParentID bool      `json:"set_parent_id"`
 	ParentID    uuid.UUID `json:"parent_id"`
+	TypeLikes   []string  `json:"type_likes"`
 	Content     types.Map `json:"content"`
 	Format      types.Map `json:"format"`
 	SpaceID     uuid.UUID `json:"space_id"`
@@ -54,6 +62,7 @@ func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) error 
 		arg.Type,
 		arg.SetParentID,
 		arg.ParentID,
+		arg.TypeLikes,
 		arg.Content,
 		arg.Format,
 		arg.SpaceID,

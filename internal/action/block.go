@@ -283,6 +283,7 @@ func AddBlock(params AddBlockParams) error {
 		CreatedBy:   params.UserID,
 		SetParentID: has_parent,
 		ParentID:    parent_id,
+		TypeLikes:   utils.GetTypeLikes(params.Type),
 	}); err != nil {
 		tx.Rollback(context.Background())
 		return err
@@ -390,6 +391,7 @@ func AddBlocks(params AddBlocksParams) error {
 			CreatedBy:   params.UserID,
 			SetParentID: has_parent,
 			ParentID:    parent_id,
+			TypeLikes:   utils.GetTypeLikes(params.Types[index].(string)),
 		}); err != nil {
 			tx.Rollback(context.Background())
 			return err
