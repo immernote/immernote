@@ -120,6 +120,23 @@ export type Block =
       children: string[];
     }
   | {
+      type: "table_view";
+      content: { title: string };
+      format: { icon: { type: string; value: string } };
+
+      id: string;
+      space_id: string;
+
+      created_by: string;
+      modified_by: string;
+
+      created_at: number;
+      modified_at: number;
+      deleted_at: number | null;
+
+      children: string[];
+    }
+  | {
       type: "paragraph";
       content: { nodes: any[] };
       format: {};
@@ -222,6 +239,16 @@ export type Msg =
       payload: {
         id: string;
         type: "view";
+        parent_id: string | null;
+        content: Extract<Block, { type: "view" }>["content"];
+        format: Extract<Block, { type: "view" }>["format"];
+      };
+    }
+  | {
+      type: "add_block";
+      payload: {
+        id: string;
+        type: "table_view";
         parent_id: string | null;
         content: Extract<Block, { type: "view" }>["content"];
         format: Extract<Block, { type: "view" }>["format"];

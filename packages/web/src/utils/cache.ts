@@ -15,6 +15,7 @@ const h = new Map();
 
 const cache: Cache = {
   get(key) {
+    console.log(Date.now(), `[GET]    ${key}`);
     const _key = typeof key === "function" ? key() : key;
     if (!_key) return;
 
@@ -38,6 +39,7 @@ const cache: Cache = {
     }
   },
   set(key, value) {
+    console.log(Date.now(), `[SET]    ${key}`);
     const _key = typeof key === "function" ? key() : key;
     if (!_key) return;
 

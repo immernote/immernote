@@ -7,6 +7,7 @@ const blocks_map = {
   database: lazy(() => import("./DatabaseBlock")),
   field: lazy(() => import("./PageBlock")),
   view: lazy(() => import("./PageBlock")),
+  table_view: lazy(() => import("./PageBlock")),
 };
 
 type BlockSwitchPrpos = {
