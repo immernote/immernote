@@ -103,6 +103,23 @@ export type Block =
       children: string[];
     }
   | {
+      type: "text_field";
+      content: {};
+      format: {};
+
+      id: string;
+      space_id: string;
+
+      created_by: string;
+      modified_by: string;
+
+      created_at: number;
+      modified_at: number;
+      deleted_at: number | null;
+
+      children: string[];
+    }
+  | {
       type: "view";
       content: { title: string };
       format: { icon: { type: string; value: string } };
@@ -265,6 +282,27 @@ export type Msg =
       };
     }
   | {
+      type: "add_block";
+      payload: {
+        id: string;
+        type: "text_field";
+        parent_id: string | null;
+        content: Extract<Block, { type: "text_field" }>["content"];
+        format: Extract<Block, { type: "text_field" }>["format"];
+      };
+    }
+  | {
+      type: "add_field";
+      payload: {
+        id: string;
+        type: "text_field";
+        parent_id: string | null;
+        content: Extract<Block, { type: "text_field" }>["content"];
+        format: Extract<Block, { type: "text_field" }>["format"];
+        view_id: string | null;
+      };
+    }
+  | {
       type: "add_database";
       payload: {
         database_id: string;
@@ -306,6 +344,15 @@ export type Msg =
         type: "view";
         content: Extract<Block, { type: "view" }>["content"] | null;
         format: Extract<Block, { type: "view" }>["format"] | null;
+      };
+    }
+  | {
+      type: "replace_block";
+      payload: {
+        id: string;
+        type: "table_view";
+        content: Extract<Block, { type: "table_view" }>["content"] | null;
+        format: Extract<Block, { type: "table_view" }>["format"] | null;
       };
     }
   | {

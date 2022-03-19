@@ -3,6 +3,7 @@ import { add_block } from "../actions/add_block";
 import { usePageBlocks, useViewBlock } from "../hooks/blocks";
 import { v4 as uuid } from "@lukeed/uuid";
 import { Plus } from "lucide-react";
+import { replace_block } from "../actions/replace_block";
 
 type TableViewBlockProps = {
   id: string;
@@ -32,6 +33,27 @@ export default function TableViewBlock({ id }: TableViewBlockProps) {
     });
   }
 
+  async function handle_new_field() {
+    if (!database_id || !view) return;
+
+    const field_id = uuid();
+
+    await add_block<"text_field">({
+      id: field_id,
+      type: "text_field",
+      content: {},
+      format: {},
+      parent_id: database_id,
+    });
+
+    await replace_block<"table_view">({
+      id: view.id,
+      type: "table_view",
+      content: { fields: [field_id] },
+      format: view.format,
+    });
+  }
+
   if (!view || !pages) {
     return <div>Loading...</div>;
   }
@@ -44,7 +66,10 @@ export default function TableViewBlock({ id }: TableViewBlockProps) {
       </div>
       <div className="grid grid-cols-12 divide-x-2 w-full border-gray6 border-t border-b">
         <div className="hover:bg-gray2 transition">Name</div>
-        <button className="px-2 hover:bg-gray3 transition inline-flex items-center justify-center">
+        <button
+          className="px-2 hover:bg-gray3 transition inline-flex items-center justify-center"
+          onClick={handle_new_field}
+        >
           <Plus className="h-[1em]" />
         </button>
       </div>
