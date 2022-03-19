@@ -13,7 +13,7 @@ export default function TableViewBlock({ id }: TableViewBlockProps) {
   const { id: database_id } = useParams<{ id: string }>();
   const { data: pages } = usePageBlocks<"page">(database_id);
 
-  async function handle_click() {
+  async function handle_new_page() {
     if (!database_id) return;
 
     await add_block<"page">({
@@ -55,7 +55,7 @@ export default function TableViewBlock({ id }: TableViewBlockProps) {
       </div>
       <button
         className="w-full border-gray6 border-t border-b hover:bg-gray3 transition px-2 py-1 text-sm inline-flex items-center gap-x-1"
-        onClick={handle_click}
+        onClick={handle_new_page}
       >
         <Plus className="h-[1em]" />
         <span>New</span>
