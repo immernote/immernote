@@ -5,7 +5,7 @@ import { add_database } from "~/actions/add_database";
 import { useFetchBlockChildren } from "~/hooks/fetch";
 import { useData } from "~/stores/data";
 import { Block } from "~/types/Block";
-import { BlockType } from "~/types/BlockType";
+import { BlockLike, BlockType, PageLike } from "~/types/BlockType";
 import { Layout } from "./layout";
 
 const BlockSwitch = lazy(() => import("./BlockSwitch"));
@@ -40,10 +40,10 @@ export default function RootPageBlock({ id }: RootPageBlockProps) {
         const ids = state.blocks[id]?.children;
         if (!ids) return [];
 
-        const list: [id: string, type: BlockType][] = new Array(ids.length);
+        const list: [id: string, type: PageLike | BlockLike][] = new Array(ids.length);
         for (const [index, item_id] of ids.entries()) {
           if (state.blocks[item_id])
-            list[index] = [state.blocks[item_id]!.id, state.blocks[item_id]!.type];
+            list[index] = [state.blocks[item_id]!.id, state.blocks[item_id]!.type as any];
         }
 
         return list;

@@ -5,8 +5,8 @@ const blocks_map = {
   page: lazy(() => import("./PageBlock")),
   paragraph: lazy(() => import("./ParagraphBlock")),
   database: lazy(() => import("./DatabaseBlock")),
-  field: lazy(() => import("./PageBlock")),
-  view: lazy(() => import("./PageBlock")),
+  // field: lazy(() => import("./PageBlock")),
+  // view: lazy(() => import("./PageBlock")),
   table_view: lazy(() => import("./PageBlock")),
 };
 
