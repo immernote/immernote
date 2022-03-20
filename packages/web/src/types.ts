@@ -138,8 +138,8 @@ export type Block =
     }
   | {
       type: "table_view";
-      content: { title: string };
-      format: { icon: { type: string; value: string } };
+      content: { fields: string[] };
+      format: { fields: { [id: string]: any } };
 
       id: string;
       space_id: string;
