@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import { useFetchUser } from "../hooks/fetch";
-import { usePubSub } from "../hooks/pubsub";
+import Sidebar from "~/components/Sidebar";
+import { useFetchUser } from "~/hooks/fetch";
+import { usePubSub } from "~/hooks/pubsub";
 
 export default function Root() {
   usePubSub();

@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
-import { Space } from "../types";
+import { Space } from "~/types/Space";
 
 export function useSpaces() {
   return useSWR<Space[]>("/api/v0/spaces");

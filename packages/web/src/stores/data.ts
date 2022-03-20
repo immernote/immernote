@@ -1,7 +1,7 @@
 import type { Draft } from "immer";
 import produce from "immer";
 import create from "zustand";
-import type { DataStore } from "../types";
+import { DataStore } from "~/types/DataStore";
 
 export const useData = create<DataStore>(() => ({
   spaces: {},

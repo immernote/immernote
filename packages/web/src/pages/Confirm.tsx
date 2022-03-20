@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { confirm } from "../actions/confirm";
-import { Button } from "../components/button";
-import { Header } from "../components/header";
-import { Layout } from "../components/layout";
-import { Link } from "../components/link";
-import { delay } from "../utils/delay";
+import { confirm } from "~/actions/confirm";
+import { Button } from "~/components/button";
+import { Header } from "~/components/header";
+import { Layout } from "~/components/layout";
+import { Link } from "~/components/link";
+import { delay } from "~/utils/delay";
 
 export default function Confirm() {
   const [state, setState] = useState<"idle" | "waiting" | "error" | "success">("idle");

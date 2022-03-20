@@ -1,6 +1,6 @@
 import type { Cache } from "swr";
-import { useData } from "../stores/data";
-import type { Block } from "../types";
+import { useData } from "~/stores/data";
+import { Block } from "~/types/Block";
 
 const get_table = (key: string) => {
   let [table] = key.replace("/api/v0/", "").replace(/\?.+/, "").split("/") as [string];

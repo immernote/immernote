@@ -1,7 +1,8 @@
 import type { GetState, SetState, StoreApi } from "zustand";
 import create from "zustand";
 import { persist } from "zustand/middleware";
-import type { Msg, MsgStore } from "../types";
+import { Msg } from "~/types/Msg";
+import { MsgStore } from "~/types/MsgStore";
 import { useWs } from "./ws";
 
 export const useMsg = create(

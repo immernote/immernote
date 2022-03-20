@@ -4,10 +4,10 @@ import clsx from "clsx";
 import { ChevronDown, ChevronRight, MoreHorizontal, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
-import { add_block } from "../actions/add_block";
-import { useFetchPageBlocks } from "../hooks/fetch";
-import { useCurrentSpace } from "../hooks/spaces";
-import { usePageBlock, usePageBlocks } from "../hooks/blocks";
+import { add_block } from "~/actions/add_block";
+import { useFetchPageBlocks } from "~/hooks/fetch";
+import { useCurrentSpace } from "~/hooks/spaces";
+import { usePageBlock, usePageBlocks } from "~/hooks/blocks";
 import Database from "./SidebarDatabase";
 
 export default function Pages(props: { parent_page_id?: string; level: number }) {

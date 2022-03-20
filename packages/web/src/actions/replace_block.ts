@@ -1,6 +1,8 @@
-import { set, useData } from "../stores/data";
-import { send } from "../stores/msg";
-import { BlockType, Msg, MsgParams } from "../types";
+import { set, useData } from "~/stores/data";
+import { send } from "~/stores/msg";
+import { MsgParams } from "~/types/MsgParams";
+import { Msg } from "~/types/Msg";
+import { BlockType } from "~/types/BlockType";
 
 export async function replace_block<T extends BlockType>(
   params: MsgParams<"replace_block", T>,

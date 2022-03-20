@@ -2,10 +2,10 @@ import { v4 as uuid } from "@lukeed/uuid";
 import { dequal } from "dequal/lite";
 import { lazy, useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { add_block } from "../actions/add_block";
-import { useViewBlock, useViewBlocks } from "../hooks/blocks";
-import { useData } from "../stores/data";
-import type { Block } from "../types";
+import { add_block } from "~/actions/add_block";
+import { useViewBlock, useViewBlocks } from "~/hooks/blocks";
+import { useData } from "~/stores/data";
+import { Block } from "~/types/Block";
 import { Layout } from "./layout";
 
 const ViewSwitch = lazy(() => import("./ViewSwitch"));

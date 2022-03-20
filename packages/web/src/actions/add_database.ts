@@ -1,5 +1,5 @@
-import { send } from "../stores/msg";
-import { MsgParams } from "../types";
+import { send } from "~/stores/msg";
+import { MsgParams } from "~/types/MsgParams";
 import { v4 as uuid } from "@lukeed/uuid";
 import { add_block } from "./add_block";
 

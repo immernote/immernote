@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { debounce } from "throttle-debounce";
-import { ProseMirror, useTextBlock } from "../lib/prosemirror";
+import { ProseMirror, useTextBlock } from "~/lib/prosemirror";
 
 type EditableProps = {
   id: string;

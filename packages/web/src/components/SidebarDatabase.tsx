@@ -3,9 +3,9 @@ import clsx from "clsx";
 import { ChevronDown, ChevronRight, MoreHorizontal } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
-import { useCurrentSpace } from "../hooks/spaces";
-import { useData } from "../stores/data";
-import { Block } from "../types";
+import { useCurrentSpace } from "~/hooks/spaces";
+import { useData } from "~/stores/data";
+import { Block } from "~/types/Block";
 import { dequal } from "dequal/lite";
 
 export default function Database({ level, id }: { id: string; level: number }) {

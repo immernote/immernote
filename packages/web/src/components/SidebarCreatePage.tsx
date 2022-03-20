@@ -1,7 +1,7 @@
 import { v4 as uuid } from "@lukeed/uuid";
 import { Plus } from "lucide-react";
-import { add_block } from "../actions/add_block";
-import { useCurrentSpace } from "../hooks/spaces";
+import { add_block } from "~/actions/add_block";
+import { useCurrentSpace } from "~/hooks/spaces";
 
 export default function CreatePage() {
   const { data: space } = useCurrentSpace();

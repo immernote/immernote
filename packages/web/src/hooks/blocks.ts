@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
-import { Block } from "../types";
+import { Block } from "~/types/Block";
 import { useCurrentSpace } from "./spaces";
 
 export function usePageBlocks<T = any>(parent_id?: string) {

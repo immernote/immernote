@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSpaces } from "../hooks/spaces";
+import { useSpaces } from "~/hooks/spaces";
 
 export default function Home() {
   const { data: spaces } = useSpaces();

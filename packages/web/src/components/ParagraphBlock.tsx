@@ -1,9 +1,9 @@
 import { useCallback } from "react";
-import { replace_block } from "../actions/replace_block";
-import { useFetchBlockChildren } from "../hooks/fetch";
-import { useData } from "../stores/data";
+import { replace_block } from "~/actions/replace_block";
+import { useFetchBlockChildren } from "~/hooks/fetch";
+import { useData } from "~/stores/data";
 import { Editable } from "./editable";
-import { Block } from "../types";
+import { Block } from "~/types/Block";
 import { dequal } from "dequal/lite";
 
 type ParagraphBlockProps = {

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { useFetchBlockChildren } from "../hooks/fetch";
-import { useData } from "../stores/data";
-import { Block } from "../types";
+import { useFetchBlockChildren } from "~/hooks/fetch";
+import { useData } from "~/stores/data";
+import { Block } from "~/types/Block";
 import { dequal } from "dequal/lite";
 
 type PageBlockProps = {

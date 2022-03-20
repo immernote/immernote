@@ -1,7 +1,9 @@
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
-import { set } from "../stores/data";
-import type { Block, Space, User } from "../types";
+import { set } from "~/stores/data";
+import { Block } from "~/types/Block";
+import { Space } from "~/types/Space";
+import { User } from "~/types/User";
 
 export function useFetchUser() {
   useSWR<User>(`/api/v0/users`, {

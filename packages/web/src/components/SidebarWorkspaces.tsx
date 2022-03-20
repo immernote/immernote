@@ -1,7 +1,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ChevronsUpDown } from "lucide-react";
-import { useFetchSpaces } from "../hooks/fetch";
-import { useCurrentSpace, useSpaces } from "../hooks/spaces";
+import { useFetchSpaces } from "~/hooks/fetch";
+import { useCurrentSpace, useSpaces } from "~/hooks/spaces";
 
 export default function Workspaces() {
   return (

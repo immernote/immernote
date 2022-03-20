@@ -1,10 +1,11 @@
 import { v4 as uuid } from "@lukeed/uuid";
 import { dequal } from "dequal/lite";
 import { lazy, useCallback } from "react";
-import { add_database } from "../actions/add_database";
-import { useFetchBlockChildren } from "../hooks/fetch";
-import { useData } from "../stores/data";
-import type { Block, BlockType } from "../types";
+import { add_database } from "~/actions/add_database";
+import { useFetchBlockChildren } from "~/hooks/fetch";
+import { useData } from "~/stores/data";
+import { Block } from "~/types/Block";
+import { BlockType } from "~/types/BlockType";
 import { Layout } from "./layout";
 
 const BlockSwitch = lazy(() => import("./BlockSwitch"));

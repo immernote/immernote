@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { ReactNode } from "react";
-import { useData } from "../stores/data";
+import { useData } from "~/stores/data";
 import { dequal } from "dequal/lite";
 import { BlockSwitch } from "./BlockSwitch";
 

@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
-import { add_block } from "../actions/add_block";
-import { usePageBlocks, useViewBlock } from "../hooks/blocks";
+import { add_block } from "~/actions/add_block";
+import { usePageBlocks, useViewBlock } from "~/hooks/blocks";
 import { v4 as uuid } from "@lukeed/uuid";
 import { Plus } from "lucide-react";
-import { replace_block } from "../actions/replace_block";
+import { replace_block } from "~/actions/replace_block";
 
 type TableViewBlockProps = {
   id: string;

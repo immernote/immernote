@@ -1,5 +1,5 @@
 import create from "zustand";
-import type { WsStore } from "../types";
+import { WsStore } from "~/types/WsStore";
 
 export const useWs = create<WsStore>(() => ({
   is_ready: false,

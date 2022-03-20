@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
 import { useMatch, useParams } from "react-router-dom";
 import Sockette from "sockette";
-import { useData } from "../stores/data";
-import { set_is_ready, set_ws, useWs } from "../stores/ws";
+import { useData } from "~/stores/data";
+import { set_is_ready, set_ws, useWs } from "~/stores/ws";
 
 const WS_HOST = import.meta.env.VITE_WS_HOST as string;
 
