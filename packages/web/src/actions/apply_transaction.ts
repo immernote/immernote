@@ -10,8 +10,10 @@ export default function apply_transaction(tr: ReturnType<typeof create_transacti
           break;
         }
         case "update_block": {
-          // @ts-ignore
-          draft.blocks[item.payload.id] = { ...draft.blocks[item.payload.id], ...item.payload };
+          if (draft.blocks[item.payload.id]) {
+            // @ts-ignore
+            draft.blocks[item.payload.id] = { ...draft.blocks[item.payload.id], ...item.payload };
+          }
           break;
         }
         default: {
