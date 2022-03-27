@@ -181,50 +181,50 @@ func ListBlocks(params ListBlocksParams) ([]Block, error) {
 	return blocks, nil
 }
 
-/* ---------------------------------------------------------------------------------------------- */
-/*                                           CreateBlock                                          */
-/* ---------------------------------------------------------------------------------------------- */
+// /* ---------------------------------------------------------------------------------------------- */
+// /*                                           CreateBlock                                          */
+// /* ---------------------------------------------------------------------------------------------- */
 
-type CreateBlockParams struct {
-	Type     string
-	ID       string
-	ParentID string
-	PageID   string
-}
+// type CreateBlockParams struct {
+// 	Type     string
+// 	ID       string
+// 	ParentID string
+// 	PageID   string
+// }
 
-func CreateBlock(params CreateBlockParams) ([]string, error) {
-	return nil, nil
-}
+// func CreateBlock(params CreateBlockParams) ([]string, error) {
+// 	return nil, nil
+// }
 
-/* ---------------------------------------------------------------------------------------------- */
-/*                                           PatchBlocks                                          */
-/* ---------------------------------------------------------------------------------------------- */
+// /* ---------------------------------------------------------------------------------------------- */
+// /*                                           PatchBlocks                                          */
+// /* ---------------------------------------------------------------------------------------------- */
 
-type PatchBlockParams struct {
-	Type     string
-	ID       string
-	ParentID string
-	PageID   string
-}
+// type PatchBlockParams struct {
+// 	Type     string
+// 	ID       string
+// 	ParentID string
+// 	PageID   string
+// }
 
-func PatchBlock(params CreateBlockParams) ([]string, error) {
-	return nil, nil
-}
+// func PatchBlock(params CreateBlockParams) ([]string, error) {
+// 	return nil, nil
+// }
 
-/* ---------------------------------------------------------------------------------------------- */
-/*                                           DeleteBlock                                          */
-/* ---------------------------------------------------------------------------------------------- */
+// /* ---------------------------------------------------------------------------------------------- */
+// /*                                           DeleteBlock                                          */
+// /* ---------------------------------------------------------------------------------------------- */
 
-type DeleteBlockParams struct {
-	Type     string
-	ID       string
-	ParentID string
-	PageID   string
-}
+// type DeleteBlockParams struct {
+// 	Type     string
+// 	ID       string
+// 	ParentID string
+// 	PageID   string
+// }
 
-func DeleteBlock(params CreateBlockParams) ([]string, error) {
-	return nil, nil
-}
+// func DeleteBlock(params CreateBlockParams) ([]string, error) {
+// 	return nil, nil
+// }
 
 /* ---------------------------------------------------------------------------------------------- */
 /*                                            AddBlock                                            */
@@ -301,7 +301,10 @@ func AddBlock(params AddBlockParams) error {
 
 	if params.Type == "page" || params.Type == "database" {
 		if has_parent {
-			if err := pq.WithTx(tx).PreparePageSets(context.Background(), parent_id); err != nil {
+			if err := pq.WithTx(tx).PreparePageSets(context.Background(), query.PreparePageSetsParams{
+				ParentID: parent_id,
+				Depth:    2,
+			}); err != nil {
 				tx.Rollback(context.Background())
 				return err
 			}
@@ -409,7 +412,10 @@ func AddBlocks(params AddBlocksParams) error {
 
 		if params.Types[index] == "page" || params.Types[index] == "database" {
 			if has_parent {
-				if err := pq.WithTx(tx).PreparePageSets(context.Background(), parent_id); err != nil {
+				if err := pq.WithTx(tx).PreparePageSets(context.Background(), query.PreparePageSetsParams{
+					ParentID: parent_id,
+					Depth:    2,
+				}); err != nil {
 					tx.Rollback(context.Background())
 					return err
 				}

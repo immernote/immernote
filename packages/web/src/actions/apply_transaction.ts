@@ -2,6 +2,7 @@ import { set } from "~/stores/data";
 import create_transaction from "./create_transaction";
 
 export default function apply_transaction(tr: ReturnType<typeof create_transaction>) {
+	console.log(JSON.stringify(tr, null, 2))
   set((draft) => {
     for (const item of tr.payload) {
       switch (item.type) {

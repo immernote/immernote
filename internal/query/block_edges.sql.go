@@ -23,3 +23,32 @@ func (q *Queries) CreateBlockEdge(ctx context.Context, arg CreateBlockEdgeParams
 	_, err := q.db.Exec(ctx, createBlockEdge, arg.ParentID, arg.BlockID)
 	return err
 }
+
+const deleteBlockEdge = `-- name: DeleteBlockEdge :exec
+DELETE FROM public.block_edges
+WHERE block_id = $1
+`
+
+func (q *Queries) DeleteBlockEdge(ctx context.Context, blockID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteBlockEdge, blockID)
+	return err
+}
+
+const updateBlockEdge = `-- name: UpdateBlockEdge :exec
+UPDATE
+  public.block_edges
+SET
+  parent_id = $1
+WHERE
+  block_id = $2
+`
+
+type UpdateBlockEdgeParams struct {
+	ParentID uuid.UUID `json:"parent_id"`
+	BlockID  uuid.UUID `json:"block_id"`
+}
+
+func (q *Queries) UpdateBlockEdge(ctx context.Context, arg UpdateBlockEdgeParams) error {
+	_, err := q.db.Exec(ctx, updateBlockEdge, arg.ParentID, arg.BlockID)
+	return err
+}

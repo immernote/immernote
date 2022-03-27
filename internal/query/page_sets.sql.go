@@ -9,6 +9,32 @@ import (
 	"github.com/google/uuid"
 )
 
+const batchCreatePageSet = `-- name: BatchCreatePageSet :exec
+INSERT INTO public.page_sets ("root_id", "page_id", "lft", "rgt")
+SELECT
+  $1,
+  unnest($2::uuid[]) AS page_id,
+  unnest($3::integer[]) AS lft,
+  unnest($4::integer[]) AS rgt
+`
+
+type BatchCreatePageSetParams struct {
+	RootID  uuid.UUID   `json:"root_id"`
+	PageIds []uuid.UUID `json:"page_ids"`
+	Lfts    []int32     `json:"lfts"`
+	Rgts    []int32     `json:"rgts"`
+}
+
+func (q *Queries) BatchCreatePageSet(ctx context.Context, arg BatchCreatePageSetParams) error {
+	_, err := q.db.Exec(ctx, batchCreatePageSet,
+		arg.RootID,
+		arg.PageIds,
+		arg.Lfts,
+		arg.Rgts,
+	)
+	return err
+}
+
 const createPageSet = `-- name: CreatePageSet :exec
 INSERT INTO public.page_sets ("root_id", "page_id", "lft", "rgt")
   VALUES ($1, $2, $3, $4)
@@ -52,6 +78,64 @@ type CreatePageSetByParentIDParams struct {
 func (q *Queries) CreatePageSetByParentID(ctx context.Context, arg CreatePageSetByParentIDParams) error {
 	_, err := q.db.Exec(ctx, createPageSetByParentID, arg.PageID, arg.ParentID)
 	return err
+}
+
+const deletePageSets = `-- name: DeletePageSets :many
+DELETE FROM public.page_sets
+WHERE page_id = ANY (
+    SELECT
+      ps.page_id
+    FROM
+      public.page_sets ps
+    WHERE
+      ps.root_id = (
+        SELECT
+          sps.root_id
+        FROM
+          public.page_sets sps
+        WHERE
+          sps.page_id = $1)
+        AND ps.lft >= (
+          SELECT
+            sps.lft
+          FROM
+            public.page_sets sps
+          WHERE
+            sps.page_id = $1)
+          AND ps.rgt <= (
+            SELECT
+              sps.rgt
+            FROM
+              public.page_sets sps
+            WHERE
+              sps.page_id = $1))
+      RETURNING
+        root_id, page_id, lft, rgt
+`
+
+func (q *Queries) DeletePageSets(ctx context.Context, pageID uuid.UUID) ([]PageSet, error) {
+	rows, err := q.db.Query(ctx, deletePageSets, pageID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PageSet{}
+	for rows.Next() {
+		var i PageSet
+		if err := rows.Scan(
+			&i.RootID,
+			&i.PageID,
+			&i.Lft,
+			&i.Rgt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPageSet = `-- name: GetPageSet :one
@@ -116,17 +200,48 @@ func (q *Queries) ListPageSets(ctx context.Context, rootID uuid.UUID) ([]PageSet
 	return items, nil
 }
 
+const popPageSets = `-- name: PopPageSets :exec
+UPDATE
+  public.page_sets
+SET
+  rgt = CASE WHEN rgt > $1 THEN
+    rgt - $2
+  ELSE
+    rgt
+  END,
+  lft = CASE WHEN lft > $1 THEN
+    lft - $2
+  ELSE
+    lft
+  END
+WHERE
+  root_id = $3
+  AND (lft > $1
+    OR rgt > $1)
+`
+
+type PopPageSetsParams struct {
+	Rgt    int32     `json:"rgt"`
+	Depth  int32     `json:"depth"`
+	RootID uuid.UUID `json:"root_id"`
+}
+
+func (q *Queries) PopPageSets(ctx context.Context, arg PopPageSetsParams) error {
+	_, err := q.db.Exec(ctx, popPageSets, arg.Rgt, arg.Depth, arg.RootID)
+	return err
+}
+
 const preparePageSets = `-- name: PreparePageSets :exec
 UPDATE
   public.page_sets
 SET
   rgt = CASE WHEN rgt > parent_set.parent_rgt - 1 THEN
-    rgt + 2
+    rgt + $1::integer
   ELSE
     rgt
   END,
   lft = CASE WHEN lft > parent_set.parent_rgt - 1 THEN
-    lft + 2
+    lft + $1::integer
   ELSE
     lft
   END
@@ -137,14 +252,19 @@ FROM (
   FROM
     public.page_sets parent_ps
   WHERE
-    parent_ps.page_id = $1) AS parent_set
+    parent_ps.page_id = $2) AS parent_set
 WHERE
   root_id = parent_set.parent_root_id
   AND (lft > parent_set.parent_rgt - 1
     OR rgt > parent_set.parent_rgt - 1)
 `
 
-func (q *Queries) PreparePageSets(ctx context.Context, parentID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, preparePageSets, parentID)
+type PreparePageSetsParams struct {
+	Depth    int32     `json:"depth"`
+	ParentID uuid.UUID `json:"parent_id"`
+}
+
+func (q *Queries) PreparePageSets(ctx context.Context, arg PreparePageSetsParams) error {
+	_, err := q.db.Exec(ctx, preparePageSets, arg.Depth, arg.ParentID)
 	return err
 }
