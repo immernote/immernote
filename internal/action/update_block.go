@@ -3,6 +3,7 @@ package action
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/immernote/immernote/internal/database"
@@ -14,10 +15,12 @@ import (
 )
 
 type UpdateBlockParams struct {
-	ID       uuid.UUID
-	Content  *types.Map
-	Format   *types.Map
-	ParentID pgtype.UUID
+	ID       uuid.UUID   `json:"id"`
+	Content  *types.Map  `json:"content"`
+	Format   *types.Map  `json:"format"`
+	ParentID pgtype.UUID `json:"parent_id"`
+	By       uuid.UUID   `json:"by"`
+	At       time.Time   `json:"at"`
 }
 
 func UpdateBlock(params UpdateBlockParams, tx pgx.Tx) error {
@@ -30,9 +33,11 @@ func UpdateBlock(params UpdateBlockParams, tx pgx.Tx) error {
 		ID:         params.ID,
 		SetContent: params.Content == &types.Map{},
 		// Is this okay?
-		Content:   *params.Content,
-		SetFormat: params.Format == &types.Map{},
-		Format:    *params.Format,
+		Content:    *params.Content,
+		SetFormat:  params.Format == &types.Map{},
+		Format:     *params.Format,
+		ModifiedBy: params.By,
+		ModifiedAt: params.At,
 	}); err != nil {
 		tx.Rollback(context.Background())
 		return err

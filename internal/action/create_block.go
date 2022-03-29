@@ -2,6 +2,7 @@ package action
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/immernote/immernote/internal/database"
@@ -12,13 +13,14 @@ import (
 )
 
 type CreateBlockParams struct {
-	ID        uuid.UUID `json:"id"`
-	Type      string    `json:"type"`
-	Content   types.Map `json:"content"`
-	Format    types.Map `json:"format"`
-	SpaceID   uuid.UUID `json:"space_id"`
-	CreatedBy uuid.UUID `json:"created_by"`
-	ParentID  uuid.UUID `json:"parent_id"`
+	ID       uuid.UUID `json:"id"`
+	Type     string    `json:"type"`
+	Content  types.Map `json:"content"`
+	Format   types.Map `json:"format"`
+	SpaceID  uuid.UUID `json:"space_id"`
+	ParentID uuid.UUID `json:"parent_id"`
+	By       uuid.UUID `json:"by"`
+	At       time.Time `json:"at"`
 }
 
 func CreateBlock(params CreateBlockParams, tx pgx.Tx) error {
@@ -32,10 +34,11 @@ func CreateBlock(params CreateBlockParams, tx pgx.Tx) error {
 		Content:     params.Content,
 		Format:      params.Format,
 		SpaceID:     params.SpaceID,
-		CreatedBy:   params.CreatedBy,
+		CreatedBy:   params.By,
 		SetParentID: has_parent,
 		ParentID:    params.ParentID,
 		TypeLikes:   utils.GetTypeLikes(params.Type),
+		CreatedAt:   params.At,
 	}); err != nil {
 		tx.Rollback(context.Background())
 		return err

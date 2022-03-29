@@ -111,7 +111,7 @@ WHERE
   b.id = $1;
 
 -- name: CreateBlock :exec
-INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id", "created_by", "modified_by")
+INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id", "created_by", "modified_by", "created_at", "modified_at")
   VALUES (@id, @type, (
       SELECT
         -- Pages are by default inserted at the end
@@ -139,7 +139,9 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
       @format,
       @space_id,
       @created_by,
-      @created_by);
+      @created_by,
+      @created_at,
+      @created_at);
 
 -- name: UpdateBlock :exec
 UPDATE
@@ -154,7 +156,9 @@ SET
     @format
   ELSE
     "format"
-  END
+  END,
+  modified_by = @modified_by,
+  modified_at = @modified_at
 WHERE
   id = @id;
 

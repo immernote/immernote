@@ -13,7 +13,7 @@ import (
 )
 
 const createBlock = `-- name: CreateBlock :exec
-INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id", "created_by", "modified_by")
+INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id", "created_by", "modified_by", "created_at", "modified_at")
   VALUES ($1, $2, (
       SELECT
         -- Pages are by default inserted at the end
@@ -41,7 +41,9 @@ INSERT INTO public.blocks ("id", "type", "rank", "content", "format", "space_id"
       $7,
       $8,
       $9,
-      $9)
+      $9,
+      $10,
+      $10)
 `
 
 type CreateBlockParams struct {
@@ -54,6 +56,7 @@ type CreateBlockParams struct {
 	Format      types.Map `json:"format"`
 	SpaceID     uuid.UUID `json:"space_id"`
 	CreatedBy   uuid.UUID `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) error {
@@ -67,6 +70,7 @@ func (q *Queries) CreateBlock(ctx context.Context, arg CreateBlockParams) error 
 		arg.Format,
 		arg.SpaceID,
 		arg.CreatedBy,
+		arg.CreatedAt,
 	)
 	return err
 }
@@ -313,9 +317,11 @@ SET
     $4
   ELSE
     "format"
-  END
+  END,
+  modified_by = $5,
+  modified_at = $6
 WHERE
-  id = $5
+  id = $7
 `
 
 type UpdateBlockParams struct {
@@ -323,6 +329,8 @@ type UpdateBlockParams struct {
 	Content    types.Map `json:"content"`
 	SetFormat  bool      `json:"set_format"`
 	Format     types.Map `json:"format"`
+	ModifiedBy uuid.UUID `json:"modified_by"`
+	ModifiedAt time.Time `json:"modified_at"`
 	ID         uuid.UUID `json:"id"`
 }
 
@@ -332,6 +340,8 @@ func (q *Queries) UpdateBlock(ctx context.Context, arg UpdateBlockParams) error 
 		arg.Content,
 		arg.SetFormat,
 		arg.Format,
+		arg.ModifiedBy,
+		arg.ModifiedAt,
 		arg.ID,
 	)
 	return err
